@@ -190,7 +190,7 @@ function getParam($key, $url){
 			 array("4shared\.com\/file\/", "Download Now", '/Size:</b>.*\">(.*)/s'),
 			 array("filefactory\.com\/file\/", "(download link)|(Please try again later)", '/\t<span>(.*)\sfile/'),
 			array("rapidshare\.de\/files\/", "You want to download"),
-			 array("mediafire\.com\/(download\.php)?\?", "You requested", '/sharedtabsfileinfo1-fs.+?([0-9.]+\s\w+)">/'),
+			 array("mediafire\.com\/\?", "download_file_title", '/sharedtabsfileinfo1-fs.+?([0-9.]+\s\w+)">/'),
 			 array("www.mediafire\.com\/file\/", "You requested"),
 			 array("netload\.in\/datei[0-9a-zA-Z]{10}\/", "File download", '/<span\sstyle\="color\:\s\#8d8d8d\;">\,(.*)<\/span>/'),
 			 array("depositfiles\.com\/([a-z]{2}\/)?files\/", "File Name", '/File\ssize:\s<b>(.*)<\/b>/', "@(com\/files\/)|(com\/[a-z]{2}\/files\/)@i", "com/en/files/"),
