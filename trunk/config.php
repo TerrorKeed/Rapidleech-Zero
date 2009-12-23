@@ -41,6 +41,7 @@ $premium_acc["rs_com"] = array(
 //$premium_acc["uploading"] = array('user' => '', 'pass' => '');
 //$premium_acc["filefactory"] = array('user' => '', 'pass' => '');
 //$premium_acc["ifile_it"] = array('user' => '', 'pass' => '');
+//$premium_acc["sendspace"] = array('user' => '', 'pass' => '');
 
 #Auto Download Premium Account #
 //$premium_acc_audl = false;
@@ -90,7 +91,7 @@ $list_baned_ip = ''; // blacklist ip, u think so?!. eg. 111.111.111.111, 222.*.*
 
 $limited_area = false; // limit authorization RL by ID Country
 $allow_CID = ''; // White list Country ID, blank mean all country is allowed. eg. ID, MY; // allow only Indonesia And Malaysia
-$baned_CID = 'US,GT'; // Blacklist Country ID, blank mean no country is banned. eg. US; // all country from US being banned.
+$baned_CID = ''; // Blacklist Country ID, blank mean no country is banned. eg. US; // all country from US being banned.
 
 $limit_timework = false; // limit your RL by time. Client's Current time depend on (Server timezone)
 $workstart = '00:00:00'; // Your RL start to work
