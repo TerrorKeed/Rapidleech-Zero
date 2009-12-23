@@ -530,6 +530,27 @@ pass: <input type="password" id="pass" name="pass">
 	<span id="ifket" ><?php if(!$ifit){echo "<div>ifile.it Free/premiX ACC</div>";}else{echo ACC_EMBED;}?></span>
 	</td>
 	</tr>
+	<tr>
+	<td class="tdacc">
+	<?php 
+  $sendspace=false; $chk='';
+  if($showpostn){
+   if($_POST['sendspace_premix']=='on')
+    {$chk= ' checked';$sendspace=true;}
+  }elseif((isset($premium_acc))&&($premium_acc['sendspace']))
+    {$chk= ' checked';$sendspace=true;} 
+	?>
+<input type="checkbox" id="sendspace_premix" name="sendspace_premix" onClick="clk(this,'sendbox','sendket','<?php echo $sendspace;?>');"<?php echo $chk;?>>
+<label for="sendspace_premix">&nbsp;sendspace</label>
+	</td>
+	<td class="tdacc">
+	<div id="sendbox"<?php echo $styledisplay;?> class="float">
+	user: <input type="text" id="usrsendspace" name="usrsendspace" value="">&nbsp;
+	pass: <input type="password" id="passsendspace" name="passsendspace" value="">
+	</div>
+	<span id="sendket" ><?php if(!$sendspace){echo "<div>sendspace premiX ACC</div>";}else{echo ACC_EMBED;}?></span>
+	</td>
+	</tr>
 	</tbody></table>
 	</li></ul>
 </div>
