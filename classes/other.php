@@ -1297,15 +1297,16 @@ function calcUsedSpace() {
 	if (!$list) {
 		_create_list ();
 	}
-	/*
-	foreach ( $list as $key => $file ) {
-		if (file_exists ( $file ["name"] )) {
-			//$total_size += filesize ( $file ["name"] );
-			$total_size += filesize ( $file ["name"] );
-		}
+
+	if(isset($list["files"]["totalsize"])){
+	 $total_size = $list["files"]["totalsize"];
+	}else{
+		foreach ( $list as $key => $file ) {
+			if (@file_exists( $file ["name"] )) {
+				$total_size += filesize ( $file ["name"] );
+			}
+		}	
 	}
-	*/
-	$total_size = $list["files"]["totalsize"];
 	return $total_size;
 }
 
