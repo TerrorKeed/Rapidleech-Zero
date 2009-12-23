@@ -125,6 +125,7 @@ $ar_chkbox_acc = array(
  'uploading_premix',
  'filefactory_premix',
  'ifile_it_premix',
+ 'sendspace_premix',
 
 );
 
@@ -587,7 +588,8 @@ if(isset($_POST['submit'])){
 		fieldfilter($ar_chkbox_acc[11],'usrhotfile','passhotfile',$badpetik);
 		fieldfilter($ar_chkbox_acc[12],'usruploading','passuploading',$badpetik); 
 		fieldfilter($ar_chkbox_acc[13],'usrfilefactory','passfilefactory',$badpetik); 
-		fieldfilter($ar_chkbox_acc[14],'usrifile','passifile',$badpetik); 
+		fieldfilter($ar_chkbox_acc[14],'usrifile','passifile',$badpetik);
+		fieldfilter($ar_chkbox_acc[15],'usrsendspace','passsendspace',$badpetik);
 
 	} //-- end $_POST['usepcc']
 	else{
@@ -660,7 +662,7 @@ if(isset($_POST['submit'])){
 	 //===================
 	 
 	$upcc = '';
-	 if(empty($_POST['rs_com_premix'])&&empty($_POST['rs_de_premix'])&&empty($_POST['megaupload_premix'])&&empty($_POST['megashare_premix'])&&empty($_POST['netload_premix'])&&empty($_POST['gigasize_premix'])&&empty($_POST['share_online_premix'])&&empty($_POST['vBulletin_acc'])&&empty($_POST['uploaded_to_premix'])&&empty($_POST['easyshare_premix'])&&empty($_POST['depositfiles_premix'])&&empty($_POST['hotfile_com_premix'])&&empty($_POST['uploading_premix'])&&empty($_POST['filefactory_premix'])&&empty($_POST['ifile_it_premix'])&&empty($_POST['muhash_premix'])&&empty($_POST['imghack_premix']))
+	 if(empty($_POST['rs_com_premix'])&&empty($_POST['rs_de_premix'])&&empty($_POST['megaupload_premix'])&&empty($_POST['megashare_premix'])&&empty($_POST['netload_premix'])&&empty($_POST['gigasize_premix'])&&empty($_POST['share_online_premix'])&&empty($_POST['vBulletin_acc'])&&empty($_POST['uploaded_to_premix'])&&empty($_POST['easyshare_premix'])&&empty($_POST['depositfiles_premix'])&&empty($_POST['hotfile_com_premix'])&&empty($_POST['uploading_premix'])&&empty($_POST['filefactory_premix'])&&empty($_POST['ifile_it_premix'])&&empty($_POST['sendspace_premix'])&&empty($_POST['muhash_premix'])&&empty($_POST['imghack_premix']))
 	  { $upcc='//'; }
 	  
 	  
@@ -734,7 +736,8 @@ if(isset($_POST['submit'])){
 	$_config .= ($_POST['hotfile_com_premix']=='on'?$upcc:'//')."\$premium_acc[\"hotfile_com\"] = array('user' => '".trim($_POST['usrhotfile'])."', 'pass' => '".trim($_POST['passhotfile'])."');\n";
 	$_config .= ($_POST['uploading_premix']=='on'?$upcc:'//')."\$premium_acc[\"uploading\"] = array('user' => '".trim($_POST['usruploading'])."', 'pass' => '".trim($_POST['passuploading'])."');\n";
 	$_config .= ($_POST['filefactory_premix']=='on'?$upcc:'//')."\$premium_acc[\"filefactory\"] = array('user' => '".trim($_POST['usrfilefactory'])."', 'pass' => '".trim($_POST['passfilefactory'])."');\n";
-	$_config .= ($_POST['ifile_it_premix']=='on'?$upcc:'//')."\$premium_acc[\"ifile_it\"] = array('user' => '".trim($_POST['usrifile'])."', 'pass' => '".trim($_POST['passifile'])."');\n\n";
+	$_config .= ($_POST['ifile_it_premix']=='on'?$upcc:'//')."\$premium_acc[\"ifile_it\"] = array('user' => '".trim($_POST['usrifile'])."', 'pass' => '".trim($_POST['passifile'])."');\n";
+	$_config .= ($_POST['sendspace_premix']=='on'?$upcc:'//')."\$premium_acc[\"sendspace\"] = array('user' => '".trim($_POST['usrsendspace'])."', 'pass' => '".trim($_POST['passsendspace'])."');\n\n";
 	
 	$_config .= "#Auto Download Premium Account #\n";
 	$_config .= ($_POST['autodlpremix']=='on' ? $upcc:'//')."\$premium_acc_audl = ".($_POST['autodlpremix']=='on'?'true':'false').";\n\n";
