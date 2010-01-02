@@ -150,7 +150,8 @@ if($task='doDel')
  {
  if (file_exists($fileName) && strlen($fileName)>0) {
 	deleteIt($fileName, $list);
-	echo '<p><b class="g">'."addslases(basename($fileName))".'</b><br><span class="g">'.$dtxt['_sucesdelete'].'</span></p><p>'.$dtxt["_thx"].'</p>';	
+	$fn = htmlspecialchars(basename($fileName));
+	echo "<p><b class=\"g\">{$fn}</b><br><span class=\"g\">{$dtxt['_sucesdelete']}</span></p><p>{$dtxt["_thx"]}</p>";
 ?>
 <p id="closebtn"></p>
 <script type="text/javascript">
@@ -184,7 +185,8 @@ if(window.opener!=null){
   if(file_exists($fileName) && strlen($fileName)>0) {
    //echo "deleting...";
    deleteIt($fileName, $list);
-   $ret = '<p><b class="g">'.addslashes(basename($fileName)).'</b><br><span class="g">'.$dtxt['_sucesdelete'].'</span></p><p>'.$dtxt["_thx"].'</p>';
+   $fn = htmlspecialchars(basename($fileName));
+   $ret = "<p><b class=\"g\">{$fn}</b><br><span class=\"g\">{$dtxt['_sucesdelete']}</span></p><p>{$dtxt["_thx"]}</p>";
    ?>
 <html><body>
 <script type="text/javascript">
