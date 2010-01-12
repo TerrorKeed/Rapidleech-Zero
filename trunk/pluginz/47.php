@@ -35,7 +35,17 @@ $Href = rtrim($loca[0]);
   is_present($page,"File not found","File not found, the file is not present or bad link","0");
   is_present($page,"due to copyright","This file is either removed due to copyright claim or is deleted by the uploader.","0");
   
-$Url =parse_url($Href);
+  $snap = cut_str ( $page ,'<table class="downloading">' ,'Click here to download' );
+  $dwn = cut_str ( $snap ,'href="' ,'"' );
+  $Url=parse_url($dwn);
+  
+  $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, $cook, 0, 0, $_GET["proxy"],$pauth);
+  is_page($page);
+  
+  
+  $locat=cut_str ($page ,"Location: ","\r"); 
+  
+$Url =parse_url($locat);
 $FileName = basename($Url["path"]);
 insert_location ( "$PHP_SELF?filename=" . urlencode ( $FileName ) ."&force_name=".urlencode($FileName)."&host=" . $Url ["host"] . "&path=" . urlencode ( $Url ["path"] . ($Url ["query"] ? "?" . $Url ["query"] : "") ) . "&referer=" . urlencode ( $Referer ) . "&email=" . ($_GET ["domail"] ? $_GET ["email"] : "") . "&partSize=" . ($_GET ["split"] ? $_GET ["partSize"] : "") . "&cookie=" . urlencode ( $cookie ) . "&post=" . urlencode ( serialize ( $post ) ) . "&proxy=" . ($_GET ["useproxy"] ? $_GET ["proxy"] : "") . "&saveto=" . $_GET ["path"] . "&method=POST&link=" . urlencode ( $LINK ) . ($_GET ["add_comment"] == "on" ? "&comment=" . urlencode ( $_GET ["comment"] ) : "") . "&auth=" . $auth . ($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : "") );
 
@@ -74,7 +84,7 @@ if($hf == "ok"){
      $redirect=rtrim($redir[1]);
      $Url = parse_url($redirect);
      insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "")."&auth=".$auth.($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
-	 exit;
+
      }
      
 }
@@ -102,7 +112,7 @@ if($hf == "ok"){
       $post["tmhash"] = $tmhash;
       $post["wait"] = $wait;
       $post["waithash"] = $waithash;
-      insert_timer($wait, "");   
+      insert_timer($wait, "Waiting timelock");
       $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, $post, 0, $_GET["proxy"],$pauth);  
       preg_match('/\/\d+\/\w+\/\w+\/[^\'"]+/i', $page, $down);      
       $LINK="http://hotfile.com/get".$down[0];
@@ -141,16 +151,15 @@ if($hf == "ok"){
         }else{
         html_error("Error get captcha", 0);
         }
-/*
         $captchaid=cut_str($page,"captchaid value=",">");
         $hash1=cut_str($page,"hash1 value=",">");
         $hash2=cut_str($page,"hash2 value=",">");
- */       
+
         unset($post);
         $post['recaptcha_challenge_field']=$ch;
         
     print     "<form method=\"post\" action=\"".$PHP_SELF.(isset($_GET["idx"]) ? "?&idx=".$_GET["idx"] : "")."\">$nn";
-    print    "<h4>Enter <img src=\"$imgfile\"> here:<input name=\"captcha\" type=\"text\" >$nn";
+    print    "<h4>Enter <img src=\"$imgfile\"> here:</h4><input name=\"captcha\" type=\"text\" >$nn";
     print    "<input name=\"link\" value=\"$Referer\" type=\"hidden\">$nn";  
     print   '<input type="hidden" name="post" value="'.urlencode(serialize($post)).'">'.$nn;
     print    "<input name=\"hf\" value=\"ok\" type=\"hidden\">$nn";
@@ -172,5 +181,6 @@ if (!$nofinish){
 /*
 written by kaox 15-oct-2009
 fixed by kaox 02-nov-2009
+update by kaox 10-jan-2010
 */
 ?>

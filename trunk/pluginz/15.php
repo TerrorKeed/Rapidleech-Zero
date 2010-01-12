@@ -2,11 +2,11 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["gigasize"]["user"] && $premium_acc["gigasize"]["pass"]))
+if (($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["gigasize"]["user"] && $premium_acc["gigasize"]["pass"]))
 {
 	$post = Array();
-	$post["uname"] = ($_GET["pr_user"] ? $_GET["pr_user"] : $premium_acc["gigasize"]["user"]);
-	$post["passwd"] = ($_GET["pr_pass"] ? $_GET["pr_pass"] : $premium_acc["gigasize"]["pass"]);
+	$post["uname"] = ($_GET["premium_user"] ? $_GET["premium_user"] : $premium_acc["gigasize"]["user"]);
+	$post["passwd"] = ($_GET["premium_pass"] ? $_GET["premium_pass"] : $premium_acc["gigasize"]["pass"]);
 	$post["d"] = "Login";
 	$post["login"] = "1";
 	$cookie = "Cookieuser[lng]=en";

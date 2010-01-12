@@ -153,8 +153,8 @@ function clearSettings()
   d.getElementById('proxy').value= "";
   d.getElementById('proxyuser').value= "";
   d.getElementById('proxypass').value= "";
-  d.getElementById('pr_user').value= "";
-  d.getElementById('pr_pass').value= "";
+  d.getElementById('premium_user').value= "";
+  d.getElementById('premium_pass').value= "";
                             
   d.getElementById('emailtd').style.display = "none";
   d.getElementById('splittd').style.display = "none";

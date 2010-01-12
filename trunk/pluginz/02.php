@@ -1,8 +1,8 @@
 <?php
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
-
-if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["pr_user"] && $_GET["pr_pass"]) || ($premium_acc["rs_com"]["user"] && $premium_acc["rs_com"]["pass"]) ||(is_array($premium_acc["rs_com"][0])) || $_GET["maudl"]=='multi') || $_POST["sssid"])
+  
+if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["premium_user"] && $_GET["premium_pass"]) || ($premium_acc["rs_com"]["user"] && $premium_acc["rs_com"]["pass"]) ||(is_array($premium_acc["rs_com"][0])) || $_GET["maudl"]=='multi') || $_POST["sssid"])
 	{
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth);
 	is_page($page);
@@ -24,17 +24,17 @@ if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["pr_user"] && 
 	 $split_hash = explode(":", base64_decode(utf8_strrev(dcd($_GET["auth_hash"]))));
 	 if(count($split_hash)>1)
 	 {
-		$_GET["pr_user"] = $split_hash[0];
-		$_GET["pr_pass"] = $split_hash[1];
+		$_GET["premium_user"] = $split_hash[0];
+		$_GET["premium_pass"] = $split_hash[1];
 	 }
 	}elseif(is_array($premium_acc["rs_com"][0])){
 		// RS-Multiple acc by TheOnly
 		$totalacc = count($premium_acc["rs_com"]);
 		$success = false;
 		for($i = 0; $i <= $totalacc; $i ++) {
-			$_GET["pr_user"] = $premium_acc["rs_com"][$i]['user'];
-			$_GET["pr_pass"] = $premium_acc["rs_com"][$i]['pass'];
-			$auth = base64_encode($_GET["pr_user"].":".$_GET["pr_pass"]);
+			$_GET["premium_user"] = $premium_acc["rs_com"][$i]['user'];
+			$_GET["premium_pass"] = $premium_acc["rs_com"][$i]['pass'];
+			$auth = base64_encode($_GET["premium_user"].":".$_GET["premium_pass"]);
 			$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth, $auth);
 			is_page($page);
 			if (stristr($page,"Account has been found, but the password is incorrect")) continue;
@@ -52,7 +52,7 @@ if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["pr_user"] && 
 		}
 	}
 	
-	$auth = $_POST["sssid"]? (utf8_strrev(dcd($_POST["sssid"]))) : ($_GET["pr_user"]!='' ? base64_encode($_GET["pr_user"].":".$_GET["pr_pass"]) : base64_encode($premium_acc["rs_com"]["user"].":".$premium_acc["rs_com"]["pass"]));
+	$auth = $_POST["sssid"]? (utf8_strrev(dcd($_POST["sssid"]))) : ($_GET["premium_user"]!='' ? base64_encode($_GET["premium_user"].":".$_GET["premium_pass"]) : base64_encode($premium_acc["rs_com"]["user"].":".$premium_acc["rs_com"]["pass"]));
 
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth, $auth);
 	is_page($page);
@@ -102,6 +102,7 @@ else
 		is_present($page, "is not allowed to use the free-service anymore today","No more free downloads from this IP today");
 		is_present($page,"This limit is reached", "This file is neither allocated to a Premium Account, or a Collector's Account, and can therefore only be downloaded 10 times. This limit is reached.");
 		is_present($page, "This file exceeds your download-limit","Download limit exceeded");
+		is_present($page, "no more download slots left for non-members", "Unfortunately our servers are overloaded, we have no more download slots left for non-members","No more download slots");
 		is_present($page, "is already downloading a file","Your IP-address is already downloading a file, Please wait until the download is completed.");
 		
 		is_present($page, "is already downloading a file","Your IP-address is already downloading a file, Please wait until the download is completed.");
@@ -172,6 +173,7 @@ function waitLoop() {
 		//$FileAddr = $FAddr[1];
 		$Href = parse_url($FileAddr);
 		$FileName = basename($Href["path"]);
+		
 			
 		if (!$FileAddr)
 			{

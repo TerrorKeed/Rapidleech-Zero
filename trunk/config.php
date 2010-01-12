@@ -97,7 +97,7 @@ $limit_timework = false; // limit your RL by time. Client's Current time depend 
 $workstart = '00:00:00'; // Your RL start to work
 $workend = '23:59:00'; // Your RL end to work
 
-$limit_cpuload = true; // limit cpu load and task server job
+$limit_cpuload = false; // limit cpu load and task server job
   $ServerLoadAllowed = 50; // Maximum server load allowed; Disable = 0
   $CpuLoadFormat = 'load'; // Value = 'load' for load format; 'percent' for percent format
   ((!function_exists('exec')&&!function_exists('shell_exec'))?$CpuLoadFormat = 'percent':null); //CpuLoadFormat must be in percent mode if required functions is not exists
@@ -170,7 +170,7 @@ $navi_left = array(
  'showlynx' => true,
  'server_info' => true,
 );
-
+ 
  $forbid_audl = false;
  $forbid_auul = false;
  $forbid_lynx = false;
