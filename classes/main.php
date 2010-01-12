@@ -340,8 +340,8 @@ if($cnt_deleted>0){
 <table id="prblock" style="display: none;">
 <tr><td>
 <table width="150">
-<tr><td><label for="pr_user"><?php echo $gtxt['_uname'];?></label></td><td><input type="text" name="pr_user" id="pr_user" size="15" onFocus="highlight(this);" value=""></td></tr>
-<tr><td><label for="pr_pass"><?php echo $gtxt['_pass'];?></label></td><td><input type="password" name="pr_pass" id="pr_pass" size="15" onFocus="highlight(this);" style="color: #912704 ;" value=""></td></tr>
+<tr><td><label for="premium_user"><?php echo $gtxt['_uname'];?></label></td><td><input type="text" name="premium_user" id="premium_user" size="15" onFocus="highlight(this);" value=""></td></tr>
+<tr><td><label for="premium_pass"><?php echo $gtxt['_pass'];?></label></td><td><input type="password" name="premium_pass" id="premium_pass" size="15" onFocus="highlight(this);" style="color: #912704 ;" value=""></td></tr>
 </table>
 </td></tr>
 </table>

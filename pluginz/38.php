@@ -2,11 +2,11 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["share_online"]["user"] && $premium_acc["share_online"]["pass"]))
+if (($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["share_online"]["user"] && $premium_acc["share_online"]["pass"]))
   {
 	$post = Array();
-	$post["user"] = ($_GET["pr_user"] ? $_GET["pr_user"] : $premium_acc["share_online"]["user"]);
-	$post["pass"] = ($_GET["pr_pass"] ? $_GET["pr_pass"] : $premium_acc["share_online"]["pass"]);
+	$post["user"] = ($_GET["premium_user"] ? $_GET["premium_user"] : $premium_acc["share_online"]["user"]);
+	$post["pass"] = ($_GET["premium_pass"] ? $_GET["premium_pass"] : $premium_acc["share_online"]["pass"]);
 	$post["act"] = "login";
 	$post["location"] = "index.php";
 	$post["login"] = "Log+me+in";

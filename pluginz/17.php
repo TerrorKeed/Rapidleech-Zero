@@ -2,7 +2,7 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-if (($_GET ["premium_acc"] == "on" && $_GET ["pr_user"] && $_GET ["pr_pass"]) || ($_GET ["premium_acc"] == "on" && $premium_acc ["easyshare"] ["user"] && $premium_acc ["easyshare"] ["pass"])) {
+if (($_GET ["premium_acc"] == "on" && $_GET ["premium_user"] && $_GET ["premium_pass"]) || ($_GET ["premium_acc"] == "on" && $premium_acc ["easyshare"] ["user"] && $premium_acc ["easyshare"] ["pass"])) {
 	function BiscottiDiKaox($content) {
 		preg_match_all ( "/Set-Cookie: (.*)\n/", $content, $matches );
 		foreach ( $matches [1] as $coll ) {

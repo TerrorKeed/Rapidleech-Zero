@@ -2,7 +2,7 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["rs_de"]["user"] && $$premium_acc["rs_de"]["pass"]))
+if (($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["rs_de"]["user"] && $$premium_acc["rs_de"]["pass"]))
 	{
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth);
 	is_page($page);
@@ -15,7 +15,7 @@ if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($
 					
 	$FileName = basename(trim(cut_str($page, 'name="uri" value="', '"')));
 	!$FileName ? $FileName = basename($Url["path"]) : "";
-	$auth = $_GET["pr_user"] ? base64_encode($_GET["pr_user"].":".$_GET["pr_pass"]) : base64_encode($premium_acc["rs_de"]["user"].":".$premium_acc["rs_de"]["pass"]);
+	$auth = $_GET["premium_user"] ? base64_encode($_GET["premium_user"].":".$_GET["premium_pass"]) : base64_encode($premium_acc["rs_de"]["user"].":".$premium_acc["rs_de"]["pass"]);
 					
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth, $auth);
 	is_page($page);

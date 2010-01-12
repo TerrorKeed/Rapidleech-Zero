@@ -8,6 +8,11 @@ Latest Revision
 ## Lic Code: GNU General Public License v3
 ---------------
 
+Rv.7.2:
+ * Roll-back public POST/GET key "pr_user" & "pr_pass"
+ * Fix several plugins
+
+
 Rv.7.1RC:
  * Fix ifile.it acc in xpanel. Thx ROCK.
  * Add btaccel plugin, Thx Viant.

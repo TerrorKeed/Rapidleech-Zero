@@ -2,12 +2,12 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
   
-if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["uploaded_to"]["user"] && $premium_acc["uploaded_to"]["pass"]))
+if (($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["uploaded_to"]["user"] && $premium_acc["uploaded_to"]["pass"]))
 {
 	$Url = parse_url('http://uploaded.to');
 	$post = array();
-	$post["email"] = $_GET["pr_user"] ? $_GET["pr_user"] : $premium_acc["uploaded_to"]["user"];
-	$post["password"] = $_GET["pr_pass"] ? $_GET["pr_pass"] : $premium_acc["uploaded_to"]["pass"];
+	$post["email"] = $_GET["premium_user"] ? $_GET["premium_user"] : $premium_acc["uploaded_to"]["user"];
+	$post["password"] = $_GET["premium_pass"] ? $_GET["premium_pass"] : $premium_acc["uploaded_to"]["pass"];
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, "/login", 0, 0, $post, 0, $_GET["proxy"],$pauth);
 	is_page($page);
 	$cook = GetCookies($page);

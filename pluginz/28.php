@@ -2,13 +2,12 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-
-if (($_GET["premium_acc"] == "on" && $_GET["pr_user"] && $_GET["pr_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["megashare"]["user"] && $premium_acc["megashare"]["pass"]))
+if (($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["megashare"]["user"] && $premium_acc["megashare"]["pass"]))
 {
 	$Url = parse_url("http://www.megashare.com/login.php");
 	$post = Array();
-	$post["loginid"] = $_GET["pr_user"] ? $_GET["pr_user"] : $premium_acc["megashare"]["user"];
-	$post["passwd"] = $_GET["pr_pass"] ? $_GET["pr_pass"] : $premium_acc["megashare"]["pass"];
+	$post["loginid"] = $_GET["premium_user"] ? $_GET["premium_user"] : $premium_acc["megashare"]["user"];
+	$post["passwd"] = $_GET["premium_pass"] ? $_GET["premium_pass"] : $premium_acc["megashare"]["pass"];
 	$post["yes"] = "Click Here To Login";
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, $cookie, $post, 0, $_GET["proxy"],$pauth);
 	//file_put_contents("megashare_1.txt", $page);

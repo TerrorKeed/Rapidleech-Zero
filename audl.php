@@ -201,7 +201,7 @@ $atxt['reach_lim_audl'] = str_replace('%link%', $audl, $atxt['reach_lim_audl']);
 		  $pre_type = $_REQUEST["acc_type"];
 		  $pre_user = $_REQUEST["rrapidlogin_com"] ? $_REQUEST["rrapidlogin_com"] : null;
 		  $pre_pass = $_REQUEST["rrapidpass_com"] ? $_REQUEST["rrapidpass_com"] : null;
-		  $start_link.=($pre_user==null && $pre_pass==null?'&maudl=multi':($pre_type!='' ? '&pr_user='.$pre_user.'&pr_pass='.$pre_pass : '&auth_hash='.encEnti(rotN(base64_encode($pre_user.":".$pre_pass),$rnum)).$rnum) );
+		  $start_link.=($pre_user==null && $pre_pass==null?'&maudl=multi':($pre_type!='' ? '&premium_user='.$pre_user.'&premium_pass='.$pre_pass : '&auth_hash='.encEnti(rotN(base64_encode($pre_user.":".$pre_pass),$rnum)).$rnum) );
 		}
 		if($_REQUEST["mu_acc"] == "on") {
 		  $mu_ck = $_REQUEST["mu_cookie"] ? $_REQUEST["mu_cookie"] : $mu_cookie_user_value;
