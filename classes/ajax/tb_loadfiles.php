@@ -144,8 +144,8 @@ if(isset($_POST['TBLoad'])) {
 		 $filelink = '#';
 		 $trfilelink = ' ';
 		}else{
-		 $filelink = $file["link"];
-		 $trfilelink = trimlink($file["link"]);
+		 $filelink = xmlentities($file["link"]);
+		 $trfilelink = trimlink($filelink);
 		}
 		$resXML.= ' <filelink>'.$filelink.'</filelink>'.$rn;
 		$resXML.= ' <filelinktr>'.$trfilelink.'</filelinktr>'.$rn;
