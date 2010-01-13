@@ -6,11 +6,11 @@ $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Ur
 is_page($page);
 
 if(preg_match('%- *(.+)</title>%', $page, $fn)){
-	if($_GET['ytube_mp4']){
-		$name = str_replace(array(" ", ".", "'", "&", "/"), '_', $fn[1]).'_HQ.mp4';
-	}else{
-		$name = str_replace(array(" ", ".", "'", "&", "/"), '_', $fn[1]).'_LQ.flv';
-	}
+	$name = str_replace(array(" ", ".", "'", "&", "/"), '_', $fn[1]). ($_GET['ytube_mp4'] ? '_HQ.mp4' : '_LQ.flv');
+
+}elseif(preg_match("/name=\"title\"\scontent=\"(.*)\">/i", $page, $jd)){
+	$name = preg_replace("/[^a-zA-Z0-9\-]/", "_", ucwords(strtolower($jd[1]))) . ($_GET['ytube_mp4'] ? '_HQ.mp4' : '_LQ.flv');
+
 }
 
 if(preg_match('/, "t": "(.+?)",/', $page, $yt)){
