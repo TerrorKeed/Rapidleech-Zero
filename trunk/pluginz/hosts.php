@@ -76,6 +76,7 @@ $host = array(
 'midupload.com' =>'72.php',
 'btaccel.com' =>'73.php',
 'freakshare.net' =>'74.php',
+'x7.to' =>'75.php',
 
 );
 ?>
