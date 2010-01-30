@@ -22,7 +22,7 @@ insert_location("$PHP_SELF?filename=".urlencode($FileName)."&force_name=".urlenc
 }else{			
 $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, 0, 0, $_GET["proxy"],$pauth);
 is_page($page);
-if (cutter($page,"Location: ","\r")) html_error( "Probably the link is typed incorrect or old , verify it in your browser." , 0 );
+if (slice($page,"Location: ","\r")) html_error( "Probably the link is typed incorrect or old , verify it in your browser." , 0 );
 is_present($page,"file does not exist", "The requsted file does not exist on this server.", 0);
 $cookie=GetCookies($page);
 $FileName=cut_str($page,"Name: </strong>","</font>");
@@ -40,17 +40,16 @@ $ss = <<<HTML
 </form>
 HTML;
 
-preg_match('/(var pong[\s\S]+?)function/i',$page,$scr)  ;
-//$script1=cutter($page,'var','function',3);
+preg_match('/(var pong[\s\S]+?)<\/script>/i',$page,$scr)  ;
+//$script1=slice($page,'var','function',3);
 $script1=$scr[1];
-$var=trim(cutter($script1,'var','=',2));
-$script1=str_replace($var,"encoded",$script1);
-$script=$ss.'<script language="Javascript">'.$script1.'document.getElementById("link").value=encoded; document.plink.submit();</script>' ;
+$var=trim(slice($script1,'<a href="\' + ',' + \'"'));
+$script=$ss.'<script language="Javascript">'.$script1.'document.getElementById("link").value='.$var.'; document.plink.submit();</script>' ;
 
 echo ($script);
 }
 
-function cutter($str, $left, $right,$cont=1)
+function slice($str, $left, $right,$cont=1)
 	{
     for($iii=1;$iii<=$cont;$iii++){
 	$str = substr ( stristr ( $str, $left ), strlen ( $left ) );
@@ -62,7 +61,7 @@ function cutter($str, $left, $right,$cont=1)
 }
 
 /*************************\
- WRITTEN BY KAOX 27-dec-09
+ WRITTEN BY KAOX 30-jan-10
 \*************************/
 
 ?>
