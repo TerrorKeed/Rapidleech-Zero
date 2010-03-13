@@ -52,15 +52,16 @@ function rename_go() {
         if(file_exists($file["name"]))
           {
             $smthExists = TRUE;
-            $newName = dirname($file["name"]).PATH_SPLITTER.$_GET["newName"][$i];
+            $newName = dirname($file["name"]) . PATH_SPLITTER . trim($_GET["newName"][$i]);
 			
 			$rest = substr($newName, -1);
-			if(eregi('[^a-zA-Z0-9_]', $rest)){$alpnum = false;}else{$alpnum = true;}
+			
+			if(!preg_match("/^[a-zA-Z0-9_]+$/i", $rest)) { $alpnum = false;}else{$alpnum = true;}
 			while(!$alpnum and (strlen($newName)>0))
 			{
 				$newName = substr($newName, 0, -1);
 				$rest = substr($newName, -1);
-				if(eregi('[^a-zA-Z0-9_]', $rest)){$alpnum = false;}else{$alpnum = true;}									
+				if(!preg_match("/^[a-zA-Z0-9_]+$/i", $rest)) { $alpnum = false;}else{$alpnum = true;}
 			}
 			
 			
