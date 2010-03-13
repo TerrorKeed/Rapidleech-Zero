@@ -5,7 +5,7 @@ if (!defined('RAPIDLEECH'))
   exit;
   }
 
-if($_COOKIE["clearsettings"])
+if(isset($_COOKIE["clearsettings"]))
    {
 		setcookie("domail", "", time() - 3600);
 		setcookie("email", "", time() - 3600);
@@ -25,10 +25,10 @@ if($_COOKIE["clearsettings"])
 	}
 
 
-if($_REQUEST["savesettings"] == "on")
+if(isset($_REQUEST["savesettings"]) && $_REQUEST["savesettings"] == "on")
 	{
 		setcookie("savesettings", TRUE,time()+800600);
-		if($_REQUEST["domail"] == "on")
+		if(isset($_REQUEST["domail"]) && $_REQUEST["domail"] == "on")
 			{
 				setcookie("domail", TRUE,time()+800600);
 				if(checkmail($_REQUEST["email"]))
@@ -40,7 +40,7 @@ if($_REQUEST["savesettings"] == "on")
 						setcookie("email", "", time() - 3600);
 					}
 					
-				if($_REQUEST["split"] == "on")
+				if(isset($_REQUEST["split"]) && $_REQUEST["split"] == "on")
 					{
 						setcookie("split", TRUE,time()+800600);
 						if(is_numeric($_REQUEST["partSize"]))
@@ -70,7 +70,7 @@ if($_REQUEST["savesettings"] == "on")
 				setcookie("domail", "", time() - 3600);
 			}
 			
-		if($_REQUEST["saveto"] == "on")
+		if(isset($_REQUEST["saveto"]) && $_REQUEST["saveto"] == "on")
 			{
 				setcookie("saveto", TRUE,time()+800600);
 				if(isset($_REQUEST["path"]))
@@ -87,7 +87,7 @@ if($_REQUEST["savesettings"] == "on")
 				setcookie("saveto", "", time() - 3600);
 			}
 			
-		if($_REQUEST["useproxy"] == "on")
+		if(isset($_REQUEST["useproxy"]) && $_REQUEST["useproxy"] == "on")
 			{
 				setcookie("useproxy", TRUE,time()+800600);
 				if(strlen(strstr($_REQUEST["proxy"], ":")) > 0)
@@ -122,7 +122,7 @@ if($_REQUEST["savesettings"] == "on")
 				setcookie("useproxy", "", time() - 3600);
 			}
 
-			if($_REQUEST["premium_acc"] == "on")
+			if(isset($_REQUEST["premium_acc"]) && $_REQUEST["premium_acc"] == "on")
 			{
 				setcookie("premium_acc",$_REQUEST["premium_acc"],time()+800600);
 				if(isset($_REQUEST["premium_user"]) && isset($_REQUEST["premium_pass"]))

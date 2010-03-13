@@ -31,38 +31,8 @@ print CREDITS;
 	exit ();
 }
 // end Server too high
-/*
-function color_cpu($nilai){
- global $alert_sloadhigh;
- if (!is_numeric($nilai)) {return FALSE;}
-  else
-  { if ($nilai <= 33){$clr = "#3D612C";}
-    elseif($nilai <= 66){$clr = "#FFCC33";}
-    else{$clr = "#FF0000";}
-    $nilai = '<b '.($alert_sloadhigh?'class="r':'style="color:'.$clr).'">'.$nilai.'</b>';
-    return $nilai;
-  }
-}
-*/
-/*
-if (php_sapi_name () == "apache2handler") {
-	$httpapp = "Apache";
-} else {
-	$httpapp = php_sapi_name ();
-}
-*/
-/*
-if (PHP_OS == "WINNT") {
-	$os = "windows";
-	$osbuild = php_uname ( 'v' );
-} elseif (PHP_OS == "Linux") {
-	$os = "linux";
-	$osbuild = php_uname ( 'r' );
-} else {
-	$os = "nocpu";
-	$osbuild = php_uname ( 'r' );
-}
-*/
+
+
 //===============================
 // General MAIN cpu load check
 {
