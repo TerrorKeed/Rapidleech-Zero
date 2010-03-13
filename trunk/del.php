@@ -38,8 +38,9 @@ function notexist() {
 	exit ();
 }
 
-function deleteIt($fileName, $list){
-	unlink ( $fileName );
+function deleteIt($fileName, $fileID, $list){
+	@unlink ( $fileName );
+	unset($list[$fileID]);
 	updateListInFile ( $list );
 }
 
@@ -53,7 +54,9 @@ if(isset($_GET['met'])) {
 if(!isset($_GET['d'])) {
 	notexist();
 }else{
-	$dkey = $_GET['d'];	
+	$dkey = $_GET['d'];
+	$ck_showall = (isset($_COOKIE["showAll"]) ? $_COOKIE["showAll"]:false); 
+	
 	if(!preg_match('/^[a-zA-Z0-9]{20}-[0-9]{2}$/', $dkey, $match)){
 	  notexist(); 
 	}else
@@ -62,13 +65,20 @@ if(!isset($_GET['d'])) {
 	  $rotKey = (int)substr($rotKey, 1, strlen($rotKey));
 	  $hashdel = explode(":", trim(base64_decode(rotN($_GET ['d'],-($rotKey)))));
 	  $fileDate = (int) $hashdel[0];
+	  $backupshow_all = $show_all;
 	  $show_all = true;
 	  _create_list(true, false, 1);
 	}
 	if(!$list) { 
 	  notexist(); 
 	}else{
-	  $fileName = $list[$fileDate]["name"];
+	  $fileName = $list[$fileDate]["name"];	  
+	  
+      { // we load $list from show download mode
+	    unset($list);
+	    $show_all = $backupshow_all;
+	    _create_list(true, false, 2);
+	  }
 	}
 	if(!file_exists($fileName) || strlen($fileName)==0)
 	{ 
@@ -133,7 +143,7 @@ if(!isset($_POST['submit'])) {
   }
   function wipeLine(){
    d.getElementById('brs'+lineid).style.display = 'none';
-   d.getElementById('chkfL-'+lineid).checked = false;
+   try{d.getElementById('chkfL-'+lineid).checked = false;}catch(e){}
   }
   function upd_parent(retxt){
    d.getElementById('del_container').innerHTML = retxt;  
@@ -143,15 +153,15 @@ if(!isset($_POST['submit'])) {
 </script>
 
 
-<?php 
+<?php
 }
 else
 {
-if(isset($_POST['task'])){ $task=$_POST['task']; }else{ $task=''; }
-if($task='doDel')
- {
- if (file_exists($fileName) && strlen($fileName)>0) {
-	deleteIt($fileName, $list);
+ $task= (isset($_POST['task']) ? $_POST['task'] : "");
+ if($task='doDel')
+ { 
+   if (file_exists($fileName) && strlen($fileName)>0) {
+	deleteIt($fileName, $fileDate, $list);
 	$fn = htmlspecialchars(basename($fileName));
 	echo "<p><b class=\"g\">{$fn}</b><br><span class=\"g\">{$dtxt['_sucesdelete']}</span></p><p>{$dtxt["_thx"]}</p>";
 ?>
@@ -181,24 +191,20 @@ if(window.opener!=null){
 
 } else { // with ajax, do delete then call the parent function, upd_parent()
 
- if(isset($_POST['task'])){ $task=$_POST['task']; }else{ $task=''; }
- 
+ $task= (isset($_POST['task']) ? $_POST['task'] : ""); 
  if($task='doDel'){
   if(file_exists($fileName) && strlen($fileName)>0) {
-   //echo "deleting...";
-   deleteIt($fileName, $list);
+   deleteIt($fileName, $fileDate, $list);
    $fn = htmlspecialchars(basename($fileName));
    $ret = "<p><b class=\"g\">{$fn}</b><br><span class=\"g\">{$dtxt['_sucesdelete']}</span></p><p>{$dtxt["_thx"]}</p>";
    ?>
 <html><body>
 <script type="text/javascript">
- if(window.parent){
+if(window.parent){
    retxt = '<?php echo $ret;?>';
    window.parent.upd_parent(retxt);
- }
+}
 </script>
-
-
 
 </body></html>
    <?php
