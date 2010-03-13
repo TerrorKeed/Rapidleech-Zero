@@ -57,13 +57,14 @@ ul{padding-left:2em;}
 
 .head_container{
 	background-color: #29406D;
-	height:55px;
+	margin-top:-7px;
 }
-.tdheadolgo{
+.tdheadolgo, .tdheadolgo h1{
  height:55px; 
  width:331px;
 }
 .tdfootcredits{
+
 }
 
 tr {font-family: Tahoma; font-size: 11px; line-height: 14px; color: #3B5998;}
