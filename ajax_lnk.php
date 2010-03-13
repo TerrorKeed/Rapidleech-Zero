@@ -18,7 +18,7 @@ require_once(CLASS_DIR."other.php");
 	 else {
 		$ch = curl_init($link);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
-	    if(eregi("megashares\.com" , $link))
+	    if(preg_match("/megashares\.com/i" , $link))
 		{
             curl_setopt($ch, CURLOPT_COOKIE, 1);
 		    curl_setopt($ch, CURLOPT_COOKIEJAR, "1");
@@ -49,7 +49,8 @@ require_once(CLASS_DIR."other.php");
 		
 		//$fsize=GetBetween($page,$pattern);
 		if(!empty($szpatern)){
-		 preg_match($szpatern, $page, $fsize);
+		  // already containing / and /
+		 preg_match("{$szpatern}", $page, $fsize);
 		 if(!$fsize){$fsize='';}
 		}
 		
@@ -59,15 +60,15 @@ require_once(CLASS_DIR."other.php");
 		
 		
 		
-		if($_POST['d'] && eregi($regex, $page)) {
+		if($_POST['d'] && preg_match("/$regex/i", $page)) {
 			echo "<span class=\"g\">".$picGood."&nbsp;(".trim($fsize[1]).")</span>\n";  
-		} elseif($_POST['d'] && eregi("The file you are trying to access is temporarily unavailable.", $page)) {
+		} elseif($_POST['d'] && preg_match("/The file you are trying to access is temporarily unavailable./i", $page)) {
 			echo "<span class=\"y\">$picEror</span>\n";
-		} elseif($_POST['d'] && !eregi($regex, $page)) {
+		} elseif($_POST['d'] && !preg_match("/$regex/i", $page)) {
 			echo "<span class=\"r\">$picGood&nbsp;(".trim($fsize[1]).")</span>\n";			
-		} elseif(!$_POST['d'] && eregi($regex, $page)) {
+		} elseif(!$_POST['d'] && preg_match("/$regex/i", $page)) {
 			echo "<span class=\"g\">$picGood&nbsp;(".trim($fsize[1]).")</span>\n";  
-		} elseif(!$_POST['d'] && eregi("The file you are trying to access is temporarily unavailable.", $page)) {
+		} elseif(!$_POST['d'] && preg_match("/The file you are trying to access is temporarily unavailable./i", $page)) {
 			echo "<span class=\"y\">$picEror</span>\n";
 		} else {
 			echo "<span class=\"r\">$picEror</span>\n";
@@ -124,7 +125,7 @@ function getParam($key, $url){
 	foreach($alllinks as $link) {
 		if (empty($link)) continue;
 	    $link = trim(str_replace(" ","",$link));
-		if(eregi("^(http)\:\/\/(www\.)?anonym\.to\/\?", $link)){
+		if(preg_match("/^(http)\:\/\/(www\.)?anonym\.to\/\?/i", $link)){
 			$link = explode("?", $link);
 			unset($link[0]);
 			$link = implode($link, "?");
@@ -133,7 +134,7 @@ function getParam($key, $url){
 			  flush();
 		}
 		
-	   if(eregi("^(http)\:\/\/(www\.)?lix\.in\/", $link)){
+	   if(preg_match("/^(http)\:\/\/(www\.)?lix\.in\//i", $link)){
 		  $post = 'tiny='.trim(substr(strstr($link, 'n/'), 2)).'&submit=continue';
 		  preg_match('@name="ifram" src="(.+?)"@i', curl($link, $post), $match);
 		  $link = $match[1];
@@ -144,7 +145,7 @@ function getParam($key, $url){
 		
 
 
-		if(eregi("^(http)\:\/\/(www\.)?linkbucks\.com\/link\/" , $link)) {
+		if(preg_match("/^(http)\:\/\/(www\.)?linkbucks\.com\/link\//i" , $link)) {
 		   $page = curl($link);
 		   preg_match("/<a href=\"(.+)\" id=\"aSkipLink\">/" , $page , $match);
 		   $link = $match[1];
@@ -153,7 +154,7 @@ function getParam($key, $url){
 			 flush();
 		}
 	
-		 if(eregi("usercash\.com" , $link)) {
+		 if(preg_match("/usercash\.com/i" , $link)) {
 			$page = curl($link);
 			preg_match("/<TITLE>(.+)<\/TITLE>/" , $page , $match);
 			$link = $match[1];
@@ -162,7 +163,7 @@ function getParam($key, $url){
 			  flush();
 		 }  
 		 
-		   if(eregi("rapidshare\.com\/users\/" , $link)) {
+		if(preg_match("/rapidshare\.com\/users\//i" , $link)) {
 		  $page = curl($link);
 		  preg_match_all("/<a href=\"(.+)\" target=\"_blank\">/" , $page , $match);
 		  unset($match[1][0]);
@@ -185,7 +186,8 @@ function getParam($key, $url){
 			 array("rapidshare\.com\/files\/", 'class="downloadlink"', "/>\|\s(.*)</"),
 			 array("megaupload\.com/([a-z]{2}\/)?\?d=", "(Filename:)|(All download slots assigned to your country)", '/File size:<\/font>\s<font style="font-family:arial;\scolor:#000000; font-size:13px;">(.*)</'),
 			 array("megashares\.com\/\?d01=", "Click here to download", "/size:\s(.*)</"),
-			 array("hotfile\.com\/dl\/", "Downloading", '/class="size">\|\s(.*)<\/span>/'),
+			 //array("hotfile\.com\/dl\/", "Downloading", '/class="size">\|\s(.*)<\/span>/'),
+			 array("hotfile\.com\/dl\/", "Downloading", '/Downloading:(?:[^\|]+)\|<\/span>\s<strong>(.*)<\/strong/'),
 			array("2shared\.com\/file\/", "Download", '/File\ssize:<\/span>\s(.*)\s&nbsp;/'),
 			 array("4shared\.com\/file\/", "Download Now", '/Size:</b>.*\">(.*)/s'),
 			 array("filefactory\.com\/file\/", "(download link)|(Please try again later)", '/\t<span>(.*)\sfile/'),
@@ -196,7 +198,7 @@ function getParam($key, $url){
 			 array("depositfiles\.com\/([a-z]{2}\/)?files\/", "File Name", '/File\ssize:\s<b>(.*)<\/b>/', "@(com\/files\/)|(com\/[a-z]{2}\/files\/)@i", "com/en/files/"),
 			 array("sendspace\.com\/file\/", "The download link is located below.", '/Size:<\/b>\s(.*)\s/'),
 			 array("usaupload\.net\/d\/", "This is the download page for file", '/File\ssize:<\/strong>\s(.*)</'),
-			 array("uploading\.com\/files\/", "File download", '/size:\s<b>(.*)<\/b>/'),
+			 array("uploading\.com\/files\/", "File size", '/size:\s<b>(.*)<\/b>/'),
 			 array("savefile\.com\/files\/", "link to this file", '/filesize: (.*)</'),
 			 array("axifile\.com\/?", "You have request", '/You\shave\srequest\s.*file\s\((.*)\)/', "@com\?@i", "com/?"),
 			array("cocoshare\.cc\/[0-9]+\/", "Filesize:"),
@@ -210,12 +212,11 @@ function getParam($key, $url){
 			 array("uploaded\.to\/(\?id=|file\/)", "Filename:", '/Filesize:.*<td>[\s](.*)\t<\//'),
 			array("filefront\.com\/", "http://static4.filefront.com/ffv6/graphics/b_download_still.gif"),
 	//array("uploadpalace\.com\/[a-zA-Z]{2}\/file\/[0-9]+\/", "Filename:"),
-			 array("speedyshare\.com\/[0-9]+\.html", "\/data\/", '/<BR>File\ssize\s(.*),/'),
+			 array("speedyshare\.com\/files\/[0-9]+\/", "File download", '/<div\sclass=result>File\ssize\s(.*),\suploaded/'),
 			array("momupload\.com\/files\/", "You want to download the file"),
 			 array("rnbload\.com\/file/" , "Filename:", '/Filesize:\s(.*)</'),
 			array("ifolder\.ru\/[0-9]+", "ints_code"),
-			array("adrive\.com\/public\/", "view"),
-			 //array("easy-share\.com" , "Download", '/"wrap-inner">.*strong>\s\((.*)\)</s'),
+			array("adrive\.com\/public\/", "view"),			 
 			 //array("easy-share\.com" , "Download", '/"sfamily2\sc">.*\((.*)\)</'),
 			 array("easy-share\.com" , "Download", '/px18\stxtgray\sfamily2\sc">.*\s\((.*)\)</'),
 			 array("bitroad\.net\/download\/[0-9a-z]+\/", "Download a file", '/content_text.*\[\s(.*)\]</'),
@@ -247,7 +248,7 @@ function getParam($key, $url){
 			array("qubefiles\.com\/?\?file=\/getfile\/", "File size"),
 			array("uploadjockey\.com\/download\/", "Download file from the following hosts"),
 			array("wikisend\.com\/download\/", "Download link"),
-			array("ugotfile\.com\/file\/", "Filesize:"),
+			array("ugotfile\.com\/file\/", "embed", "/<span\sstyle\=\"font\-size\:\s14px;\">(.*)<\/span/"),
 			array("misterupload\.net\/en\/file\/", "File name:"),
   array("filesavr\.com\/","This file has been downloaded"),
 			array("filedropper\.com\/", "File Details"),
@@ -255,10 +256,14 @@ function getParam($key, $url){
   array("sharemobile\.ro\/file\.php?\?id=", "Filename"),
 			array("file-rack\.com\/files\/", "Download File"),
 			array("indowebster\.com\/", "Download Link", '/Size:<\/b>\s(.*)<\/div/'),
+			array("storage\.to\/get\/", "Downloading:", '/Downloading:(?:[^\(]+)\((.*)\)/'),
+			array("zippyshare\.com\/v\/", "You have requested", '/Size:(?:[^>]+)>(.*)<\/font/'),
+			array("freakshare\.net\/files\/", "box_heading", '/box_heading.+\s-\s(.*)<\/h1/'),
+			//<h1 class="box_heading" style="text-align:center;">
 			);
 		$LnkOccur = false;
 		foreach($sites as $site) {
-			if(eregi($site[0], $link)) {
+			if(preg_match("/{$site[0]}/i", $link)) {
 				check(trim($link), $x, $site[1], $site[2], $site[3], $site[4]);
 				$x++;
 				$LnkOccur = true;
