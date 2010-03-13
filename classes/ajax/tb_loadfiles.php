@@ -5,8 +5,10 @@ if(!defined('RAPIDLEECH')){
 
 if(isset($_POST['TBLoad'])) {
  $charSet = 'charset=ISO-8859-1';
+ $expires = 60; // set expired cached page in 60 sec
  header("content-type:text/xml; $charSet");
- //@ob_end_clean();
+ header("Expires: ".gmdate("D, d M Y H:i:s", time()+$expires)."GMT");
+
  clearstatcache();
  if(!defined('IMAGE_DIR')){ define('IMAGE_DIR', 'misc/');}
  if(!defined('CLASS_DIR')){ define('CLASS_DIR', 'classes/');	}
@@ -56,7 +58,7 @@ if(isset($_POST['TBLoad'])) {
    
    $feat_ajax = array();
    $ajax_rename_ada = @file_exists("rsajax_ren.js");
-   $feat_ajax["ajax_rename"] = (!$disable_to["act_rename"] && $ajax_rename_ada ? '1' : '0');
+   $feat_ajax["ajax_rename"] = (!$disable_to["act_rename"] && $ajax_rename_ada && !$disable_ajaxren ? '1' : '0');
    $resXML.= '<instantrename>'.($feat_ajax["ajax_rename"]).'</instantrename>'.$rn.$rn;
    
    $jQ_google_api_online = @fopen($jQ_google_api_file, "r");
