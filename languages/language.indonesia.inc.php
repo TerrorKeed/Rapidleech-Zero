@@ -1,21 +1,21 @@
 <?php
 
   /*****************************************************
-  ** Title........: Rapidleech PlugMod rev. 36 by eqbal Lang Pack
+  ** Title........: Rapidleech PlugMod rev. 36B by eqbal Lang Pack
   ** Author.......: Credits to Pramode & Checkmate & Kloon. Mod by: MsNeil & Idoenk
   ** Filename.....: languages.en.inc.php
   ** Language.....: Bahasa / Indonesia
   ** Lang:Mod.....: Idoenk
   ** Version......: 0.1
   ** Notes........: *
-  ** Updated......:  040409
+  ** Updated......: 100307 - YYMMDD
   *****************************************************/
   // Set Charset of this language
   $charSet = 'charset=UTF-8';
   //$charSet = 'charset=ISO-8859-1';
 
-  $scrname = substr(basename($_SERVER[SCRIPT_NAME]), 0, -strlen(strrchr(basename($_SERVER[SCRIPT_NAME]), ".")));
-  $vpage = ($vpage=='' ? $scrname : $vpage);
+  $scrname = substr(basename($_SERVER["PHP_SELF"]), 0, -strlen(strrchr(basename($_SERVER["PHP_SELF"]), ".")));
+  $vpage = (!isset($vpage) ? $scrname : $vpage);
   
  
   $gtxt = array(
@@ -72,6 +72,7 @@
      'match_csensitive' => 'Case Sensitive',
      'match_hideunmatch' => 'Hide UnMatch',	 	 
 	 
+	 'days' => 'hari',
 	 'hours' => 'jam',
 	 'minutes' => 'menit',
 	 'seconds' => 'detik',
@@ -128,6 +129,7 @@ switch($vpage)
 	 'lact_autodeleted'   => 'terhapus oleh autodelete',	 
 	 'current_storage'   => 'Status Ruang Files:',
 	 'current_traffic'   => 'Status Traffic:',
+	 'reset_traffic_remain'   => 'Sisa Waktu Reset Traffic:',
 	 'max_traffic'   => 'maximum quota traffic',
 	 
      'send_email'  => 'Kirim File ke Email',
@@ -148,9 +150,13 @@ switch($vpage)
      'plugin_youtube' => 'Transfer Video YouTube Kualitas Tinggi, Format Mp4 (H264)',
      'plugin_imageshack' => 'ImageShack&reg; TorrentService',
      'plugin_megaupl' => 'Cookie Megaupload.com',
+	 'plugin_hotfile' => 'Hotfile.com Cookie Value',
+	 'plugin_rs' => 'Rapidshare.com Cookie Value',
      'plugin_buletin' => 'Gunakan Plugin vBulletin',
 	 
      '_user' => 'user=',
+	 '_auth' => 'auth=',
+	 '_enc' => 'enc=',
 	 	 
      '_sfrefresh' => 'Refresh',
      'chk_all' => 'Check Semua',
@@ -381,7 +387,11 @@ switch($vpage)
      'acc_imgshack' 	=> 'Gunakan Akun Imageshack',
      'error_interval' 	=> 'Kesalahan pada interval delay (dari 1 hingga 3600 detik)',
 	 'plugin_megaupl' => 'Cookie Megaupload.com',
+	 'plugin_hotfile' => 'Cookie Hotfile.com',
+	 'plugin_rs' => 'Cookie Rapidshare.com',
 	 '_user' => 'user=',
+     '_auth' => 'auth=',
+     '_enc' => 'enc=',	 
 	 'reach_lim_audl' => 'Maaf tidak dapat memproses lebih dari %link% sekaligus.',
 	 'auto_check_link' => 'Periksa Link Otomatis',
 
