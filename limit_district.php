@@ -2,7 +2,9 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
 
-$pesankematian = "<html>$nn<head>$nn<title>:: {$RL_VER} ::</title>$nn<meta http-equiv=\"Content-Type\" content=\"text/html; $charSet\"><style type=\"text/css\">$nn<!--$nn@import url(\"".IMAGE_DIR."style_sujancok".$csstype.".css\");$nn-->$nn</style>$nn</head>$nn<body><br>$nn<h1>{$RL_VER}: ";
+if(!isset($ipmu)) $ipmu = get_real_ip();
+
+$pesankematian = "<html>$nn<head>$nn<title>:: {$RL_VER} ::</title>$nn<meta http-equiv=\"Content-Type\" content=\"text/html; $charSet\"><style type=\"text/css\">$nn<!--$nn@import url(\"".IMAGE_DIR."style_sujancok".$csstype.".css\");$nn-->$nn</style>$nn</head>$nn<body><br>$nn<h1>{$RL_VER}: Hey {$ipmu},";
 
 //Cek ip yg banned
 if($dlimitation[0]){
@@ -36,11 +38,6 @@ if($dlimitation[1]){
   $ar_allow_CID = ($str_arr!="" ? explode(",", $str_arr) : array());
   $str_arr = str_replace(" ","", trim($baned_CID));
   $ar_baned_CID = ($str_arr!="" ? explode(",", $str_arr):array());
-
-  //$ar_baned_CID = array('MY','IG','AU','US');
-  //foreach($list_country_num as $key => $cID){
-  //  echo $cID." - ". "[{$key}] ". $list_country_name[$cID] . "<br>";
-  //}
 
   if(count($ar_baned_CID)>0){
      if(in_array($country, $ar_baned_CID)){

@@ -254,6 +254,7 @@ function getParam($key, $url){
   array("youshare\.com\/", "Download"),
   array("sharemobile\.ro\/file\.php?\?id=", "Filename"),
 			array("file-rack\.com\/files\/", "Download File"),
+			array("indowebster\.com\/", "Download Link", '/Size:<\/b>\s(.*)<\/div/'),
 			);
 		$LnkOccur = false;
 		foreach($sites as $site) {

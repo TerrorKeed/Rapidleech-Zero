@@ -1,14 +1,15 @@
 <?php
-error_reporting(0);
-
 $time = explode (' ', microtime()); 
 $begintime = $time[1] + $time[0]; unset($time);
 
-//ini_set('display_errors', 0);
-set_time_limit(0);
+error_reporting(0);
+//error_reporting(E_ALL); 
+@ini_set('display_errors', true); 
+
+@set_time_limit(0);
 ini_alter("memory_limit", "1024M");
-ob_end_clean();
-ob_implicit_flush(TRUE);
+@ob_end_clean();
+@ob_implicit_flush(TRUE);
 ignore_user_abort(1);
 clearstatcache();
 error_reporting(6135);
@@ -16,11 +17,10 @@ error_reporting(6135);
 $nn = "\r\n";
 $fromaddr = "RapidLeech";
 $dev_name = 'eqbal';
-
 $rev_num = '36B.Rv7.1';
-
 $RL_VER = 'Rx08.ii'.$rev_num;
-$PHP_SELF = !$PHP_SELF ? $_SERVER["PHP_SELF"] : $PHP_SELF;
+
+$PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 define('RAPIDLEECH', 'yes');
 define('ROOT_DIR', realpath("./"));
 define('PATH_SPLITTER', (strstr(ROOT_DIR, "\\") ? "\\" : "/"));
@@ -65,6 +65,7 @@ if(file_exists(DOWNLOAD_DIR)) {
 
 
 // Check configs/files.lst is not writable,
+$czFlst = 0;
 if(file_exists(FILES_LST)) {
   if (!is__writable(FILES_LST)) {
 	html_error(FILES_LST." is not writable, please make sure it is chmod to 777");
@@ -77,7 +78,7 @@ if(file_exists(FILES_LST)) {
 
 
 if ($no_cache) {
-  header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+  header("Expires: Mon, 26 Jul 2010 05:00:00 GMT");
   header("Last-Modified: " . gmdate("D, d M Y H:i:s") . "GMT");
   header("Cache-Control: no-cache, must-revalidate");
   header("Pragma: no-cache");
@@ -103,6 +104,8 @@ if($limitbyip){
    foreach($premium_acc as $dhost => $val){ if($val){$ada_acc=true; break;}   }
   }
   if(isset($mu_cookie_user_value)){$ada_acc=($mu_cookie_user_value!='');}
+  if(isset($hf_cookie_auth_value)){$ada_acc=($hf_cookie_auth_value!='');}
+  if(isset($rs_cookie_enc_value)){$ada_acc=($rs_cookie_enc_value!='');}
   if(isset($imageshack_acc)){$ada_acc=($imageshack_acc["user"]!='' && $imageshack_acc["pass"]!='');}
   // check if max download reach
   $trheute = $heute+1;
@@ -112,16 +115,16 @@ if($limitbyip){
 }
 
 // Init call create_list
-if($_COOKIE["showAll"]!=1 && $czFlst==0){
+if( $czFlst==0 && (!isset($_COOKIE["showAll"]) || (isset($_COOKIE["showAll"]) && $_COOKIE["showAll"]!=1) )){
   _create_list(false, true); // medic mode, to force list in downloaded files
   updateCozEmpty(FILES_LST); // relist file    
 }
-_create_list();
 
+    $is_exceed = $is_expired = false;
 	if($limitbytraffic){
-		$cur_trf = get_traffic(TRAFFIC_LST);
+		$cur_trf = get_traffic(TRAFFIC_LST);		
 		if($day_reset_trafic > 0){
-		 $trafic_start_date = autoreset_traffic($day_reset_trafic, $cur_trf[1]);
+		 $trafic_start_date = autoreset_traffic($day_reset_trafic, $cur_trf);
 		}
 		$max_trf = ($max_trafic * 1024 * 1024);
 		$is_exceed = ($cur_trf[0] - $max_trf) >= 0;
@@ -158,9 +161,10 @@ _create_list();
 	}
 	
 	// Build Message for any limitation occurs
+	$msg=null;
 	if($is_expired || $is_exceed || !$is_worktime || $storage_exceed || $alert_sloadhigh || $is_dllimit) {
 		$limitmsg=""; 
-		if($is_expired || $is_exceed){$limitmsg = $txt['quote_alert']; $msg=$txt['quote_status'];}  // limitbytraffic alerted
+		if($is_expired || $is_exceed){$limitmsg = $txt['quote_alert']; $msg.=$txt['quote_status'];}  // limitbytraffic alerted
 		if($is_exceed){$msg.=($msg!=""?"<br>":"").$txt['exceed_alert'];}
 		if($is_expired){$msg.=($msg!=""?"<br>":"").$txt['expired_since'].date("d-M-Y",mktime(0,0,0,$date[1],$date[0],$date[2]));}
 		
@@ -173,9 +177,13 @@ _create_list();
 		$flag = true;  // Tell you there's limitation alert
 	}
 	
-	$arRef = explode("http://",$_SERVER['HTTP_REFERER']);
-	$arRef = explode("/", $arRef[1]);
-	$ref=(trim($arRef[0])!==$_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_REFERER']:'');
+	if(isset($_SERVER['HTTP_REFERER'])){
+	 $arRef = explode("http://", $_SERVER['HTTP_REFERER']);
+	 $arRef = explode("/", $arRef[1]);
+	 $ref=(trim($arRef[0])!==$_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_REFERER']:'');
+	}else{
+	 $ref='';
+	}
 	if($logact){
 	// Ditulis oleh Lewi Verdatama untuk OLC
 	// Digunakan untuk mencatat detail pengunjung seperti : Waktu, IP, Refferer, dan Browser
@@ -210,6 +218,7 @@ if(!isset($_SERVER['PHP_AUTH_USER']) || ($loggeduser = logged_user($users)) === 
 		exit("<html>$nn<head>$nn<title>:: $RL_VER ::</title>$nn<meta http-equiv=\"Content-Type\" content=\"text/html; $charSet\"><style type=\"text/css\">$nn<!--$nn@import url(\"".IMAGE_DIR."style_sujancok".$csstype.".css\");$nn-->$nn</style>$nn</head>$nn<body>$nn<h1>$RL_VER: NuLL</h1>$nn</body>$nn</html>");
 	}
 }
+
 
 
 //************************
@@ -258,19 +267,19 @@ if(isset($_GET["useproxy"]) && (!$_GET["proxy"] || !strstr($_GET["proxy"], ":"))
       }
       	else
       {
-      	if ($_GET["pauth"])
+      	if (isset($_GET["pauth"]))
       		{
       			$pauth = $_GET["pauth"];
       		}
       			else
       		{
-      			$pauth = ($_GET["proxyuser"] && $_GET["proxypass"]) ? base64_encode($_GET["proxyuser"].":".$_GET["proxypass"]) : "";
+      			$pauth = (isset($_GET["proxyuser"]) && isset($_GET["proxypass"])) ? base64_encode($_GET["proxyuser"].":".$_GET["proxypass"]) : "";
       		}
       }
 
-if (!$_GET["path"] || $download_dir_is_changeable == false)
+if (!isset($_GET["path"]) || $download_dir_is_changeable == false)
   {
-	if(!$_GET["host"])
+	if(!isset($_GET["host"]))
 	  {
 		$_GET["path"] = (substr($download_dir, 0, 6) != "ftp://") ? realpath(DOWNLOAD_DIR) : $download_dir;
 	  }
@@ -279,26 +288,29 @@ if (!$_GET["path"] || $download_dir_is_changeable == false)
 		$_GET["saveto"] = (substr($download_dir, 0, 6) != "ftp://") ? realpath(DOWNLOAD_DIR) : $download_dir;
 	  }
   }
-  if(!$_GET["filename"] || !$_GET["host"] || !$_GET["path"])
+  if(!isset($_GET["filename"]) || !$_GET["host"] || !$_GET["path"])
   {
       //require "host.php";
 	require_once(HOST_DIR."hosts.php");
   
-   if(!$_POST["link"]){
-     if($_GET["idx"]) //if link was sent from audl
+   if(!isset($_POST["link"])){
+     if(isset($_GET["idx"])) //if link was sent from audl
 	 {
-	   $LINK = utf8_strrev(base64_decode($_GET["link"]));	  
+	   $LINK = (isset($_GET["link"]) ? utf8_strrev(base64_decode($_GET["link"])) : "");	   
 	 }else{
-	   $LINK = $_GET["link"];
+	   $LINK = (isset($_GET["link"]) ? $_GET["link"]:"");
 	 }
    }else{
-     $LINK = $_POST["link"];
+     $LINK = (isset($_POST["link"])?$_POST["link"]:"");
    }
 	
     $LINK = urlcleaner(trim(urldecode($LINK))); // urldecode, trim, strip * in link	
 
     if(!$LINK){  //Initiate main php needs
 	   $ch_curl = (extension_loaded("curl") ? 1 : 0);
+	   
+	   _create_list();
+	   
 	   // This prep embeded acc if there's any
 	   if(isset($premium_acc)){
 	     $acc_txt = '';		
@@ -323,10 +335,16 @@ if (!$_GET["path"] || $download_dir_is_changeable == false)
 		   $acc_txt.= (isset($premium_acc[$host_acc]["user"]) ? ($premium_acc[$host_acc]["user"]!=''&&$premium_acc[$host_acc]["pass"]!='' ? $ar_host_acc[$host_acc] . $spacer : '') : $ar_host_acc[$host_acc]." multi acc" . $spacer);
 		 }
 		 if(isset($mu_cookie_user_value)){
-		  $acc_txt.= ($mu_cookie_user_value!='' ? "megaupload.com cookie" . $spacer:'');
+		   $acc_txt.= ($mu_cookie_user_value!='' ? "megaupload.com cookie" . $spacer:'');
+		 }
+		 if(isset($hf_cookie_auth_value)){
+		   $acc_txt.= ($hf_cookie_auth_value!='' ? "hotfile.com cookie" . $spacer:'');
+		 }
+		 if(isset($rs_cookie_enc_value)){
+		   $acc_txt.= ($rs_cookie_enc_value!='' ? "rapidshare.com cookie" . $spacer:'');
 		 }
 		 if(isset($imageshack_acc)){
-		  $acc_txt.= ($imageshack_acc["user"]!='' && $imageshack_acc["pass"]!='' ? "Imageshack Account" . $spacer : '');
+		   $acc_txt.= ($imageshack_acc["user"]!='' && $imageshack_acc["pass"]!='' ? "Imageshack Account" . $spacer : '');
 		 }
 		 $ar_rscom = (isset($premium_acc["rs_com"]) ? $premium_acc["rs_com"] : false);		
 	   } //-end embed acc need
@@ -342,15 +360,20 @@ if (!$_GET["path"] || $download_dir_is_changeable == false)
 	   }else{
 	    $exist_accrs = false;
 	   }
-	   $userck_std_mode = ((isset($_GET["ajax"]) && $_GET["ajax"]=="on") || (isset($_COOKIE["rl_ajax"]) ) );
-	   if($userck_std_mode){
-	    $disable_ajax = (!isset($_GET["ajax"]) && isset($_COOKIE["rl_ajax"]) ? $_COOKIE["rl_ajax"]!=1 : ($_GET["ajax"]!="on"));
+	   // dummy like sess-id  -_-'
+       $usrajxnuid = str_replace("=","",base64_encode(str_replace(".","",$ipmu).':'.'4jaX'));
+
+	   
+	   $userck_std_mode = (isset($_GET["ajax"]) && $_GET["ajax"]=="on" && isset($_GET["ausv"]) && $_GET["ausv"]==$usrajxnuid) || (isset($_COOKIE["rl_ajax"]) );  
+	   
+	   if($userck_std_mode ){
+	    $disable_ajax = (!isset($_GET["ajax"]) || !isset($_GET["ausv"]) || ( isset($_GET["ausv"]) && $_GET["ausv"]!=$usrajxnuid) ? !isset($_COOKIE["rl_ajax"]) || (isset($_COOKIE["rl_ajax"]) && $_COOKIE["rl_ajax"]!=1) : (!isset($_GET["ajax"]) || (isset($_GET["ajax"]) && $_GET["ajax"]!="on")));
 		$userck_std_mode = !$disable_ajax;
 	   }
 	   
        $ada_rsajax_js = @file_exists("rsajax.js");
        $ajax_serverfiles = ($ada_rsajax_js && !$disable_ajax);
-       $ajax_rename = (($ada_rsajax_js && @file_exists("rsajax_ren.js") && !$disable_ajaxren) ? true : false);
+       $ajax_rename = (($ada_rsajax_js && !$disable_ajaxren) ? true : false);
 	   
 	   $userck_std_mode = (!$disable_ajax && $ada_rsajax_js);
 	   $disable_ajax = !$userck_std_mode;
@@ -599,7 +622,7 @@ if($limitbyip){
 			  else {
 				$add_trafic = $file["bytesReceived"];
 			  }
-			  if(!write_traffic($fn_trafic, $add_trafic . ":" . (isset($trafic_start_date) ? $trafic_start_date:strtotime("now")) )) {
+			  if(!write_traffic($fn_trafic, $add_trafic . ":" . (isset($trafic_start_date) ? $trafic_start_date : (strtotime("now")+(3600 * $timezone)) ) )) {
 				  print $txt['error_upd_trf_list']."<br>";
 			  }
 			}

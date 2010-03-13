@@ -6,7 +6,8 @@ $id=1;
 // Presents auto-upload script!
 // We define some constants here, essential for some parts in rapidleech
 define('RAPIDLEECH', 'yes');
-$PHP_SELF = !$PHP_SELF ? $_SERVER["PHP_SELF"] : $PHP_SELF;
+
+$PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 define('ROOT_DIR', realpath("./"));
 define('HOST_DIR', 'pluginz/');
 define('UPL_DIR', 'upl/');
@@ -14,19 +15,26 @@ define('MISC_DIR', 'misc/');
 define('CLASS_DIR', 'classes/');
 define('CONFIG_DIR', './');
 
+$nn = "\r\n";
 $rev_num = '36B.Rv7.1';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
 // Some configuration
 error_reporting(0);	// This sets error reporting to none, which means no errors will be reported
+
+//error_reporting(6135);
+//error_reporting(E_ALL); 
+//@ini_set('display_errors', true); 
+
 //ini_set('display_errors', 1);	// This sets error reporting to all, all errors will be reported
-set_time_limit(0);	// Removes the time limit, so it can upload as many as possible
+@set_time_limit(0);	// Removes the time limit, so it can upload as many as possible
 ini_alter("memory_limit", "1024M");	// Set memory limit, in case it runs out when processing large files
-ob_end_clean();	// Cleans any previous outputs
-ob_implicit_flush(TRUE);	// Sets so that we can update the page without refreshing
+@ob_end_clean();	// Cleans any previous outputs
+@ob_implicit_flush(TRUE);	// Sets so that we can update the page without refreshing
 ignore_user_abort(1);	// Continue executing the script even if the page was stopped or closed
 clearstatcache();	// Clear caches created by PHP
 require_once(CONFIG_DIR."config.php");	// Reads the configuration file, so we can pick up any accounts needed to use
+
 // Include other useful functions
 require_once(CLASS_DIR."other.php");
 require_once(HOST_DIR."hosts.php");
@@ -110,7 +118,7 @@ function openmyList(src){
  hpath = hpath.substring(0, hpath.lastIndexOf("/")+1); 
  ifrm.src= hpath + src + Math.floor(Math.random()*100);
  dcontainer.style.display=''; 
- obj=document.body;
+ obj=d.body;
  obj.scrollTop=obj.scrollHeight;
 }
 
@@ -118,16 +126,27 @@ function closeframe(){
  ifrm.src= "about:blank"; 
  dcontainer.style.display='none'; 
 }
+
+function cleanResidue(){
+ var prblock = d.getElementsByTagName('table');
+ var dvnfo = d.getElementsByTagName('div');
+ for(var i in prblock){
+  if(prblock[i].id=='progressblock') prblock[i].innerHTML = '';
+ }
+ for(var i in dvnfo){
+  if(dvnfo[i].id=='info') dvnfo[i].innerHTML = '';
+ }
+}
 </script>
 </head>
 <body>
 <div class="head_container"><center>
 <a href="<?php echo $index_file;?>" alt="Rapidleech 2.3"><div class="tdheadolgo">&nbsp;</div></a></center>
-</div><span id='1'></span> 
+</div>
 <center>
 <?php
 	// If the user submit to upload, go into upload page
-	if ($_GET['action'] == 'upload') {
+	if (isset($_GET['action']) && $_GET['action'] == 'upload') {
 		// Define another constant
 		if(!defined('CRLF')) define('CRLF',"\r\n");
 		// The new line variable
@@ -151,6 +170,7 @@ function closeframe(){
 			echo "No files or hosts selected for upload";
 			exit;
 		}
+		$did = 1;
 		// Start uploading!
 		foreach ($uploads as $file=>$hosts) {
 			// If file does not exist
@@ -171,15 +191,18 @@ function closeframe(){
 			// Get the size of the file
 			$fsize = getSize($lfile);
 			// Start uploading this file			
-			echo "Uploading <b>".basename($file)."</b><br />";
+			echo "Uploading <b>".basename($file)."</b>&nbsp[<b class='g'>".bytesToKbOrMbOrGb($fsize)."</b>]<br />";
 			// Upload to different hosts
 
+			
 			foreach ($hosts as $host=>$value) {
 			echo "Transload destination: <b style='color:#FFFF00'>".$host."</b><br/>";
 			?>
-			<script type="text/javascript">
-			var orlink='<?php echo basename($file); ?> to <?php echo $host; ?>';
-			</script>
+
+
+<script type="text/javascript">
+var orlink='<?php echo basename($file); ?> to <?php echo $host; ?>';
+</script>
 			<?php
 		
 			//ob_start("callback");
@@ -198,19 +221,20 @@ function closeframe(){
 				// Save the download link
 				$uploads[$file][$host] = $download_link;
 				$uploads[$file]['date'] = date("Y-m-d H:i:s");
-				echo "<script>document.getElementById('$id').innerHTML = '';</script>" . "\r\n</td></tr></table>\r\n";
+				echo "<script>cleanResidue();</script>" 
+				     . "\r\n</td></tr></table>\r\n";				
 			//ob_get_contents();
-			//ob_end_flush();
-			//ob_get_clean();
+			//@ob_end_flush();
+			//@ob_get_clean();
 			}
 		}
 	
 	//////////////////////////////New code added here///////
 	// Write links to a file
 	if(!file_exists(MYUPLOAD_LST))@touch(MYUPLOAD_LST);
-	$fh = fopen(MYUPLOAD_LST, 'r');
-	$fcontent = fread($fh, filesize(MYUPLOAD_LST));	
-	$fh2 = fopen(MYUPLOAD_LST, 'w+');
+	$fh = @fopen(MYUPLOAD_LST, 'r');
+	$fcontent = ($fh && @filesize(MYUPLOAD_LST)>0 ? @fread($fh, @filesize(MYUPLOAD_LST)) : "");
+	$fh2 = @fopen(MYUPLOAD_LST, 'w+');
 	$dash = "";	$ul_log ="";
 	for($i=0;$i<=5;$i++) $dash.="====";
 	foreach($uploads as $file => $hosts){
@@ -221,9 +245,10 @@ function closeframe(){
 	  }
 	 }
 	}
-	$towrite = $ul_log . $fcontent;
-	fwrite($fh2, $towrite);
-	fclose($fh); fclose($fh2);
+	if($fh2){
+	 $towrite = $ul_log . $fcontent;
+	 fwrite($fh2, $towrite); fclose($fh); fclose($fh2);
+	}
 	//////////////////////////////
 
 //fill table element residue from the plugin uploader
@@ -276,7 +301,7 @@ else
 <form name="flist" method="post" action="auul.php?action=upload">
 <table width="100%">
 <tr>
-<td width="70%">
+<td width="70%" valign="top">
 <center>
 <div class="navi">
 <a href="javascript:setCheckboxes(1);" style="color: #99C9E6;">Check All</a> |
@@ -300,20 +325,20 @@ else
 <div id="divcontainer" >
 <table cellpadding="3" cellspacing="1" width="100%" class="filelist">
 	<tr bgcolor="#4B433B" valign="bottom" align="center" style="color: white;">
-		<th><a href="javascript:setCheckboxes(1);" style="color: #99C9E6;">All</a></th>
+		<th width="30"><a href="javascript:setCheckboxes(1);" style="color: #99C9E6;">All</a></th>
 		<th>Name</th>
-		<th>Size</th>
+		<th width="120">Size</th>
 	</tr>
- <tbody id="divcontainer" style="height:300px; padding:5px;">
+ <tbody id="divcontainer" style="height:<?php echo (count($list)<13? "100%" : "280px");?>; padding:5px; white-space:nowrap; overflow:auto;">
 <?php
 	$brs = 1;
 	foreach($list as $key => $file) {
-		if(file_exists($file["name"])) {
+		if(isset($file["name"]) && @file_exists($file["name"])) {
 ?>	
 <tr id='brs<?php echo $brs;?>' class='rowlist' onMouseDown='clk("chkfL-<?php echo $brs;?>")' onMouseOut='if(document.getElementById("chkfL-<?php echo $brs;?>").checked) {this.className="rowlist_checked";}else{this.className="rowlist";}'>
  <td align="center"><input type=checkbox name="files[]" id="chkfL-<?php echo $brs;?>" onclick='clk(this.id)' value="<?php echo basename($file["name"]); ?>"></td>
  <td><?php echo basename($file["name"]); ?></td>
- <td><?php echo $file["size"]; ?></td>
+ <td align="center"><?php echo $file["size"]; ?></td>
 </tr>
 <?php
 		$brs++;
