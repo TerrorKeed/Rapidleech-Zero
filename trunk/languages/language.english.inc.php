@@ -1,21 +1,21 @@
 <?php
 
   /*****************************************************
-  ** Title........: Rapidleech PlugMod rev. 36 by eqbal Lang Pack
+  ** Title........: Rapidleech PlugMod rev. 36B by eqbal Lang Pack
   ** Author.......: Credits to Pramode & Checkmate & Kloon. Mod by: MsNeil & Idoenk
   ** Filename.....: languages.en.inc.php
   ** Language.....: English  
   ** Lang:Mod.....: -
   ** Version......: 0.1
   ** Notes........: *
-  ** Updated.....:  040409
+  ** Updated......: 100307 - YYMMDD
   *****************************************************/
   // Set Charset of this language
   $charSet = 'charset=UTF-8';
   //$charSet = 'charset=ISO-8859-1';
   
-  $scrname = substr(basename($_SERVER[SCRIPT_NAME]), 0, -strlen(strrchr(basename($_SERVER[SCRIPT_NAME]), ".")));
-  $vpage = ($vpage=='' ? $scrname : $vpage);
+  $scrname = substr(basename($_SERVER["PHP_SELF"]), 0, -strlen(strrchr(basename($_SERVER["PHP_SELF"]), ".")));
+  $vpage = (!isset($vpage) ? $scrname : $vpage);
 
 
   $gtxt = array(
@@ -71,6 +71,7 @@
      'match_csensitive' => 'Case Sensitive',
      'match_hideunmatch' => 'Hide UnMatch',	 
 	 
+	 'days' => 'day(s)',
 	 'hours' => 'hour(s)',
 	 'minutes' => 'minute(s)',
 	 'seconds' => 'second(s)',
@@ -127,6 +128,7 @@ switch($vpage)
 	 'lact_autodeleted'   => 'deleted by autodelete',
 	 'current_storage'   => 'Current Used Storage:',
 	 'current_traffic'   => 'Current Traffic:',
+	 'reset_traffic_remain'   => 'Reset Traffic Remaining:',
 	 'max_traffic'   => 'maximum quota traffic',
 	 
      'send_email'  => 'Send File to Email',
@@ -146,9 +148,13 @@ switch($vpage)
      'plugin_youtube' => 'Transfer YouTube Video in High Quality Mp4 (H264) Format',
      'plugin_imageshack' => 'ImageShack&reg; TorrentService',
      'plugin_megaupl' => 'Megaupload.com Cookie Value',
+     'plugin_hotfile' => 'Hotfile.com Cookie Value',
+     'plugin_rs' => 'Rapidshare.com Cookie Value',
      'plugin_buletin' => 'Use vBulletin Plugin',
 	 
      '_user' => 'user=',
+     '_auth' => 'auth=',
+     '_enc' => 'enc=',
 	 	 
      '_sfrefresh' => 'Refresh',
      'chk_all' => 'Check All',
@@ -382,7 +388,11 @@ switch($vpage)
      'acc_imgshack' 	=> 'Use Imageshack Account',
      'error_interval' 	=> 'Errors in the interval of delay (from 1 to 3600 seconds)',
 	 'plugin_megaupl' => 'Cookie Megaupload.com',	 
+	 'plugin_hotfile' => 'Cookie Hotfile.com',	 
+	 'plugin_rs' => 'Cookie Rapidshare.com',	 
 	 '_user' => 'user=',
+     '_auth' => 'auth=',
+     '_enc' => 'enc=',	 
 	 'reach_lim_audl' => 'Sorry you can not proceed more than %link% Links at once.',
 	 'auto_check_link' => 'Auto Check Links',
 
