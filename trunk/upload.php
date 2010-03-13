@@ -7,15 +7,16 @@ define('CONFIG_DIR', './');
 define('CLASS_DIR', 'classes/');
 
 error_reporting(0);
-set_time_limit(0);
+@set_time_limit(0);
 @ini_alter("memory_limit", "1024M");
 @ob_end_clean();
-ob_implicit_flush(TRUE);
+@ob_implicit_flush(TRUE);
 ignore_user_abort(1);
 clearstatcache();
 error_reporting(6135);
 $nn = "\r\n";
-$RL_VER = 'Rx08.ii36';
+$rev_num = '36B.Rv7.1';
+$RL_VER = 'Rx08.ii'.$rev_num;
 
 require_once(CONFIG_DIR."config.php");
 require_once(CLASS_DIR."other.php");
@@ -283,25 +284,25 @@ hr {
 echo $not_done ? "" : '<br><center><b><a href="javascript:window.close();">DONE</a></b></center>';
 ?>
 </center>
-</body>
-</html>
+
 <?php
 //-- mod: Auto Upload ------------------------------------------
 if ($download_link!='') {
-	// Write links to a file
-	if(!file_exists(MYUPLOAD_LST))@touch(MYUPLOAD_LST);
-	$fh = fopen(MYUPLOAD_LST, 'r');
-	$fcontent = fread($fh, filesize(MYUPLOAD_LST));
-
-	
-	$fh2 = fopen(MYUPLOAD_LST, 'w+');
-	$dash = "";
-	for ($i=0;$i<=80;$i++) $dash.="=";
-	$towrite = "[".date("Y-m-d H:i:s")."] -- ".$lname."\r\n".$dash."\r\n".$download_link."\r\n\r\n".$fcontent;
-	fwrite($fh2, $towrite);
-	fclose($fh);
-	fclose($fh2);
+  // Write links to a file
+  if(!file_exists(MYUPLOAD_LST))@touch(MYUPLOAD_LST);
+  $fh = @fopen(MYUPLOAD_LST, 'r');
+  if($fh){
+	$fcontent = (filesize(MYUPLOAD_LST)>0 ? @fread($fh, filesize(MYUPLOAD_LST)):"");
+	$fh2 = @fopen(MYUPLOAD_LST, 'w+');
+	if($fh2){
+	  $dash = "";	for ($i=0;$i<=80;$i++) $dash.="=";
+	  $towrite = "[".date("Y-m-d H:i:s")."] -- ".$lname."\r\n".$dash."\r\n".$download_link."\r\n\r\n".$fcontent;
+	  fwrite($fh2, $towrite); fclose($fh); fclose($fh2);
+	}
+  }
 }
 //-- end: Auto Upload ------------------------------------------
-?>
-	<script language=javascript>parent.nextlink<?php echo $_GET['auul']; ?>();</script>
+if(isset($_GET['auul'])) echo '<script type="text/javascript">parent.nextlink'.$_GET['auul'].'();</script>';
+?>	
+</body>
+</html>

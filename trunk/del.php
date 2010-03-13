@@ -1,6 +1,10 @@
 <?php
-error_reporting(0);
 define('RAPIDLEECH', 'yes');
+
+error_reporting(0);
+//error_reporting(6135);
+//error_reporting(E_ALL); 
+//@ini_set('display_errors', true); 
 
 define('MISC_DIR', 'misc/');
 define('CLASS_DIR', 'classes/');
@@ -59,8 +63,6 @@ if(!isset($_GET['d'])) {
 	  $hashdel = explode(":", trim(base64_decode(rotN($_GET ['d'],-($rotKey)))));
 	  $fileDate = (int) $hashdel[0];
 	  $show_all = true;
-	  //$ckShowAll = ($_COOKIE["showAll"]!=1 ? 1:"");
-	  //setcookie("showAll", "1", time() + 3600, "/");
 	  _create_list(true, false, 1);
 	}
 	if(!$list) { 

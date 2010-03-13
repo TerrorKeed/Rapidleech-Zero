@@ -17,12 +17,10 @@ switch($task)
 		
 ?>
 
-<script language=javascript>
+<script type="text/javascript">
 var dId;
-
 function highlight(field) {
-   field.focus(); field.select(); }
-	
+   field.focus(); field.select(); }	
 </script>
 
 	
@@ -51,8 +49,6 @@ function highlight(field) {
 </tbody>
 </table></center>
 </div>
-
-
 
 
 </td></tr>
@@ -155,7 +151,7 @@ pass: <input type="password" id="newpascp" name="newpascp">
 </tr>
 
 <tr>
-<td class="tdlog"><input type="checkbox" id="login" name="login" onClick="clk(this,'rlbtnChange','lip',0); document.getElementById('loginrl').style.display='none';"<?php $logindontdisplay=true;if($showpostn){if($_POST['login']=='on'){echo ' checked';$logindontdisplay=false;}}elseif($login){echo ' checked';$logindontdisplay=false;} ?>>&nbsp;<label for=login>Login index page</label></td>
+<td class="tdlog"><input type="checkbox" id="login" name="login" onClick="clk(this,'rlbtnChange','lip',0); document.getElementById('loginrl').style.display='none';"<?php $logindontdisplay=true;if($showpostn){if(isset($_POST['login']) && $_POST['login']=='on'){echo ' checked';$logindontdisplay=false;}}elseif($login){echo ' checked';$logindontdisplay=false;} ?>>&nbsp;<label for=login>Login index page</label></td>
 <td class="tdacc">
 <div id="rlbtnChange"<?php if($logindontdisplay) echo $styledisplay; ?>><input type="button" value="Change" id="loginchange" onClick="var d=document; d.getElementById('loginrl').style.display=''; d.getElementById('rlbtnChange').style.display='none';d.getElementById('rlauthHash').value='1';d.getElementById('user').focus();"></div>
 
@@ -183,15 +179,15 @@ pass: <input type="password" id="pass" name="pass">
 <h1>PREMIX ACC CONFIG</h1></td><td>&nbsp;</td></tr>
 <tr>
 <td class="tdacc">
-<input type="checkbox" id="usepcc" name="usepcc" onClick="displ=this.checked?'':'none';document.getElementById('divpccL').style.display=displ;" <?php if($showpostn){if($_POST['usepcc']=='on')echo ' checked';}elseif((isset($premium_acc)) && $ada_acc) echo ' checked';?>><label for=usepcc><b>Use premiX acc</b></label>
+<input type="checkbox" id="usepcc" name="usepcc" onClick="displ=this.checked?'':'none';document.getElementById('divpccL').style.display=displ;" <?php if($showpostn){if(isset($_POST['usepcc']) && $_POST['usepcc']=='on')echo ' checked';}elseif((isset($premium_acc)) && $ada_acc) echo ' checked';?>><label for=usepcc><b>Use premiX acc</b></label>
 &nbsp;&nbsp;&nbsp;
-<input type="checkbox" id="autodlpremix" name="autodlpremix" <?php if($showpostn){if($_POST['autodlpremix']=='on')echo ' checked';}elseif((isset($premium_acc))&&($premium_acc_audl)) echo ' checked'; ?>><label for="autodlpremix" title="Enable Premix on Audl">Enable on Audl</label>
+<input type="checkbox" id="autodlpremix" name="autodlpremix" <?php if($showpostn){if(isset($_POST['autodlpremix']) && $_POST['autodlpremix']=='on')echo ' checked';}elseif((isset($premium_acc))&&(isset($premium_acc_audl))&&$premium_acc_audl) echo ' checked'; ?>><label for="autodlpremix" title="Enable Premix on Audl">Enable on Audl</label>
 </td>
 <td class="tdacc"><span>Activate PCC Array</span></td></tr>
 
 <tr>
 <td colspan="2">
-<div id="divpccL" style="display:<?php if($showpostn){if($_POST['usepcc']=='on'){echo '';}else{echo 'none';}}elseif((isset($premium_acc))&& $ada_acc){echo '';}else{echo 'none';}?>"><div class="float">
+<div id="divpccL" style="display:<?php if($showpostn){if(isset($_POST['usepcc']) && $_POST['usepcc']=='on'){echo '';}else{echo 'none';}}elseif((isset($premium_acc))&& $ada_acc){echo '';}else{echo 'none';}?>"><div class="float">
 <ul class="pret"><li class="ndot">
 	<table border="1px"><tbody>
 	<tr>
@@ -200,10 +196,10 @@ pass: <input type="password" id="pass" name="pass">
 	$rsencchecked=false;
 	$chk ='';
 	if($showpostn){
-	 if($_POST['rs_com_premix']=='on')
+	 if(isset($_POST['rs_com_premix']) && $_POST['rs_com_premix']=='on')
 	  {$chk=' checked';$rsencchecked=true;}
-	}elseif(isset($premium_acc["rs_com"]) && (($premium_acc["rs_com"]["user"]!='' && $premium_acc["rs_com"]["pass"]!='')
-	  || ($premium_acc["rs_com"][0]["user"]!=''&& $premium_acc["rs_com"][0]["pass"]!='')))
+	}elseif(isset($premium_acc["rs_com"]) && ((isset($premium_acc["rs_com"]["user"]) && $premium_acc["rs_com"]["user"]!='' && isset($premium_acc["rs_com"]["pass"]) && $premium_acc["rs_com"]["pass"]!='')
+	  || (isset($premium_acc["rs_com"][0]["user"]) && $premium_acc["rs_com"][0]["user"]!=''&& isset($premium_acc["rs_com"][0]["pass"]) && $premium_acc["rs_com"][0]["pass"]!='')))
 	  
 	  {$chk=' checked';$rsencchecked=true;}
 ?>
@@ -216,7 +212,7 @@ pass: <input type="password" id="pass" name="pass">
 	
 	<span id="rspcc"></span>
 	<span id="buttonplus0">
-	&nbsp;<input id="0" type="image" src="<?php echo IMAGE_DIR;?>plus.png" alt="+" onclick="addElement('rsenc', this.id); return false;" style="vertical-align:middle;">
+	&nbsp;<input id="rsid_0" type="image" src="<?php echo IMAGE_DIR;?>plus.png" alt="+" title="Add Row" onclick="addElement('rsenc', this.id, ['rpl', 'rppl'], ['addition', 'buttonplus'] ); return false;" style="vertical-align:middle;">
 	</span></div>
 	<span id="rsauth2">
 	<?php if(!$rsencchecked){
@@ -234,7 +230,7 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $rsdechecked=false;$chk ='';
   if($showpostn){
-   if($_POST['rs_de_premix']=='on')
+   if(isset($_POST['rs_de_premix']) && $_POST['rs_de_premix']=='on')
     {$chk= ' checked';$rsdechecked=true;}
   }elseif(isset($premium_acc['rs_de']))
     {$chk= ' checked';$rsdechecked=true;}
@@ -255,7 +251,7 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
  $megupld=false;$chk='';
  if($showpostn){
-   if($_POST['megaupload_premix']=='on')
+   if(isset($_POST['megaupload_premix']) && $_POST['megaupload_premix']=='on')
     {$chk= ' checked';$megupld=true;}
  }elseif(isset($premium_acc['megaupload']))
     {$chk= ' checked';$megupld=true;}
@@ -277,9 +273,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $megshr=false;$chk='';
   if($showpostn){
-    if($_POST['megashare_premix']=='on')
+    if(isset($_POST['megashare_premix']) && $_POST['megashare_premix']=='on')
 	 {$chk= ' checked';$megshr=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['megashare']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['megashare'])))
     {$chk= ' checked'; $megshr=true;} 
 ?>
 
@@ -299,9 +295,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $ntld=false;$chk='';
   if($showpostn){
-    if($_POST['netload_premix']=='on')
+    if(isset($_POST['netload_premix']) && $_POST['netload_premix']=='on')
 	  {$chk= ' checked';$ntld=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['netload']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['netload'])))
     {$chk= ' checked';$ntld=true;} 
 ?>
 
@@ -321,9 +317,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $gigasz=false;$chk='';
   if($showpostn){
-    if($_POST['gigasize_premix']=='on')
+    if(isset($_POST['gigasize_premix']) && $_POST['gigasize_premix']=='on')
 	  {$chk= ' checked';$gigasz=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['gigasize']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['gigasize'])))
     {$chk= ' checked';$gigasz=true;} 
 ?>
 
@@ -343,9 +339,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $shareonln=false;$chk='';
   if($showpostn){
-    if($_POST['share_online_premix']=='on')
+    if(isset($_POST['share_online_premix']) && $_POST['share_online_premix']=='on')
 	  {$chk= ' checked';$shareonln=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['share_online']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['share_online'])))
     {$chk= ' checked';$shareonln=true;} 
 ?>
 
@@ -365,9 +361,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $vbulacc=false;$chk='';
    if($showpostn){
-     if($_POST['vBulletin_acc_premix']=='on')
+     if(isset($_POST['vBulletin_acc_premix']) && $_POST['vBulletin_acc_premix']=='on')
 	  {$chk= ' checked';$vbulacc=true;}
-     }elseif((isset($premium_acc))&&($premium_acc['vBulletin_acc']))
+     }elseif((isset($premium_acc))&&(isset($premium_acc['vBulletin_acc'])))
       {$chk= ' checked';$vbulacc=true;} 
 ?>
 <input type="checkbox" id="vBulletin_acc_premix" name="vBulletin_acc_premix" onClick="clk(this,'vbulbox','vbulket','<?php echo $vbulacc;?>');"<?php echo $chk;?>>
@@ -387,9 +383,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $upl_to=false; $chk='';
   if($showpostn){
-   if($_POST['uploaded_to_premix']=='on')
+   if(isset($_POST['uploaded_to_premix']) && $_POST['uploaded_to_premix']=='on')
     {$chk= ' checked';$upl_to=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['uploaded_to']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['uploaded_to'])))
     {$chk= ' checked';$upl_to=true;} 
 ?>
 <input type="checkbox" id="uploaded_to_premix" name="uploaded_to_premix" onClick="clk(this,'uptobox','uptoket','<?php echo $upl_to;?>');"<?php echo $chk;?>>
@@ -409,9 +405,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $easysh=false; $chk='';
   if($showpostn){
-   if($_POST['easyshare_premix']=='on')
+   if(isset($_POST['easyshare_premix']) && $_POST['easyshare_premix']=='on')
     {$chk= ' checked';$easysh=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['easyshare']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['easyshare'])))
     {$chk= ' checked';$easysh=true;} 
 ?>
 <input type="checkbox" id="easyshare_premix" name="easyshare_premix" onClick="clk(this,'easybox','easyket','<?php echo $easysh;?>');"<?php echo $chk;?>>
@@ -430,9 +426,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $deposit=false; $chk='';
   if($showpostn){
-   if($_POST['depositfiles_premix']=='on')
+   if(isset($_POST['depositfiles_premix']) && $_POST['depositfiles_premix']=='on')
     {$chk= ' checked';$deposit=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['depositfiles']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['depositfiles'])))
     {$chk= ' checked';$deposit=true;} 
 ?>
 <input type="checkbox" id="depositfiles_premix" name="depositfiles_premix" onClick="clk(this,'deposbox','deposket','<?php echo $deposit;?>');"<?php echo $chk;?>>
@@ -451,9 +447,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $hotfile=false; $chk='';
   if($showpostn){
-   if($_POST['hotfile_com_premix']=='on')
+   if(isset($_POST['hotfile_com_premix']) && $_POST['hotfile_com_premix']=='on')
     {$chk= ' checked';$hotfile=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['hotfile_com']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['hotfile_com'])))
     {$chk= ' checked';$hotfile=true;} 
 ?>
 <input type="checkbox" id="hotfile_com_premix" name="hotfile_com_premix" onClick="clk(this,'hotfilebox','hotfileket','<?php echo $hotfile;?>');"<?php echo $chk;?>>
@@ -472,9 +468,9 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $ulding=false; $chk='';
   if($showpostn){
-   if($_POST['uploading_premix']=='on')
+   if(isset($_POST['uploading_premix']) && $_POST['uploading_premix']=='on')
     {$chk= ' checked';$ulding=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['uploading']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['uploading'])))
     {$chk= ' checked';$ulding=true;} 
 ?>
 <input type="checkbox" id="uploading_premix" name="uploading_premix" onClick="clk(this,'uldingbox','uldingket','<?php echo $ulding;?>');"<?php echo $chk;?>>
@@ -493,9 +489,9 @@ pass: <input type="password" id="pass" name="pass">
 	<?php 
   $ff=false; $chk='';
   if($showpostn){
-   if($_POST['filefactory_premix']=='on')
+   if(isset($_POST['filefactory_premix']) && $_POST['filefactory_premix']=='on')
     {$chk= ' checked';$ff=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['filefactory']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['filefactory'])))
     {$chk= ' checked';$ff=true;} 
 	?>
 <input type="checkbox" id="filefactory_premix" name="filefactory_premix" onClick="clk(this,'ffbox','ffket','<?php echo $ff;?>');"<?php echo $chk;?>>
@@ -514,9 +510,9 @@ pass: <input type="password" id="pass" name="pass">
 	<?php 
   $ifit=false; $chk='';
   if($showpostn){
-   if($_POST['ifile_it_premix']=='on')
+   if(isset($_POST['ifile_it_premix']) && $_POST['ifile_it_premix']=='on')
     {$chk= ' checked';$ifit=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['ifile_it']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['ifile_it'])))
     {$chk= ' checked';$ifit=true;} 
 	?>
 <input type="checkbox" id="ifile_it_premix" name="ifile_it_premix" onClick="clk(this,'ifbox','ifket','<?php echo $ifit;?>');"<?php echo $chk;?>>
@@ -535,22 +531,23 @@ pass: <input type="password" id="pass" name="pass">
 	<?php 
   $sendspace=false; $chk='';
   if($showpostn){
-   if($_POST['sendspace_premix']=='on')
+   if(isset($_POST['sendspace_premix']) && $_POST['sendspace_premix']=='on')
     {$chk= ' checked';$sendspace=true;}
-  }elseif((isset($premium_acc))&&($premium_acc['sendspace']))
+  }elseif((isset($premium_acc))&&(isset($premium_acc['sendspace'])))
     {$chk= ' checked';$sendspace=true;} 
 	?>
 <input type="checkbox" id="sendspace_premix" name="sendspace_premix" onClick="clk(this,'sendbox','sendket','<?php echo $sendspace;?>');"<?php echo $chk;?>>
-<label for="sendspace_premix">&nbsp;sendspace</label>
+<label for="sendspace_premix">&nbsp;ifile.it</label>
 	</td>
 	<td class="tdacc">
 	<div id="sendbox"<?php echo $styledisplay;?> class="float">
 	user: <input type="text" id="usrsendspace" name="usrsendspace" value="">&nbsp;
 	pass: <input type="password" id="passsendspace" name="passsendspace" value="">
 	</div>
-	<span id="sendket" ><?php if(!$sendspace){echo "<div>sendspace premiX ACC</div>";}else{echo ACC_EMBED;}?></span>
+	<span id="sendket" ><?php if(!$sendspace){echo "<div>sendspace Free/premiX ACC</div>";}else{echo ACC_EMBED;}?></span>
 	</td>
 	</tr>
+
 	</tbody></table>
 	</li></ul>
 </div>
@@ -564,7 +561,7 @@ pass: <input type="password" id="pass" name="pass">
 <?php 
   $megcook=false;$chk='';
   if($showpostn){
-   if($_POST['muhash_premix']=='on')
+   if(isset($_POST['muhash_premix']) && $_POST['muhash_premix']=='on')
     {$chk= ' checked';$megcook=true;}
    }elseif((isset($mu_cookie_user_value))&&(!empty($mu_cookie_user_value)))
     {$chk= ' checked';$megcook=true;}
@@ -575,19 +572,65 @@ pass: <input type="password" id="pass" name="pass">
 </td>
 <td class="tdacc">
 	<div id="muacchash"<?php echo $styledisplay;?> class="float">
-	cookie: <input type="text" id="muhashcookie" name="muhashcookie" value="" size="40">
+	user= <input type="text" id="muhashcookie" name="muhashcookie" value="" size="40">
 	</div>
-	<span id="muket2"><?php if(!$megcook){echo "<span>Megaupload.com premiX ACC cookie. example: IX.BBTAZOLCTAOLCI.UBHOLCJRW7R9PB</span>";}else{echo CK_EMBED;}?></span>
+	<span id="muket2"><?php if(!$megcook){echo "<span>Megaupload.com premiX ACC cookie.</span>";}else{echo CK_EMBED;}?></span>
 </td>
 </tr>
+
+<tr>
+<td class="tdacc" style="padding-left:15px;">
+<?php 
+  $hfcook=false;$chk='';
+  if($showpostn){
+   if(isset($_POST['hfhash_premix']) && $_POST['hfhash_premix']=='on')
+    {$chk= ' checked';$hfcook=true;}
+   }elseif(isset($hf_cookie_auth_value)&&(!empty($hf_cookie_auth_value)))
+    {$chk= ' checked';$hfcook=true;}
+?>
+
+<input type="checkbox" id="hfhash_premix" name="hfhash_premix" onClick="clk(this,'hfacchash','hfket2','<?php echo $hfcook;?>');"<?php echo $chk;?>>
+<label for="hfhash_premix">&nbsp;Hotfile.com cookie</label>
+</td>
+<td class="tdacc">
+	<div id="hfacchash"<?php echo $styledisplay;?> class="float">
+	auth= <input type="text" id="hfhashcookie" name="hfhashcookie" value="" size="40">
+	</div>
+	<span id="hfket2"><?php if(!$hfcook){echo "<span>Hotfile.com premiX ACC cookie.</span>";}else{echo CK_EMBED;}?></span>
+</td>
+</tr>
+
+<tr>
+<td class="tdacc" style="padding-left:15px;">
+<?php 
+  $rscook=false;$chk='';
+  if($showpostn){
+   if(isset($_POST['rshash_premix']) && $_POST['rshash_premix']=='on')
+    {$chk= ' checked';$rscook=true;}
+   }elseif(isset($rs_cookie_enc_value)&&(!empty($rs_cookie_enc_value)))
+    {$chk= ' checked';$rscook=true;}
+?>
+
+<input type="checkbox" id="rshash_premix" name="rshash_premix" onClick="clk(this,'rsacchash','rsket2','<?php echo $rscook;?>');"<?php echo $chk;?>>
+<label for="rshash_premix">&nbsp;Rapidshare.com cookie</label>
+</td>
+<td class="tdacc">
+	<div id="rsacchash"<?php echo $styledisplay;?> class="float">
+	auth= <input type="text" id="rshashcookie" name="rshashcookie" value="" size="40">
+	</div>
+	<span id="rsket2"><?php if(!$rscook){echo "<span>Hotfile.com premiX ACC cookie.</span>";}else{echo CK_EMBED;}?></span>
+</td>
+</tr>
+
+
 <tr>
 <td class="tdacc" style="padding-left:15px;">
 <?php 
   $img_hackt=false;$chk='';
   if($showpostn){
-    if($_POST['imghack_premix']=='on')
+    if(isset($_POST['imghack_premix']) && $_POST['imghack_premix']=='on')
 	 {$chk= ' checked';$img_hackt=true;}
-  }elseif(isset($imageshack_acc)&&!empty($imageshack_acc))
+  }elseif(isset($imageshack_acc)&&!empty($imageshack_acc["user"])&&!empty($imageshack_acc["pass"]))
     {$chk= ' checked';$img_hackt=true;} 
 ?>
 
@@ -607,7 +650,10 @@ pass: <input type="password" id="pass" name="pass">
 <tr>
 <td align="left" colspan="3">
 <?php
-$exist_accrs = (isset($premium_acc["rs_com"])?($premium_acc["rs_com"]["user"]!=''&&$premium_acc["rs_com"]["pass"]!=''?true:($premium_acc["rs_com"][0]["user"]!=''&&$premium_acc["rs_com"][0]["pass"]!=''?true:false)):false);
+$exist_accrs = (isset($premium_acc["rs_com"]) ? 
+  ( isset($premium_acc["rs_com"]["user"]) && $premium_acc["rs_com"]["user"]!='' && isset($premium_acc["rs_com"]["pass"]) && $premium_acc["rs_com"]["pass"]!='' ? true : 
+    (isset($premium_acc["rs_com"][0]["user"]) && $premium_acc["rs_com"][0]["user"]!='' && isset($premium_acc["rs_com"][0]["pass"]) && $premium_acc["rs_com"][0]["pass"]!='' ? true : false)
+  ) : false );
 ?>
 <div id="parentnfoconfig">
 <div id="nfoconfig" align="center" style="width:250px;padding:4px 0 5px 8px; margin-left:0px; display:<?php echo (($ch_curl==1) && ($exist_accrs)?"":"none;");?>">
@@ -637,14 +683,14 @@ setTimeout("stacc()",100);
 <h1>UPLOAD ACC CONFIG</h1></td><td>&nbsp;</td></tr>
 <tr>
 <td class="tdacc">
-<input type="checkbox" id="useulcc" name="useulcc" onClick="displ=this.checked?'':'none';document.getElementById('divulccL').style.display=displ;" <?php if($showpostn){if($_POST['useulcc']=='on')echo ' checked';}elseif((isset($upload_acc))&&(is_array($upload_acc))) echo ' checked';?>><label for=useulcc><b>Use Upload acc</b></label>
+<input type="checkbox" id="useulcc" name="useulcc" onClick="displ=this.checked?'':'none';document.getElementById('divulccL').style.display=displ;" <?php if($showpostn){if(isset($_POST['useulcc']) && $_POST['useulcc']=='on')echo ' checked';}elseif((isset($upload_acc))&&(is_array($upload_acc))) echo ' checked';?>><label for=useulcc><b>Use Upload acc</b></label>
 <div class="spc">&nbsp;</div>
 </td>
 <td class="tdacc"><span>Activate UCC Array</span></td></tr>
 
 <tr>
 <td colspan="2">
-<div id="divulccL" style="display:<?php if($showpostn){if($_POST['useulcc']=='on'){echo '';}else{echo 'none';}}elseif((isset($upload_acc))&&(is_array($upload_acc))){echo '';}else{echo 'none';}?>"><div class="float">
+<div id="divulccL" style="display:<?php if($showpostn){if(isset($_POST['useulcc']) && $_POST['useulcc']=='on'){echo '';}else{echo 'none';}}elseif((isset($upload_acc))&&(is_array($upload_acc))){echo '';}else{echo 'none';}?>"><div class="float">
 <ul class="pret"><li class="ndot">
 	<table border="1px"><tbody>
 	<tr>
@@ -652,7 +698,7 @@ setTimeout("stacc()",100);
 <?php 
  $mf_up=false;$chk='';
  if($showpostn){
-   if($_POST['mediafire_up_upload']=='on')
+   if(isset($_POST['mediafire_up_upload']) && $_POST['mediafire_up_upload']=='on')
     {$chk= ' checked';$mf_up=true;}
  }elseif(isset($upload_acc['mediafire_up']))
     {$chk= ' checked';$mf_up=true;}
@@ -673,7 +719,7 @@ setTimeout("stacc()",100);
 <?php 
   $rs_com_coll_up=false;$chk='';
   if($showpostn){
-    if($_POST['rs_com_coll_upload']=='on')
+    if(isset($_POST['rs_com_coll_upload']) && $_POST['rs_com_coll_upload']=='on')
 	 {$chk= ' checked';$rs_com_coll_up=true;}
   }elseif(isset($upload_acc['rs_com_coll']))
     {$chk= ' checked'; $rs_com_coll_up=true;} 
@@ -694,7 +740,7 @@ setTimeout("stacc()",100);
 <?php 
   $rs_com_pre_up=false;$chk='';
   if($showpostn){
-    if($_POST['rs_com_pre_upload']=='on')
+    if(isset($_POST['rs_com_pre_upload']) && $_POST['rs_com_pre_upload']=='on')
 	  {$chk= ' checked';$rs_com_pre_up=true;}
   }elseif(isset($upload_acc['rs_com_pre']))
     {$chk= ' checked';$rs_com_pre_up=true;} 
@@ -716,7 +762,7 @@ setTimeout("stacc()",100);
 <?php 
   $mu_pre_up=false;$chk='';
   if($showpostn){
-    if($_POST['mu_pre_upload']=='on')
+    if(isset($_POST['mu_pre_upload']) && $_POST['mu_pre_upload']=='on')
 	  {$chk= ' checked';$mu_pre_up=true;}
   }elseif(isset($upload_acc['mu_pre']))
       {$chk= ' checked';$mu_pre_up=true;} 
@@ -738,7 +784,7 @@ setTimeout("stacc()",100);
 <?php 
   $hf_com_up=false;$chk='';
   if($showpostn){
-    if($_POST['hf_com_upload']=='on')
+    if(isset($_POST['hf_com_upload']) && $_POST['hf_com_upload']=='on')
 	  {$chk= ' checked';$hf_com_up=true;}
   }elseif(isset($upload_acc['hf_com']))
     {$chk= ' checked';$hf_com_up=true;} 
@@ -760,7 +806,7 @@ setTimeout("stacc()",100);
 <?php 
   $easysh_mem_up=false;$chk='';
    if($showpostn){
-     if($_POST['easysh_mem_upload']=='on')
+     if(isset($_POST['easysh_mem_upload']) && $_POST['easysh_mem_upload']=='on')
 	  {$chk= ' checked';$easysh_mem_up=true;}
      }elseif(isset($upload_acc['easysh_mem']))
       {$chk= ' checked';$easysh_mem_up=true;} 
@@ -781,7 +827,7 @@ setTimeout("stacc()",100);
 <?php 
   $deposit_up_up=false;$chk='';
    if($showpostn){
-     if($_POST['deposit_up_upload']=='on')
+     if(isset($_POST['deposit_up_upload']) && $_POST['deposit_up_upload']=='on')
 	  {$chk= ' checked';$deposit_up_up=true;}
      }elseif(isset($upload_acc['deposit_up']))
       {$chk= ' checked';$deposit_up_up=true;} 
@@ -802,7 +848,7 @@ setTimeout("stacc()",100);
 <?php 
   $uploading_up_up=false;$chk='';
    if($showpostn){
-     if($_POST['uploading_up_upload']=='on')
+     if(isset($_POST['uploading_up_upload']) && $_POST['uploading_up_upload']=='on')
 	  {$chk= ' checked';$uploading_up_up=true;}
      }elseif(isset($upload_acc['uploading_up']))
       {$chk= ' checked';$uploading_up_up=true;} 
@@ -842,7 +888,7 @@ setTimeout("stacc()",100);
 
 <tr>
 <td class="tdacc">
-<input type="checkbox" id=limitbyip name="limitbyip" onClick="var displ=this.checked?'':'none';document.getElementById('limitip').style.display=displ;document.getElementById('limitip2').style.display=displ;"<?php $limitipchecked=true;if($showpostn){if($_POST['limitbyip']=='on'){echo ' checked';$limitipchecked=false;}}elseif($limitbyip){echo ' checked';$limitipchecked=false;} ?>><label for=limitbyip>&nbsp;<b>Limit Leeching per IP</b></label></td>
+<input type="checkbox" id=limitbyip name="limitbyip" onClick="var displ=this.checked?'':'none';document.getElementById('limitip').style.display=displ;document.getElementById('limitip2').style.display=displ;"<?php $limitipchecked=true;if($showpostn){if(isset($_POST['limitbyip']) && $_POST['limitbyip']=='on'){echo ' checked';$limitipchecked=false;}}elseif($limitbyip){echo ' checked';$limitipchecked=false;} ?>><label for=limitbyip>&nbsp;<b>Limit Leeching per IP</b></label></td>
 <td class="tdacc">This feature only enable if you have any premium acc in your RL.
 </td>
 </tr>
@@ -861,7 +907,7 @@ setTimeout("stacc()",100);
 
 <tr>
 <td class="tdacc">
-<input type="checkbox" id=downloadLimitbyip name="downloadLimitbyip" onClick="var displ=this.checked?'':'none';document.getElementById('downloadLimitip').style.display=displ;document.getElementById('downloadLimitip2').style.display=displ;"<?php $downloadLimitipchecked=true;if($showpostn){if($_POST['downloadLimitbyip']=='on'){echo ' checked';$downloadLimitipchecked=false;}}elseif($downloadLimitbyip){echo ' checked';$downloadLimitipchecked=false;} ?>><label for=downloadLimitbyip>&nbsp;<b>Limit Leeching by IP</b></label></td>
+<input type="checkbox" id=downloadLimitbyip name="downloadLimitbyip" onClick="var displ=this.checked?'':'none';document.getElementById('downloadLimitip').style.display=displ;document.getElementById('downloadLimitip2').style.display=displ;"<?php $downloadLimitipchecked=true;if($showpostn){if(isset($_POST['downloadLimitbyip']) && $_POST['downloadLimitbyip']=='on'){echo ' checked';$downloadLimitipchecked=false;}}elseif($downloadLimitbyip){echo ' checked';$downloadLimitipchecked=false;} ?>><label for=downloadLimitbyip>&nbsp;<b>Limit Leeching by IP</b></label></td>
 <td class="tdacc">This feature always enable although you don't use <span class="r">Rapidshare.com ACC or Megaupload ACC</b></td>
 </td>
 <tr>
@@ -887,7 +933,7 @@ setTimeout("stacc()",100);
 </tr>
 <tr>
 
-<td class="tdacc"><input type="checkbox" id="limitbytraffic" name="limitbytraffic" onClick="var displ=this.checked?'':'none';document.getElementById('limittraf').style.display=displ;document.getElementById('limittraf2').style.display=displ;"<?php $limitbytrafficchk=true;if($showpostn){if($_POST['limitbytraffic']=='on'){echo ' checked';$limitbytrafficchk=false;}}elseif($limitbytraffic){echo ' checked';$limitbytrafficchk=false;} ?>><label for="limitbytraffic">&nbsp;<b>Limit Traffic</b></label></td>
+<td class="tdacc"><input type="checkbox" id="limitbytraffic" name="limitbytraffic" onClick="var displ=this.checked?'':'none';document.getElementById('limittraf').style.display=displ;document.getElementById('limittraf2').style.display=displ;"<?php $limitbytrafficchk=true;if($showpostn){if(isset($_POST['limitbytraffic']) && $_POST['limitbytraffic']=='on'){echo ' checked';$limitbytrafficchk=false;}}elseif($limitbytraffic){echo ' checked';$limitbytrafficchk=false;} ?>><label for="limitbytraffic">&nbsp;<b>Limit Traffic</b></label></td>
 <td class="tdacc">This feature Limit Traffic in your RL
 </td>
 </tr>
@@ -912,7 +958,7 @@ setTimeout("stacc()",100);
 <div style="float:left;">The D-Day traffic quota will expired</div><br><div style="height:3px;">&nbsp;</div>
 <div style="float:left;">Auto-Reset traffic. set to 0 or blank to disable.
 <?php if($day_reset_trafic > 0) {
- echo "<small>remain: " . sec2time(timeremain_traffic($day_reset_trafic, $cur_trf[1])) . "</small>";
+ echo "<small class='g'>remain: " . sec2time(timeremain_traffic($day_reset_trafic, $cur_trf[1])) . "</small>";
  }
  ?>
 </div>
@@ -924,18 +970,18 @@ setTimeout("stacc()",100);
 </tr>
 
 <tr>
-<td class="tdacc"><input type="checkbox" id="limited_edition" name="limited_edition" onClick="var displ=this.checked?'':'none';document.getElementById('limitauthip').style.display=displ;document.getElementById('limitauthip2').style.display=displ;"<?php $limitauthbyip=true;if($showpostn){if($_POST['limited_edition']=='on'){echo ' checked';$limitauthbyip=false;}}elseif($limited_edition){echo ' checked';$limitauthbyip=false;} ?>><label for="limited_edition">&nbsp;<b>Limit Authorize by IP</b></label></td>
+<td class="tdacc"><input type="checkbox" id="limited_edition" name="limited_edition" onClick="var displ=this.checked?'':'none';document.getElementById('limitauthip').style.display=displ;document.getElementById('limitauthip2').style.display=displ;"<?php $limitauthbyip=true;if($showpostn){if(isset($_POST['limited_edition']) && $_POST['limited_edition']=='on'){echo ' checked';$limitauthbyip=false;}}elseif($limited_edition){echo ' checked';$limitauthbyip=false;} ?>><label for="limited_edition">&nbsp;<b>Limit Authorize by IP</b></label></td>
 <td class="tdacc">Limit access to your RL by authorized IP only.</td>
 </tr>
 <tr>
 <td class="tdacc" id="limitauthip"<?php if($limitauthbyip) echo $styledisplay; ?>><div style="padding-left:15px;">
-<input type="text" name="list_allow_ip" value="<?php if($showpostn){if(!empty($_POST['list_allow_ip'])){echo $_POST['list_allow_ip'];}else{echo $list_allow_ip;}}?>"> White List IP<br>
+<input type="text" name="list_allow_ip" value="<?php if($showpostn){if(!empty($_POST['list_allow_ip'])){echo $_POST['list_allow_ip'];}else{echo (trim($list_allow_ip)!='' ? $list_allow_ip:get_real_ip());}}else{echo (trim($list_allow_ip)!='' ? $list_allow_ip:get_real_ip());}?>"> White List IP<br>
 <input type="text" name="list_baned_ip" value="<?php if($showpostn){if(!empty($_POST['list_baned_ip'])){echo $_POST['list_baned_ip'];}else{echo $list_baned_ip;}}else{echo $list_baned_ip;}?>"> Black Listed IP</div>
 </td>
 <td class="tdacc" id="limitauthip2"<?php if($limitauthbyip) echo $styledisplay; ?>><div style="padding-left:15px; margin-top: 0px;">
-<span>White list IP. eg. 111.111.111.111, 255.*.*.*, // <span class="r">never blank this if you set limitation=true</span></span>
+<span>White list IP. eg. <b class="g"><?php echo get_real_ip();?></b>, 111.111.111.111, 255.*.*.*, // <span class="r">never blank this if you set limitation=true</span></span>
 <div style="height:5px;">&nbsp;</div>
-<span>Banned / Blacklist IP, u think so?!. eg. 111.111.111.111, 222.*.*.*, 212.212.212.*</span>
+<span>Banned / Blacklist IP,!. eg. 111.111.111.111, 222.*.*.*, 212.212.212.*</span>
 </div></td>
 </tr>
 
@@ -947,7 +993,7 @@ if(!file_exists($geo_class) || !file_exists($geo_db)) {
   $msg_CID = " <span class='g'><b>{$geo_class}</b> OR <b>{$geo_db}</b> Not Found.</span>";
 }
 ?>
-<td class="tdacc"><input type="checkbox" id="limited_area" name="limited_area" onClick="var displ=this.checked?'':'none';document.getElementById('limitautharea').style.display=displ;document.getElementById('limitautharea2').style.display=displ;"<?php $limitauthbyarea=true;if($showpostn){if($_POST['limited_area']=='on' && $msg_CID==""){echo ' checked';$limitauthbyarea=false;}}elseif($limited_area && $msg_CID==""){echo ' checked';$limitauthbyarea=false;} echo ($msg_CID!="" ? " disabled='true'":"");?>><label for="limited_area">&nbsp;<b>Limit Authorize by Country ID Area</b></label></td>
+<td class="tdacc"><input type="checkbox" id="limited_area" name="limited_area" onClick="var displ=this.checked?'':'none';document.getElementById('limitautharea').style.display=displ;document.getElementById('limitautharea2').style.display=displ;"<?php $limitauthbyarea=true;if($showpostn){if(isset($_POST['limited_area']) && $_POST['limited_area']=='on' && $msg_CID==""){echo ' checked';$limitauthbyarea=false;}}elseif($limited_area && $msg_CID==""){echo ' checked';$limitauthbyarea=false;} echo ($msg_CID!="" ? " disabled='true'":"");?>><label for="limited_area">&nbsp;<b>Limit Authorize by Country ID Area</b></label></td>
 <td class="tdacc">Limit access to your RL by Country ID.<?php echo $msg_CID;?></td>
 </tr>
 <tr>
@@ -966,7 +1012,7 @@ if(!file_exists($geo_class) || !file_exists($geo_db)) {
 
 
 <tr>
-<td class="tdacc"><input type="checkbox" id="limit_timework" name="limit_timework" onClick="var displ=this.checked?'':'none';document.getElementById('limittdtime').style.display=displ;document.getElementById('limittdtime2').style.display=displ;"<?php $limitedtime=true;if($showpostn){if($_POST['limit_timework']=='on'){echo ' checked';$limitedtime=false;}}elseif($limit_timework){echo ' checked';$limitedtime=false;} ?>><label for="limit_timework">&nbsp;<b>Limit by Time</b></label></td>
+<td class="tdacc"><input type="checkbox" id="limit_timework" name="limit_timework" onClick="var displ=this.checked?'':'none';document.getElementById('limittdtime').style.display=displ;document.getElementById('limittdtime2').style.display=displ;"<?php $limitedtime=true;if($showpostn){if(isset($_POST['limit_timework']) && $_POST['limit_timework']=='on'){echo ' checked';$limitedtime=false;}}elseif($limit_timework){echo ' checked';$limitedtime=false;} ?>><label for="limit_timework">&nbsp;<b>Limit by Time</b></label></td>
 <td class="tdacc">Limit access your RL by Time.</td>
 </tr>
 <tr>
@@ -1017,11 +1063,11 @@ if(!file_exists($geo_class) || !file_exists($geo_db)) {
 <td class="tdacc"><h1><span id="nod_trfiles"></span>FILES CONFIG</h1></td><td>&nbsp;</td></tr>
 <tbody id="bd_trfiles" <?php echo (isset($_COOKIE["trfiles"])?($_COOKIE["trfiles"]==1?$styledisplay:''):$styledisplay);?>>
 <tr>
-<td class="tdacc"><input type="checkbox" id=dirchange name="dirchange"<?php if($showpostn){if($_POST['dirchange']=='on')echo ' checked';}elseif($download_dir_is_changeable) echo ' checked'; ?>><label for=dirchange>&nbsp;Download Directory is changeable</label></td>
+<td class="tdacc"><input type="checkbox" id=dirchange name="dirchange"<?php if($showpostn){if(isset($_POST['dirchange']) && $_POST['dirchange']=='on')echo ' checked';}elseif($download_dir_is_changeable) echo ' checked'; ?>><label for=dirchange>&nbsp;Download Directory is changeable</label></td>
 <td class="tdacc">Don't check this to disallow users to change the download directory!</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id="dirchangeaudl" name="dirchangeaudl"<?php if($showpostn){if($_POST['dirchangeaudl']=='on')echo ' checked';}elseif($maysaveto) echo ' checked'; ?>><label for="dirchangeaudl">&nbsp;Download Dir is changeable&nbsp;(audl.php)</label></td>
+<td class="tdacc"><input type="checkbox" id="dirchangeaudl" name="dirchangeaudl"<?php if($showpostn){if(isset($_POST['dirchangeaudl']) && $_POST['dirchangeaudl']=='on')echo ' checked';}elseif($maysaveto) echo ' checked'; ?>><label for="dirchangeaudl">&nbsp;Download Dir is changeable&nbsp;(audl.php)</label></td>
 <td class="tdacc">Don't check this to disallow users to change the download directory in <b>audl.php</b></td>
 </tr>
 <tr>
@@ -1045,43 +1091,43 @@ if(!file_exists($geo_class) || !file_exists($geo_db)) {
 <td class="tdacc">To prevent users to rename the file with forbidden extension (.php, .asp, .cgi, etc)</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=showallfiles name="showallfiles"<?php if($showpostn){if($_POST['showallfiles']=='on')echo ' checked';}elseif($show_all) echo ' checked'; ?>><label for=showallfiles>&nbsp;Show all files</label></td>
+<td class="tdacc"><input type="checkbox" id=showallfiles name="showallfiles"<?php if($showpostn){if(isset($_POST['showallfiles']) && $_POST['showallfiles']=='on')echo ' checked';}elseif($show_all) echo ' checked'; ?>><label for=showallfiles>&nbsp;Show all files</label></td>
 <td class="tdacc">To show all files in the catalog</td>
 </tr>
 
 <tr>
-<td class="tdacc"><input type="checkbox" id="disall" name="disall" onClick="var displ=this.checked?'none':'';document.getElementById('disalldiv').style.display=displ;document.getElementById('dis1').style.display=displ;"<?php $disall=false;if($showpostn){if($_POST['disall']=='on'){echo ' checked';$disall=true;}}elseif($disable_action){echo ' checked';$disall=true;} ?>><label for=disall>&nbsp;Disable Actions files.</label></td>
+<td class="tdacc"><input type="checkbox" id="disall" name="disall" onClick="var displ=this.checked?'none':'';document.getElementById('disalldiv').style.display=displ;document.getElementById('dis1').style.display=displ;"<?php $disall=false;if($showpostn){if(isset($_POST['disall']) && $_POST['disall']=='on'){echo ' checked';$disall=true;}}elseif($disable_action){echo ' checked';$disall=true;} ?>><label for=disall>&nbsp;Disable Actions files.</label></td>
 <td class="tdacc">Disable upload, split, zip, rename, delete, etc.</td>
 </tr>
 <tr>
 <td class="tdacc" id="disalldiv" style="display:<?php echo ($disable_action?'none':'');?>">
 <div class="div_left_ndot"><ul>
 <li class="ndot">
-<input type="checkbox" id="act_upload" name="act_upload"<?php if($showpostn){if($_POST['act_upload']=='on')echo ' checked';}elseif($disable_to["act_upload"]) echo ' checked'; ?>><label for="act_upload">&nbsp;Disable Upload</label></li>
+<input type="checkbox" id="act_upload" name="act_upload"<?php if($showpostn){if(isset($_POST['act_upload']) && $_POST['act_upload']=='on')echo ' checked';}elseif($disable_to["act_upload"]) echo ' checked'; ?>><label for="act_upload">&nbsp;Disable Upload</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_ftp" name="act_ftp"<?php if($showpostn){if($_POST['act_ftp']=='on')echo ' checked';}elseif($disable_to["act_ftp"]) echo ' checked'; ?>><label for=act_ftp>&nbsp;Disable Ftp</label></li>
+<input type="checkbox" id="act_ftp" name="act_ftp"<?php if($showpostn){if(isset($_POST['act_ftp']) && $_POST['act_ftp']=='on')echo ' checked';}elseif($disable_to["act_ftp"]) echo ' checked'; ?>><label for=act_ftp>&nbsp;Disable Ftp</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_mail" name="act_mail"<?php if($showpostn){if($_POST['act_mail']=='on')echo ' checked';}elseif($disable_to["act_mail"]) echo ' checked'; ?>><label for=act_mail>&nbsp;Disable Email</label></li>
+<input type="checkbox" id="act_mail" name="act_mail"<?php if($showpostn){if(isset($_POST['act_mail']) && $_POST['act_mail']=='on')echo ' checked';}elseif($disable_to["act_mail"]) echo ' checked'; ?>><label for=act_mail>&nbsp;Disable Email</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_boxes" name="act_boxes"<?php if($showpostn){if($_POST['act_boxes']=='on')echo ' checked';}elseif($disable_to["act_boxes"]) echo ' checked'; ?>><label for=act_boxes>&nbsp;Disable Mass Submits</label></li>
+<input type="checkbox" id="act_boxes" name="act_boxes"<?php if($showpostn){if(isset($_POST['act_boxes']) && $_POST['act_boxes']=='on')echo ' checked';}elseif($disable_to["act_boxes"]) echo ' checked'; ?>><label for=act_boxes>&nbsp;Disable Mass Submits</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_split" name="act_split"<?php if($showpostn){if($_POST['act_split']=='on')echo ' checked';}elseif($disable_to["act_split"]) echo ' checked'; ?>><label for=act_split>&nbsp;Disable Split</label></li>
+<input type="checkbox" id="act_split" name="act_split"<?php if($showpostn){if(isset($_POST['act_split']) && $_POST['act_split']=='on')echo ' checked';}elseif($disable_to["act_split"]) echo ' checked'; ?>><label for=act_split>&nbsp;Disable Split</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_merge" name="act_merge"<?php if($showpostn){if($_POST['act_merge']=='on')echo ' checked';}elseif($disable_to["act_merge"]) echo ' checked'; ?>><label for=act_merge>&nbsp;Disable Merge</label></li>
+<input type="checkbox" id="act_merge" name="act_merge"<?php if($showpostn){if(isset($_POST['act_merge']) && $_POST['act_merge']=='on')echo ' checked';}elseif($disable_to["act_merge"]) echo ' checked'; ?>><label for=act_merge>&nbsp;Disable Merge</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_md5" name="act_md5"<?php if($showpostn){if($_POST['act_md5']=='on')echo ' checked';}elseif($disable_to["act_md5"]) echo ' checked'; ?>><label for=act_md5>&nbsp;Disable MD5 / Changer</label></li>
+<input type="checkbox" id="act_md5" name="act_md5"<?php if($showpostn){if(isset($_POST['act_md5']) && $_POST['act_md5']=='on')echo ' checked';}elseif($disable_to["act_md5"]) echo ' checked'; ?>><label for=act_md5>&nbsp;Disable MD5 / Changer</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_pack" name="act_pack"<?php if($showpostn){if($_POST['act_pack']=='on')echo ' checked';}elseif($disable_to["act_pack"]) echo ' checked'; ?>><label for=act_pack>&nbsp;Disable Pack</label></li>
+<input type="checkbox" id="act_pack" name="act_pack"<?php if($showpostn){if(isset($_POST['act_pack']) && $_POST['act_pack']=='on')echo ' checked';}elseif($disable_to["act_pack"]) echo ' checked'; ?>><label for=act_pack>&nbsp;Disable Pack</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_zip" name="act_zip"<?php if($showpostn){if($_POST['act_zip']=='on')echo ' checked';}elseif($disable_to["act_zip"]) echo ' checked'; ?>><label for=act_zip>&nbsp;Disable Zip</label></li>
+<input type="checkbox" id="act_zip" name="act_zip"<?php if($showpostn){if(isset($_POST['act_zip']) && $_POST['act_zip']=='on')echo ' checked';}elseif($disable_to["act_zip"]) echo ' checked'; ?>><label for=act_zip>&nbsp;Disable Zip</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_unzip" name="act_unzip"<?php if($showpostn){if($_POST['act_unzip']=='on')echo ' checked';}elseif($disable_to["act_unzip"]) echo ' checked'; ?>><label for=act_unzip>&nbsp;Disable UnZip</label></li>
+<input type="checkbox" id="act_unzip" name="act_unzip"<?php if($showpostn){if(isset($_POST['act_unzip']) && $_POST['act_unzip']=='on')echo ' checked';}elseif($disable_to["act_unzip"]) echo ' checked'; ?>><label for=act_unzip>&nbsp;Disable UnZip</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_rename" name="act_rename"<?php if($showpostn){if($_POST['act_rename']=='on')echo ' checked';}elseif($disable_to["act_rename"]) echo ' checked'; ?>><label for=act_rename>&nbsp;Disable Rename</label></li>
+<input type="checkbox" id="act_rename" name="act_rename"<?php if($showpostn){if(isset($_POST['act_rename']) && $_POST['act_rename']=='on')echo ' checked';}elseif($disable_to["act_rename"]) echo ' checked'; ?>><label for=act_rename>&nbsp;Disable Rename</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_mrename" name="act_mrename"<?php if($showpostn){if($_POST['act_mrename']=='on')echo ' checked';}elseif($disable_to["act_mrename"]) echo ' checked'; ?>><label for=act_mrename>&nbsp;Disable Mass-Rename</label></li>
+<input type="checkbox" id="act_mrename" name="act_mrename"<?php if($showpostn){if(isset($_POST['act_mrename']) && $_POST['act_mrename']=='on')echo ' checked';}elseif($disable_to["act_mrename"]) echo ' checked'; ?>><label for=act_mrename>&nbsp;Disable Mass-Rename</label></li>
 <li class="ndot">
-<input type="checkbox" id="act_delete" name="act_delete"<?php if($showpostn){if($_POST['act_delete']=='on')echo ' checked';}elseif($disable_to["act_delete"]) echo ' checked'; ?>><label for=act_delete>&nbsp;Disable Delete</label></li>
+<input type="checkbox" id="act_delete" name="act_delete"<?php if($showpostn){if(isset($_POST['act_delete']) && $_POST['act_delete']=='on')echo ' checked';}elseif($disable_to["act_delete"]) echo ' checked'; ?>><label for=act_delete>&nbsp;Disable Delete</label></li>
 </div>
 </td>
 <td class="tdacc" id="dis1" style="display:<?php echo ($disable_action?'none':'');?>">
@@ -1124,7 +1170,7 @@ $kolshowall = true;
 foreach($show_column_sfile as $kol => $kolval)
 { $kolshowall = $kolshowall && $kolval; }
 ?>
-<input type="checkbox" id="show_column_sfile" name="show_column_sfile" onClick="var displ=this.checked?'none':'';document.getElementById('col_sfile').style.display=displ; document.getElementById('col_dis1').style.display=displ;"<?php if($_POST['show_column_sfile']=='on'){echo ' checked';$kolshowall=true;}elseif($kolshowall){echo ' checked';} ?>><label for="show_column_sfile">&nbsp;Server Files Column. <b>Checked: Show All</b></label></td>
+<input type="checkbox" id="show_column_sfile" name="show_column_sfile" onClick="var displ=this.checked?'none':'';document.getElementById('col_sfile').style.display=displ; document.getElementById('col_dis1').style.display=displ;"<?php if(isset($_POST['show_column_sfile']) && $_POST['show_column_sfile']=='on'){echo ' checked';$kolshowall=true;}elseif($kolshowall){echo ' checked';} ?>><label for="show_column_sfile">&nbsp;Server Files Column. <b>Checked: Show All</b></label></td>
 <td class="tdacc">Customized Server Files table column</td>
 </tr>
 
@@ -1132,17 +1178,17 @@ foreach($show_column_sfile as $kol => $kolval)
 <td class="tdacc" id="col_sfile" style="display:<?php echo ($kolshowall?'none':'');?>">
 <div class="div_left_ndot"><ul>
 <li class="ndot">
-	<input type="checkbox" id="col_md5" name="col_md5"<?php if($showpostn){if($_POST['col_md5']=='on')echo ' checked';}elseif($show_column_sfile["md5"]) echo ' checked'; ?>><label for="col_md5">&nbsp;Show MD5</label></li>
+	<input type="checkbox" id="md5" name="md5"<?php if($showpostn){if(isset($_POST['md5']) && $_POST['md5']=='on')echo ' checked';}elseif($show_column_sfile["md5"]) echo ' checked'; ?>><label for="md5">&nbsp;Show MD5</label></li>
 <li class="ndot">
-	<input type="checkbox" id="col_downloadlink" name="col_downloadlink"<?php if($showpostn){if($_POST['col_downloadlink']=='on')echo ' checked';}elseif($show_column_sfile["downloadlink"]) echo ' checked'; ?>><label for="col_downloadlink">&nbsp;Show Download_Link</label></li>
+	<input type="checkbox" id="downloadlink" name="downloadlink"<?php if($showpostn){if(isset($_POST['downloadlink']) && $_POST['downloadlink']=='on')echo ' checked';}elseif($show_column_sfile["downloadlink"]) echo ' checked'; ?>><label for="downloadlink">&nbsp;Show Download_Link</label></li>
 <li class="ndot">	
-	<input type="checkbox" id="col_comments" name="col_comments"<?php if($showpostn){if($_POST['col_comments']=='on')echo ' checked';}elseif($show_column_sfile["comments"]) echo ' checked'; ?>><label for="col_comments">&nbsp;Show Comments</label></li>
+	<input type="checkbox" id="comments" name="comments"<?php if($showpostn){if(isset($_POST['comments']) && $_POST['comments']=='on')echo ' checked';}elseif($show_column_sfile["comments"]) echo ' checked'; ?>><label for="comments">&nbsp;Show Comments</label></li>
 <li class="ndot">	
-	<input type="checkbox" id="col_date" name="col_date"<?php if($showpostn){if($_POST['col_date']=='on')echo ' checked';}elseif($show_column_sfile["date"]) echo ' checked'; ?>><label for="col_date">&nbsp;Show Date</label></li>
+	<input type="checkbox" id="date" name="date"<?php if($showpostn){if(isset($_POST['date']) && $_POST['date']=='on')echo ' checked';}elseif($show_column_sfile["date"]) echo ' checked'; ?>><label for="date">&nbsp;Show Date</label></li>
 <li class="ndot">	
-	<input type="checkbox" id="col_age" name="col_age"<?php if($showpostn){if($_POST['col_age']=='on')echo ' checked';}elseif($show_column_sfile["age"]) echo ' checked'; ?>><label for="col_age">&nbsp;Show Age</label></li>
+	<input type="checkbox" id="age" name="age"<?php if($showpostn){if(isset($_POST['age']) && $_POST['age']=='on')echo ' checked';}elseif($show_column_sfile["age"]) echo ' checked'; ?>><label for="age">&nbsp;Show Age</label></li>
 <li class="ndot">	
-	<input type="checkbox" id="col_ip" name="col_ip"<?php if($showpostn){if($_POST['col_ip']=='on')echo ' checked';}elseif($show_column_sfile["ip"]) echo ' checked'; ?>><label for="col_ip">&nbsp;Show IP</label></li>
+	<input type="checkbox" id="ip" name="ip"<?php if($showpostn){if(isset($_POST['ip']) && $_POST['ip']=='on')echo ' checked';}elseif($show_column_sfile["ip"]) echo ' checked'; ?>><label for="ip">&nbsp;Show IP</label></li>
 </div>
 </td>
 <td class="tdacc" id="col_dis1" style="display:<?php echo ($kolshowall?'none':'');?>">
@@ -1169,11 +1215,11 @@ foreach($show_column_sfile as $kol => $kolval)
 
 
 <tr>
-<td class="tdacc"><input type="checkbox" id="bandwidthsave" name="bandwidthsave"<?php if($showpostn){if($_POST['bandwidthsave']=='on')echo ' checked';}elseif($bw_save) echo ' checked'; ?>><label for=bandwidthsave>&nbsp;Bandwidth saving</label></td>
+<td class="tdacc"><input type="checkbox" id="bandwidthsave" name="bandwidthsave"<?php if($showpostn){if(isset($_POST['bandwidthsave']) && $_POST['bandwidthsave']=='on')echo ' checked';}elseif($bw_save) echo ' checked'; ?>><label for=bandwidthsave>&nbsp;Bandwidth saving</label></td>
 <td class="tdacc">To save bandwidth, if the file name is exist, then stop leeching</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id="deletelink_in_lynx" name="deletelink_in_lynx"<?php if($showpostn){if($_POST['deletelink_in_lynx']=='on')echo ' checked';}elseif($deletelink_in_lynx) echo ' checked'; ?>><label for="deletelink_in_lynx">&nbsp;Show Delete Link (lynx.php)</label></td>
+<td class="tdacc"><input type="checkbox" id="deletelink_in_lynx" name="deletelink_in_lynx"<?php if($showpostn){if(isset($_POST['deletelink_in_lynx']) && $_POST['deletelink_in_lynx']=='on')echo ' checked';}elseif($deletelink_in_lynx) echo ' checked'; ?>><label for="deletelink_in_lynx">&nbsp;Show Delete Link (lynx.php)</label></td>
 <td class="tdacc">Show Delete-Link in Lynx.php (always disabled if Actions files - Delete is disabled)</td>
 </tr>
 </tbody>
@@ -1193,61 +1239,61 @@ foreach($show_column_sfile as $kol => $kolval)
 <td class="tdacc"><h1><span id="nod_trview"></span>VIEW CONFIG</h1></td><td>&nbsp;</td></tr>
 <tbody id="bd_trview" <?php echo (isset($_COOKIE["trview"])?($_COOKIE["trview"]==1?$styledisplay:''):$styledisplay);?>>
 <tr>
-<td class="tdacc"><input type="checkbox" id="showcpanel" name="showcpanel"<?php if($showpostn){if($_POST['showcpanel']=='on')echo ' checked';}elseif($navi_left["showcpanel"]) echo ' checked'; ?>><label for="showcpanel">&nbsp;Show Cpanel button</label></td>
+<td class="tdacc"><input type="checkbox" id="showcpanel" name="showcpanel"<?php if($showpostn){if(isset($_POST['showcpanel']) && $_POST['showcpanel']=='on')echo ' checked';}elseif($navi_left["showcpanel"]) echo ' checked'; ?>><label for="showcpanel">&nbsp;Show Cpanel button</label></td>
 <td class="tdacc">Show CPanel button</td>
 </tr>
 <tr>
-<td class="tdacc"><label for="showplugins"><input type="checkbox" id="showplugins" name="showplugins"<?php if($showpostn){if($_POST['showplugins']=='on')echo ' checked';}elseif($navi_left["showplugins"]) echo ' checked'; ?>>&nbsp;Show Plugins list</label></td>
+<td class="tdacc"><label for="showplugins"><input type="checkbox" id="showplugins" name="showplugins"<?php if($showpostn){if(isset($_POST['showplugins']) && $_POST['showplugins']=='on')echo ' checked';}elseif($navi_left["showplugins"]) echo ' checked'; ?>>&nbsp;Show Plugins list</label></td>
 <td class="tdacc">Show Plugins supported</td>
 </tr>
 
 <tr>
-<td class="tdacc"><label for="showaudl"><input type="checkbox" id="showaudl" name="showaudl" onClick="var displ=this.checked?'none':'';d.getElementById('audlforbid').style.display=displ;d.getElementById('audlforbidket').style.display=displ;" <?php if($showpostn){if($_POST['showaudl']=='on')echo ' checked';}elseif($navi_left["showaudl"]) echo ' checked'; ?>>&nbsp;Show Auto Download</label></td>
-<td class="tdacc">Show Auto Download Button</td>
+<td class="tdacc"><label for="showaudl"><input type="checkbox" id="showaudl" name="showaudl" onClick="var displ=this.checked?'none':'';d.getElementById('audlforbid').style.display=displ;d.getElementById('audlforbidket').style.display=displ;" <?php if($showpostn){if(isset($_POST['showaudl']) && $_POST['showaudl']=='on')echo ' checked';}elseif($navi_left["showaudl"]) echo ' checked'; ?>>&nbsp;Show Auto Download</label></td>
+<td class="tdacc">Show Auto Download Button <?php echo ($forbid_audl? "<b class='r'>AUDL DISABLED</b>":"");?></td>
 </tr>
 <tr>
 <td class="tdacc" id="audlforbid" style="display:<?php echo ($navi_left["showaudl"]?'none':'');?>">
 <div style="padding-left:15px;"><label for="forbid_audl">
-<input type="checkbox" id="forbid_audl" name="forbid_audl"<?php if($showpostn){if($_POST['forbid_audl']=='on')echo ' checked';}elseif($forbid_audl) echo ' checked'; ?>>&nbsp;*&nbsp;Forbidden to AuDL</label>
+<input type="checkbox" id="forbid_audl" name="forbid_audl"<?php if($showpostn){if(isset($_POST['forbid_audl']) && $_POST['forbid_audl']=='on')echo ' checked';}elseif($forbid_audl) echo ' checked'; ?>>&nbsp;*&nbsp;Forbidden to AuDL</label>
 </div>
 </td>
 <td class="tdacc" id="audlforbidket" style="display:<?php echo ($navi_left["showaudl"]?'none':'');?>">Restrict access to Auto Downlaod</td>
 </tr>
 
 <tr>
-<td class="tdacc"><label for="showauul"><input type="checkbox" id="showauul" name="showauul" onClick="var displ=this.checked?'none':'';d.getElementById('auulforbid').style.display=displ;d.getElementById('auulforbidket').style.display=displ;"<?php if($showpostn){if($_POST['showauul']=='on')echo ' checked';}elseif($navi_left["showauul"]) echo ' checked'; ?>>&nbsp;Show Auto Upload</label></td>
-<td class="tdacc">Show Auto Upload Button</td>
+<td class="tdacc"><label for="showauul"><input type="checkbox" id="showauul" name="showauul" onClick="var displ=this.checked?'none':'';d.getElementById('auulforbid').style.display=displ;d.getElementById('auulforbidket').style.display=displ;"<?php if($showpostn){if(isset($_POST['showauul']) && $_POST['showauul']=='on')echo ' checked';}elseif($navi_left["showauul"]) echo ' checked'; ?>>&nbsp;Show Auto Upload</label></td>
+<td class="tdacc">Show Auto Upload Button <?php echo ($forbid_auul? "<b class='r'>AUUL DISABLED</b>":"");?></td>
 </tr>
 <tr>
 <td class="tdacc" id="auulforbid" style="display:<?php echo ($navi_left["showauul"]?'none':'');?>">
 <div style="padding-left:15px;"><label for="forbid_auul">
-<input type="checkbox" id="forbid_auul" name="forbid_auul"<?php if($showpostn){if($_POST['forbid_auul']=='on')echo ' checked';}elseif($forbid_auul) echo ' checked'; ?>>&nbsp;*&nbsp;Forbidden to AuUL</label>
+<input type="checkbox" id="forbid_auul" name="forbid_auul"<?php if($showpostn){if(isset($_POST['forbid_auul']) && $_POST['forbid_auul']=='on')echo ' checked';}elseif($forbid_auul) echo ' checked'; ?>>&nbsp;*&nbsp;Forbidden to AuUL</label>
 </div>
 </td>
 <td class="tdacc" id="auulforbidket" style="display:<?php echo ($navi_left["showauul"]?'none':'');?>">Restrict access to Auto Upload</td>
 </tr>
 
 <tr>
-<td class="tdacc"><label for="showlynx"><input type="checkbox" id="showlynx" name="showlynx" onClick="var displ=this.checked?'none':'';d.getElementById('lynxforbid').style.display=displ;d.getElementById('lynxforbidket').style.display=displ;"<?php if($showpostn){if($_POST['showlynx']=='on')echo ' checked';}elseif($navi_left["showlynx"]) echo ' checked'; ?>>&nbsp;Show Listed Files</label></td>
-<td class="tdacc">Show Listed Files Button</td>
+<td class="tdacc"><label for="showlynx"><input type="checkbox" id="showlynx" name="showlynx" onClick="var displ=this.checked?'none':'';d.getElementById('lynxforbid').style.display=displ;d.getElementById('lynxforbidket').style.display=displ;"<?php if($showpostn){if(isset($_POST['showlynx']) && $_POST['showlynx']=='on')echo ' checked';}elseif($navi_left["showlynx"]) echo ' checked'; ?>>&nbsp;Show Listed Files</label></td>
+<td class="tdacc">Show Listed Files Button <?php echo ($forbid_lynx? "<b class='r'>LYNX DISABLED</b>":"");?></td>
 </tr>
 <tr>
 <td class="tdacc" id="lynxforbid" style="display:<?php echo ($navi_left["showlynx"]?'none':'');?>">
 <div style="padding-left:15px;">
-<input type="checkbox" id="forbid_lynx" name="forbid_lynx"<?php if($showpostn){if($_POST['forbid_lynx']=='on')echo ' checked';}elseif($forbid_lynx) echo ' checked'; ?>><label for="forbid_lynx">&nbsp;*&nbsp;Forbidden to Listed&nbsp;Files</label>
+<input type="checkbox" id="forbid_lynx" name="forbid_lynx"<?php if($showpostn){if(isset($_POST['forbid_lynx']) && $_POST['forbid_lynx']=='on')echo ' checked';}elseif($forbid_lynx) echo ' checked'; ?>><label for="forbid_lynx">&nbsp;*&nbsp;Forbidden to Listed&nbsp;Files</label>
 </div>
 </td>
 <td class="tdacc" id="lynxforbidket" style="display:<?php echo ($navi_left["showlynx"]?'none':'');?>">Restrict access to Listed&nbsp;Files</td>
 </tr>
 
 <tr>
-<td class="tdacc"><input type="checkbox" id="showinfoserver" name="showinfoserver" onclick="var displ=this.checked?'':'none';document.getElementById('cpu_nfo').style.display=displ;document.getElementById('cpu_nfoket').style.display=displ;"<?php if($showpostn){if($_POST['showinfoserver']=='on')echo ' checked';}elseif($navi_left["server_info"]) echo ' checked'; ?>><label for="showinfoserver">&nbsp;Show server info</label></td>
+<td class="tdacc"><input type="checkbox" id="server_info" name="server_info" onclick="var displ=this.checked?'':'none';document.getElementById('cpu_nfo').style.display=displ;document.getElementById('cpu_nfoket').style.display=displ;"<?php if($showpostn){if(isset($_POST['server_info']) && $_POST['server_info']=='on')echo ' checked';}elseif($navi_left["server_info"]) echo ' checked'; ?>><label for="server_info">&nbsp;Show server info</label></td>
 <td class="tdacc">Disk space &amp; Time Info</td>
 </tr>
 <tr>
 <td class="tdacc" id="cpu_nfo" style="display:<?php echo ($navi_left["server_info"]? '':'none');?>">
 <div style="padding-left:15px;">
-<input type="checkbox" id="cpuUsageNFO" name="cpuUsageNFO"<?php if($showpostn){if($_POST['cpuUsageNFO']=='on')echo ' checked';}elseif($cpuUsageNFO) echo ' checked'; ?>><label for="cpuUsageNFO">&nbsp;Show CPU Usage</label>
+<input type="checkbox" id="cpuUsageNFO" name="cpuUsageNFO"<?php if($showpostn){if(isset($_POST['cpuUsageNFO']) && $_POST['cpuUsageNFO']=='on')echo ' checked';}elseif($cpuUsageNFO) echo ' checked'; ?>><label for="cpuUsageNFO">&nbsp;Show CPU Usage</label>
 </div>
 </td>
 <td class="tdacc" id="cpu_nfoket" style="display:<?php echo ($navi_left["server_info"]? '':'none');?>">
@@ -1255,11 +1301,11 @@ foreach($show_column_sfile as $kol => $kolval)
 </td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id="onlinevisit" name="onlinevisit"<?php if($showpostn){if($_POST['onlinevisit']=='on')echo ' checked';}elseif($OnlineVisitor) echo ' checked'; ?>><label for="onlinevisit">&nbsp;Show Online Visitor</label></td>
+<td class="tdacc"><input type="checkbox" id="onlinevisit" name="onlinevisit"<?php if($showpostn){if(isset($_POST['onlinevisit']) && $_POST['onlinevisit']=='on')echo ' checked';}elseif($OnlineVisitor) echo ' checked'; ?>><label for="onlinevisit">&nbsp;Show Online Visitor</label></td>
 <td class="tdacc">Show how many Visitor is Online</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=showpremixstatus name="showpremixstatus" onclick="var displ=this.checked?'':'none';document.getElementById('ip_list').style.display=displ;document.getElementById('ip_list_ket').style.display=displ;"<?php $shpremixst=true; if($showpostn){if($_POST['showpremixstatus']=='on')echo ' checked';$shpremixst=false;}elseif($premix_status) echo ' checked';$shpremixst=false; ?>><label for=showpremixstatus>&nbsp;Show premiX acc Status</label></td>
+<td class="tdacc"><input type="checkbox" id=showpremixstatus name="showpremixstatus" onclick="var displ=this.checked?'':'none';document.getElementById('ip_list').style.display=displ;document.getElementById('ip_list_ket').style.display=displ;"<?php $shpremixst=true; if($showpostn){if(isset($_POST['showpremixstatus']) && $_POST['showpremixstatus']=='on')echo ' checked';$shpremixst=false;}elseif($premix_status) echo ' checked';$shpremixst=false; ?>><label for=showpremixstatus>&nbsp;Show premiX acc Status</label></td>
 <td class="tdacc">Display (RS) Premix ACC status</td>
 </tr>
 <tr>
@@ -1283,44 +1329,65 @@ foreach($show_column_sfile as $kol => $kolval)
 <td class="tdacc"><h1><span id="nod_trmisc"></span>MISC CONFIG</h1></td><td>&nbsp;</td></tr>
 <tbody id="bd_trmisc" <?php echo (isset($_COOKIE["trmisc"])?($_COOKIE["trmisc"]==1?$styledisplay:''):$styledisplay);?>>
 <tr>
-<td class="tdacc"><input type="checkbox" id=nocache name="nocache"<?php if($showpostn){if($_POST['nocache']=='on')echo ' checked';}elseif($no_cache) echo ' checked'; ?>><label for=nocache>&nbsp;No cache page</label></td>
+<td class="tdacc"><input type="checkbox" id=nocache name="nocache"<?php if($showpostn){if(isset($_POST['nocache']) && $_POST['nocache']=='on')echo ' checked';}elseif($no_cache) echo ' checked'; ?>><label for=nocache>&nbsp;No cache page</label></td>
 <td class="tdacc">Prohibition by Browser (You should leave this checked unless you know what you are doing)</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=redirrect name="redirrect"<?php if($showpostn){if($_POST['redirrect']=='on')echo ' checked';}elseif($redir) echo ' checked'; ?>><label for=redirrect>&nbsp;Redirrect</label></td>
+<td class="tdacc"><input type="checkbox" id=redirrect name="redirrect"<?php if($showpostn){if(isset($_POST['redirrect']) && $_POST['redirrect']=='on')echo ' checked';}elseif($redir) echo ' checked'; ?>><label for=redirrect>&nbsp;Redirrect</label></td>
 <td class="tdacc">Redirect passive method (You should leave this checked unless you know what you are doing)</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=disable_ajax name="disable_ajax"<?php if($showpostn){if($_POST['disable_ajax']=='on')echo ' checked';}elseif($disable_ajax) echo ' checked'; ?>><label for=disable_ajax>&nbsp;Disable Ajax</label></td>
+<td class="tdacc"><input type="checkbox" id=disable_ajax name="disable_ajax"<?php if($showpostn){if(isset($_POST['disable_ajax']) && $_POST['disable_ajax']=='on')echo ' checked';}elseif($disable_ajax) echo ' checked'; ?>><label for=disable_ajax>&nbsp;Disable Ajax</label></td>
 <td class="tdacc">Do not use Ajax in Serverfiles.</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=disable_ajaxren name="disable_ajaxren"<?php if($showpostn){if($_POST['disable_ajaxren']=='on')echo ' checked';}elseif($disable_ajaxren) echo ' checked'; ?>><label for=disable_ajaxren>&nbsp;Disable Instant-Rename</label></td>
+<td class="tdacc"><input type="checkbox" id=disable_ajaxren name="disable_ajaxren"<?php if($showpostn){if(isset($_POST['disable_ajaxren']) && $_POST['disable_ajaxren']=='on')echo ' checked';}elseif($disable_ajaxren) echo ' checked'; ?>><label for=disable_ajaxren>&nbsp;Disable Instant-Rename</label></td>
 <td class="tdacc">Do not load Ajax Instant-Rename. <small>require: rsajax.js</small></td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=logact name="logact"<?php if($showpostn){if($_POST['logact']=='on')echo ' checked';}elseif($logact) echo ' checked'; ?>><label for=logact>&nbsp;User-Log Activity</label></td>
+<td class="tdacc"><input type="checkbox" id=logact name="logact"<?php if($showpostn){if(isset($_POST['logact']) && $_POST['logact']=='on')echo ' checked';}elseif($logact) echo ' checked'; ?>><label for=logact>&nbsp;User-Log Activity</label></td>
 <td class="tdacc">Record IP, Browser, Refferer; time access of the users</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id=alternatefree name="alternatefree"<?php if($showpostn){if($_POST['alternatefree']=='on')echo ' checked';}elseif($alternatefree) echo ' checked'; ?>><label for=alternatefree>&nbsp;Alternate switch to freedownload</label></td>
+<td class="tdacc"><input type="checkbox" id=alternatefree name="alternatefree"<?php if($showpostn){if(isset($_POST['alternatefree']) && $_POST['alternatefree']=='on')echo ' checked';}elseif($alternatefree) echo ' checked'; ?>><label for=alternatefree>&nbsp;Alternate switch to freedownload</label></td>
 <td class="tdacc">Auto switch to free download if premium not available</td>
 </tr>
 <tr>
-<td class="tdacc"><input type="checkbox" id="auto_cl" name="auto_cl" onclick="var displ=this.checked?'':'none';document.getElementById('autCl').style.display=displ;document.getElementById('autClket').style.display=displ;"<?php if($showpostn){if($_POST['auto_cl']=='on')echo ' checked';}elseif($redir) echo ' checked'; ?>><label for="auto_cl">&nbsp;Auto-close audl popup</label></td>
+<td class="tdacc"><input type="checkbox" id="auto_cl" name="auto_cl" onclick="var displ=this.checked?'':'none';document.getElementById('line_autClket').style.display=displ;"<?php if($showpostn){if(isset($_POST['auto_cl']) && $_POST['auto_cl']=='on')echo ' checked';}elseif($redir) echo ' checked'; ?>><label for="auto_cl">&nbsp;Auto-close audl popup</label></td>
 <td class="tdacc">Close Window pop-up after leech file completed</td>
 </tr>
-<tr>
-<td class="tdacc" id="autCl" style="display:<?php echo ($showautoclose? '':'none');?>" class="float"><div style="padding-left:20px;">
+<tr id="line_autClket" style="display:<?php echo ($showautoclose? '':'none');?>">
+<td class="tdacc float"><div style="padding-left:20px;">
 <input type="text" name="auto_close" maxlength="5" size="4" value="<?php if($showpostn){if(!empty($_POST['auto_close']))echo $_POST['auto_close'];}else echo $timeautoclose; ?>">&nbsp;<b class="g">ms</b></div></td>
-<td class="tdacc" id="autClket" style="display:<?php echo ($showautoclose? '':'none');?>"><div style="padding-left:10px;">Timer for closing Auto-download window pop-up. default: 500 milliseconds</div></td>
+<td class="tdacc"><div style="padding-left:10px;">Timer for closing Auto-download window pop-up. default: 500 milliseconds</div></td>
 </tr>
 
 <tr>
-<td class="tdacc"><input type="checkbox" id=autochecklink name="autochecklink"<?php if($showpostn){if($_POST['autochecklink']=='on')echo ' checked';}elseif($autochecklink) echo ' checked'; ?>><label for=autochecklink>&nbsp;Auto-Check Link</label></td>
+<td class="tdacc"><input type="checkbox" id=autochecklink name="autochecklink"<?php if($showpostn){if(isset($_POST['autochecklink']) && $_POST['autochecklink']=='on')echo ' checked';}elseif($autochecklink) echo ' checked'; ?>><label for=autochecklink>&nbsp;Auto-Check Link</label></td>
 <td class="tdacc">Auto check submited link in audl</td>
 </tr>
 
+<tr>
+<td class="tdacc"><input type="checkbox" id=mip_enabled name="mip_enabled" onclick="var displ=this.checked?'':'none';document.getElementById('line_mip').style.display=displ;"<?php if($showpostn){if(isset($_POST['mip_enabled']) && $_POST['mip_enabled']=='on')echo ' checked';}elseif($mip_enabled) echo ' checked'; ?>/><label for=mip_enabled>&nbsp;Enable Multi-IP</label></td>
+<td class="tdacc">Enable Multi-IP based on mip_iplist.txt</td>
+</tr>
+<tr id="line_mip" style="display:<?php echo ($mip_enabled? '':'none');?>">
+<td class="tdacc float" ><div style="padding-left:20px;">
+<input type="checkbox" name="mip_arotate" id="mip_arotate"<?php if($showpostn){if(isset($_POST['mip_arotate']) && $_POST['mip_arotate']=='on')echo ' checked';}elseif($mip_arotate) echo ' checked'; ?>>&nbsp;<label for=mip_arotate>IP-Rotate</label><div style="height:3px;"></div>
+<textarea type="text" name="mip_list" rows="4" cols="20"><?php echo htmlspecialchars($mip_list);?></textarea><br/>
+</div>
+</td>
+<td class="tdacc" valign="top" style="height:110px;">
+ <div style="padding-left:10px;">
+  Should IP changed to next ip after transload process
+  <div style="height:8px;"></div>
+  List of IP :: <?php echo (!defined('LOG_DIR') ? "Not found: LOG_DIR" : "");$fmip = LOG_DIR."mip_iplist.txt";
+  if(file_exists($fmip)){echo (!fopen($fmip,"a")? " -&gt; <b class='r'>Can't write to ":"<b class='g'>")."{$fmip}</b>";}else{echo "{$fmip} Not Found.";}
+  ?>
+  <br/>(separate each IP by new line)
+ </div>
+</td>
+</tr>
 
 <tr>
 <td class="tdacc"><div class="spc" style="padding-left:3px;">&nbsp;<input type="text" name="iframealocate" size="2" maxlength="2" value="<?php if($showpostn){if(!empty($_POST['iframealocate']))echo $_POST['iframealocate'];}else echo $iframealocate; ?>">&nbsp;IFrame to allocate in audl</div></td>

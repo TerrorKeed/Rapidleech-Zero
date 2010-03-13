@@ -1,20 +1,24 @@
 <?php
 define('RAPIDLEECH', 'yes');
-error_reporting(0);
+
+//error_reporting(0);
+error_reporting(E_ALL); 
+@ini_set('display_errors', true); 
 
 define('MISC_DIR', 'misc/');
 define('CLASS_DIR', 'classes/');
 define('CONFIG_DIR', './');
 define('LANG_DIR', 'languages/');
-//ini_set('display_errors', 1);
-set_time_limit(0);
+@set_time_limit(0);
 ini_alter("memory_limit", "1024M");
-ob_end_clean();
+@ob_end_clean();
 //ob_implicit_flush(TRUE);  //mess in t35
 ignore_user_abort(1);
 clearstatcache();
-$PHP_SELF = !$PHP_SELF ? $_SERVER["PHP_SELF"] : $PHP_SELF;
+$PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
+//error_reporting(6135);
+$nn = "\r\n";
 $rev_num = '36B.Rv7.1';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
@@ -53,6 +57,7 @@ if(!$forbid_audl){
  exit();
 }
 
+_create_list();
 if($downloadLimitbyip){
  $FilesDownloaded = 0;
  $StorageTaken = 0;
@@ -63,7 +68,7 @@ if($downloadLimitbyip){
  _create_list(false);
  $show_all = $bshow_all;
  foreach ( $list as $k => $file ) {
-   if ($file ['ip'] == get_real_ip()) {
+   if (isset($file ['ip']) && $file ['ip'] == get_real_ip()) {
 	if (time () - $downloadDelayPerIP < $file ['date']) {
 	   $FilesDownloadedPerTime ++;
 	}
@@ -140,9 +145,9 @@ if($limit_timework)
 ?>
 	
 <?php
-if ($_REQUEST["crot"] == "step2")
+if (isset($_REQUEST["crot"]) && $_REQUEST["crot"] == "step2" && isset($_POST["links"]))
 	{
-		$getlinks=explode("\r\n",trim($_REQUEST[links]));
+		$getlinks=explode("\r\n",trim($_POST["links"]));
 		foreach($getlinks as $key => $value)
 		{
 			//if(empty($getlinks[$key])) unset($getlinks[$key]);
@@ -152,7 +157,7 @@ if ($_REQUEST["crot"] == "step2")
 			}
 		}
 		$getlinks = array_values($getlinks);
-		if (!count($getlinks) || (trim($_REQUEST[links]) == ""))
+		if (!count($getlinks) || (trim($_POST["links"]) == ""))
 		{
 		 echo '<script type="text/javascript">function gotoback(){au=d.location.href; au=au.substring(0, au.indexOf("?")); d.location.href=au;}</script>';
 		 die('<br/><br/><span style="color:red; background-color:#fec; padding:3px; border:2px solid #FFaa00"><b>'.$atxt['not_link'].'</b></span><br>'.
@@ -164,7 +169,7 @@ if ($_REQUEST["crot"] == "step2")
 		 echo '
 <script type="text/javascript">function dopostback(){d.backpost.submit();}</script>
 <form action="'.basename($PHP_SELF).'" name="backpost" id="backpost" method="post">
-<div style="display:none;"><textarea name="bufferlink" id="bufferlink">'.$_REQUEST[links].'</textarea></div>
+<div style="display:none;"><textarea name="bufferlink" id="bufferlink">'.$_POST["links"].'</textarea></div>
 </form>';		 
 $atxt['reach_lim_audl'] = str_replace('%link%', $audl, $atxt['reach_lim_audl']);
 		 die('<span style="color:red; background-color:#fec; padding:3px; border:2px solid #FFaa00"><b>'.$atxt['reach_lim_audl'].'</b></span><br/><br/><a href="javascript:void(0);" onclick="dopostback()"><b>[ '.$gtxt['back_main'].' ]</b></a>'."\r\n".'</body></html>');
@@ -177,35 +182,47 @@ $atxt['reach_lim_audl'] = str_replace('%link%', $audl, $atxt['reach_lim_audl']);
 				$getlinks[$i] = urlcleaner($getlinks[$i]);
 			}
 
-		if(isset($_REQUEST[useproxy]) && $_REQUEST[useproxy] && (!$_REQUEST[proxy] || !strstr($_REQUEST[proxy], ":")))
+		if(isset($_REQUEST["useproxy"]) && $_REQUEST["useproxy"] && (!$_REQUEST["proxy"] || !strstr($_REQUEST["proxy"], ":")))
 		    {
 	        	die('<span style="color:red; background-color:#fec; padding:3px; border:2px solid #FFaa00"><b>'.$gtxt['wrong_proxy'].'</b></span><br>');
 	    	}
 	    		else
 	    	{
-	    		if ($_REQUEST[useproxy] == "on")
+	    		if (isset($_REQUEST["useproxy"]) && $_REQUEST["useproxy"] == "on")
 	    			{						
-						$start_link.='&proxy='.$_REQUEST[proxy];
-						$start_link.='&proxyuser='.$_REQUEST[proxyuser];
-						$start_link.='&proxypass='.$_REQUEST[proxypass];
+						$start_link.='&proxy='.$_REQUEST["proxy"];
+						$start_link.='&proxyuser='.$_REQUEST["proxyuser"];
+						$start_link.='&proxypass='.$_REQUEST["proxypass"];
 					}
 	    	}
 
 		$rnum= rand(11,99);
 		
-		$start_link.=($_REQUEST["imageshack_acc"]!=''?'&imageshack_tor='.$_REQUEST["imageshack_acc"]:'').
-			($_REQUEST["mu_acc"]!=''?'&mu_acc='.$_REQUEST["mu_acc"]:'').
-			($_REQUEST["rspre_com"]!=''?'&premium_acc='.$_REQUEST["rspre_com"]:'');
+		$start_link.=(isset($_REQUEST["imageshack_acc"]) && $_REQUEST["imageshack_acc"]!=''?'&imageshack_tor='.$_REQUEST["imageshack_acc"]:'').
+
+		(isset($_REQUEST["mu_acc"])?'&mu_acc='.$_REQUEST["mu_acc"]:'').
+		(isset($_REQUEST["hf_acc"])?'&hf_acc='.$_REQUEST["hf_acc"]:'').
+		(isset($_REQUEST["rs_acc"])?'&rs_acc='.$_REQUEST["rs_acc"]:'').
+		
+		(isset($_REQUEST["rspre_com"])?'&premium_acc='.$_REQUEST["rspre_com"]:'');
 			
-		if($_REQUEST["rspre_com"] == "on"){
+		if(isset($_REQUEST["rspre_com"]) && $_REQUEST["rspre_com"] == "on"){
 		  $pre_type = $_REQUEST["acc_type"];
 		  $pre_user = $_REQUEST["rrapidlogin_com"] ? $_REQUEST["rrapidlogin_com"] : null;
 		  $pre_pass = $_REQUEST["rrapidpass_com"] ? $_REQUEST["rrapidpass_com"] : null;
 		  $start_link.=($pre_user==null && $pre_pass==null?'&maudl=multi':($pre_type!='' ? '&premium_user='.$pre_user.'&premium_pass='.$pre_pass : '&auth_hash='.encEnti(rotN(base64_encode($pre_user.":".$pre_pass),$rnum)).$rnum) );
 		}
-		if($_REQUEST["mu_acc"] == "on") {
-		  $mu_ck = $_REQUEST["mu_cookie"] ? $_REQUEST["mu_cookie"] : $mu_cookie_user_value;
-		  $start_link.='&mu_hash='.encEnti(rotN($mu_ck,$rnum)).$rnum;	
+		if(isset($_REQUEST["mu_acc"]) && $_REQUEST["mu_acc"] == "on") {
+		  $cook = isset($_REQUEST["mu_cookie"]) ? $_REQUEST["mu_cookie"] : $mu_cookie_user_value;
+		  $start_link.='&mu_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
+		}
+		if(isset($_REQUEST["hf_acc"]) && $_REQUEST["hf_acc"] == "on") {
+		  $cook = isset($_REQUEST["hf_cookie"]) ? $_REQUEST["hf_cookie"] : $hf_cookie_auth_value;
+		  $start_link.='&hf_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
+		}
+		if(isset($_REQUEST["rs_acc"]) && $_REQUEST["rs_acc"] == "on") {
+		  $cook = isset($_REQUEST["rs_cookie"]) ? $_REQUEST["rs_cookie"] : $rs_cookie_enc_value;
+		  $start_link.='&rs_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
 		}
 ?>
 <script type="text/javascript" src="rscheck.js"></script>
@@ -225,7 +242,7 @@ $atxt['reach_lim_audl'] = str_replace('%link%', $audl, $atxt['reach_lim_audl']);
 	var isAuto = false;
 	var StrMethod = "";
 	var metAudl = 0;  // queue atau simultan
-	var tmrNext; var auto_check = <?php echo ($_REQUEST["autochk_lnk"]=="on" ? 'true' : 'false');?>
+	var tmrNext; var auto_check = <?php echo (isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? 'true' : 'false');?>
 
 	Array.prototype.inArray = function(valeur) {
 	 for (var i in this) { if (this[i] == valeur) return i; }
@@ -386,7 +403,7 @@ function forceAudl(){if(audl!=<?php echo $audl;?>){audl=<?php echo $audl;?>;};se
 			d.getElementById('iframealocate').style.display = 'none';
 		  }
 		  else{ // Start Simultan Download ~ open window popup
-			var useloc = "<?php echo $_REQUEST[rspre_com]?'no':'yes';?>"; var options = "width=700,height=300,toolbar=no,location="+useloc+",directories=no,status=no,menubar=no,scrollbars=yes,copyhistory=no";
+			var useloc = "<?php echo (isset($_REQUEST["rspre_com"])?'no':'yes');?>"; var options = "width=700,height=300,toolbar=no,location="+useloc+",directories=no,status=no,menubar=no,scrollbars=yes,copyhistory=no";
 			idwindow[id] = window.open(start_link+'&link='+strrev(unescape(links[id]))+StrMethod, id, options);
 			idwindow[id].opener=self;
 			idwindow[id].focus();
@@ -429,7 +446,7 @@ function forceAudl(){if(audl!=<?php echo $audl;?>){audl=<?php echo $audl;?>;};se
 			butn.setAttribute("id", "dButton"+links.length);
 			td2.appendChild(butn);
 			var td3 = d.createElement("td");
-			<?php if($_REQUEST["autochk_lnk"]=="on"){ ?>
+			<?php if(isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on"){ ?>
 			var imgLd = d.createElement("img");
 			imgLd.setAttribute("src", "<?php echo IMAGE_DIR.'fbload.gif'?>");
 			td3.appendChild(imgLd); 
@@ -450,7 +467,7 @@ function forceAudl(){if(audl!=<?php echo $audl;?>){audl=<?php echo $audl;?>;};se
 		}
 		Obj_txta.value = ""; 
 		startFrm = links.length - arrayLinks.length;		
-		setTimeout("Obj_txta.blur()", 100); <?php echo ($_REQUEST["autochk_lnk"]=="on" ? "d.getElementById('btnaddlinks').disabled=true; loadHandler();":"");?>
+		setTimeout("Obj_txta.blur()", 100); <?php echo (isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? "d.getElementById('btnaddlinks').disabled=true; loadHandler();":"");?>
 	} //end addLinks
 		
 		
@@ -599,14 +616,14 @@ forceAudl();
 </script>
 
 <table id="links" width=90% style="border:1px solid #666" class="audlcontainer" cellspacing="0" cellpadding="0">
-<thead><tr><td width=80% align="center"><b><?php echo $atxt['_link'];?> </b></td><td width=70 align="center">&nbsp;<b><?php echo $gtxt['action'];?></b>&nbsp;</td><td width=70 id='statusTitle' align="center">&nbsp;<b><?php echo ($_REQUEST["autochk_lnk"]=="on" ? "<blink>":""); echo $atxt['_status'];echo ($_REQUEST["autochk_lnk"]=="on" ? "</blink>":"")?></b>&nbsp;</td></tr></thead>
+<thead><tr><td width=80% align="center"><b><?php echo $atxt['_link'];?> </b></td><td width=70 align="center">&nbsp;<b><?php echo $gtxt['action'];?></b>&nbsp;</td><td width=70 id='statusTitle' align="center">&nbsp;<b><?php echo (isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? "<blink>":""); echo $atxt['_status'];echo (isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? "</blink>":"")?></b>&nbsp;</td></tr></thead>
 <tbody>
 <?php
 		for ($i=0; $i<count($getlinks); $i++)
 			{
 				echo "<tr><td width=80% nowrap align='right' id=row".$i."><span>".$getlinks[$i]."</span></td>";
 				echo "<td width=70 align='center' id='action".$i."'><button onClick=javascript:download($i); id=dButton".$i.">Download</button></td>";
-				echo "<td width=70 align='center' id='status".$i."'>&nbsp;".($_REQUEST["autochk_lnk"]=="on" ? "<img src='".IMAGE_DIR."fbload.gif'>":"")."&nbsp;</td>";
+				echo "<td width=70 align='center' id='status".$i."'>&nbsp;".(isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? "<img src='".IMAGE_DIR."fbload.gif'>":"")."&nbsp;</td>";
 				echo "</tr>\n";
 			}
 ?>
@@ -631,13 +648,13 @@ forceAudl();
  <input type="checkbox" value="lnkcurl" name="lcurl" id="lcurl"<?php echo (($ch_curl == 1)?' checked=checked':' disabled=disabled');?>>
 </div>
 <script type="text/javascript">
- <?php if($_REQUEST["autochk_lnk"]=="on"){?>loadHandler();<?php }?>
+ <?php if(isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on"){?>loadHandler();<?php }?>
  function dopostback(){ d.backpost.submit(); }
  function ifrmClose_audl(){d.getElementById("auiframe").src="about:blank"; d.getElementById("tbliframe").style.display="none"; }
 </script>
 
 <form action="<?php echo basename($PHP_SELF);?>" name="backpost" id="backpost" method="post">
-<div style="display:none;"><textarea name="bufferlink" id="bufferlink"><?php print $_REQUEST[links];?></textarea></div>
+<div style="display:none;"><textarea name="bufferlink" id="bufferlink"><?php print $_REQUEST["links"];?></textarea></div>
 </form>
 
 <span id="curmetode">Method <b class="g">Queue</b></span>
@@ -648,7 +665,7 @@ forceAudl();
 <a href="javascript:void(0);" onclick="dopostback();" title="Back to Autodl" alt="Back to Autodl"><div id="left_audl"></div></a>
 </td>
 <td><textarea name="addlinks" id="addlinks" class="redtxtarea" style="width:640px; height:20px;" onfocus="if(this.value=='add more link here...'){this.value='';}this.style.height=100;" onblur="if(this.value==''){this.style.height=20; this.value='add more link here...'}">add more link here...</textarea></td>
-<td valign="top"><input type="button" id="btnaddlinks" value="<?php echo $atxt['add_link'];?> " onclick="javascript:addLinks('addlinks');" <?php echo ($_REQUEST["autochk_lnk"]=="on" ? "disabled=true":"");?>></td>
+<td valign="top"><input type="button" id="btnaddlinks" value="<?php echo $atxt['add_link'];?> " onclick="javascript:addLinks('addlinks');" <?php echo (isset($_REQUEST["autochk_lnk"]) && $_REQUEST["autochk_lnk"]=="on" ? "disabled=true":"");?>></td>
 </tr>
 </table>
 
@@ -737,15 +754,15 @@ function highlight(field) {
 		    </tr>
             <tr>
               <td width="320">
-                <label><input type="checkbox" id="useproxy" name="useproxy" onClick="var displ=this.checked?'':'none';document.getElementById('proxy').style.display=displ;"<?php echo $_COOKIE["useproxy"] ? " checked" : ""; ?>>&nbsp;<?php echo $gtxt['use_proxy'];?></label>
+                <label><input type="checkbox" id="useproxy" name="useproxy" onClick="var displ=this.checked?'':'none';document.getElementById('proxy').style.display=displ;"<?php echo isset($_COOKIE["useproxy"]) ? " checked" : ""; ?>>&nbsp;<?php echo $gtxt['use_proxy'];?></label>
 				<table border=0 id="proxy" style="padding-left:22px; display: none;">
-                  <tr><td><?php echo $gtxt['_proxy'];?></td><td><input type="text" name=proxy size=25<?php echo $_COOKIE["proxy"] ? " value=\"".$_COOKIE["proxy"]."\"" : ""; ?>></td></tr>
-                  <tr><td><?php echo $gtxt['_uname'];?></td><td><input type="text"name=proxyuser size=25 <?php echo $_COOKIE["proxyuser"] ? " value=\"".$_COOKIE["proxyuser"]."\"" : ""; ?>></td></tr>
-                  <tr><td><?php echo $gtxt['_pass'];?></td><td><input type="text" name=proxypass size=25 <?php echo $_COOKIE["proxypass"] ? " value=\"".$_COOKIE["proxypass"]."\"" : ""; ?>></td></tr>
+                  <tr><td><?php echo $gtxt['_proxy'];?></td><td><input type="text" name=proxy size=25<?php echo isset($_COOKIE["proxy"]) ? " value=\"".(isset($_COOKIE["proxy"])?$_COOKIE["proxy"]:"")."\"" : ""; ?>></td></tr>
+                  <tr><td><?php echo $gtxt['_uname'];?></td><td><input type="text"name=proxyuser size=25 <?php echo isset($_COOKIE["proxyuser"]) ? " value=\"".(isset($_COOKIE["proxyuser"])?$_COOKIE["proxyuser"]:"")."\"" : ""; ?>></td></tr>
+                  <tr><td><?php echo $gtxt['_pass'];?></td><td><input type="text" name=proxypass size=25 <?php echo isset($_COOKIE["proxypass"]) ? " value=\"".(isset($_COOKIE["proxypass"])?$_COOKIE["proxypass"]:"")."\"" : ""; ?>></td></tr>
                 </table>				
               </td>
             </tr>
-			<tr><td><label><input type="checkbox" value="on" name=imageshack_acc id=imageshack_acc <?php if (is_array($imageshack_acc)) print ' checked'; ?>>&nbsp;<?php echo $atxt['acc_imgshack'];?></label></td>
+			<tr><td><label><input type="checkbox" value="on" name=imageshack_acc id=imageshack_acc <?php if (isset($imageshack_acc) && is_array($imageshack_acc)) print ' checked'; ?>>&nbsp;<?php echo $atxt['acc_imgshack'];?></label></td>
 			</tr>
             <?php
             if ($maysaveto === true)
@@ -753,72 +770,91 @@ function highlight(field) {
             ?>
             <tr>
               <td>
-                <label><input type="checkbox" name=saveto id=saveto onClick="javascript:var displ=this.checked?'':'none';document.getElementById('path').style.display=displ;"<?php echo $_COOKIE["saveto"] ? " checked" : ""; ?>>&nbsp;<?php echo $gtxt['save_to'];?></label>
-				<table id="path" <?php echo $_COOKIE["saveto"] ? "" : " style=\"display: none;\""; ?>><tr>
+                <label><input type="checkbox" name=saveto id=saveto onClick="javascript:var displ=this.checked?'':'none';document.getElementById('path').style.display=displ;"<?php echo isset($_COOKIE["saveto"]) ? " checked" : ""; ?>>&nbsp;<?php echo $gtxt['save_to'];?></label>
+				<table id="path" <?php echo isset($_COOKIE["saveto"]) ? "" : " style=\"display: none;\""; ?>><tr>
 				 <td style="padding-left:22px;">
-                 <input name=savedir size="55" value="<?php echo realpath(($_COOKIE["savedir"] ? $_COOKIE["savedir"] : (strstr(realpath("./"), ":") ? addslashes($workpath) : $workpath))) ?>">
+                 <input name=savedir size="55" value="<?php echo realpath((isset($_COOKIE["savedir"]) ? (isset($_COOKIE["savedir"])?$_COOKIE["savedir"]:"") : (strstr(realpath("./"), ":") ? addslashes($workpath) : $workpath))) ?>">
 				 </td></tr>
 				</table>
 			  </td>
             </tr>
             <?php
                     }
-
-$premium_host_type = array(
-	"rs_com" => "rapidshare.com",
-	"rs_de" => "rapidshare.de",
-	"megaupload" => "megaupload.com",
-	"megashare" => "megashare.com",
-	"netload" => "netload.in",
-	"gigasize" => "gigasize.com",
-	"share_online" => "share_online.com",
-	"uploaded_to" => "uploaded.to",
-	"easyshare" => "easy-share.com",
-	"depositfiles" => "depositfiles.com",
-	"hotfile_com" => "hotfile.com",
-	"uploading_com" => "uploading.com",
-	"filefactory" => "filefactory.com",
-);
-$ada_acc = false;
-foreach($premium_acc as $dhost => $val){
-  if($val){$ada_acc=true; break;}
-}
+		 $ar_host_acc = array(
+		  "rs_com"=>"rapidshare.com",
+		  "rs_de"=>"rapidshare.de",
+		  "megaupload"=>"megaupload.com",
+		  "megashare"=>"megashare.com",
+		  "netload"=>"netload.in",
+		  "gigasize"=>"gigasize.com",
+		  "share_online"=>"share_online.com",
+		  "uploaded_to"=>"uploaded.to",
+		  "easyshare"=>"easy-share.com",
+		  "depositfiles"=>"depositfiles.com",
+		  "hotfile_com"=>"hotfile.com",
+		  "uploading"=>"uploading.com",
+		  "filefactory"=>"filefactory.com",
+		  "ifile_it"=>"ifile.it",
+		 );
+$ada_acc = (isset($premium_acc) && is_array($premium_acc));
+ if($ada_acc){
+   foreach($premium_acc as $dhost => $val){
+	if($val){$ada_acc=true; break;}
+   }
+ }
             ?>
             <tr>
 			  <td>
                 <input type="checkbox" value="on" name="rspre_com" id="rspre_com" onClick="javascript:var displcom=this.checked?'':'none';document.getElementById('rapidblockcom').style.display=displcom;"<?php if(isset($premium_acc_audl) && $ada_acc && $premium_acc_audl) print ' checked';?>>&nbsp;<label for="rspre_com"><?php echo $gtxt['use_premix'];?></label>
-                <table id="rapidblockcom" width="150" border="0" <?php echo $_COOKIE["rspre_com"] ? "" : " style=\"display: none;\""; ?>>
+                <table id="rapidblockcom" width="150" border="0" <?php echo isset($_COOKIE["rspre_com"]) ? "" : " style=\"display: none;\""; ?>>
                  <tr>
 				  <td style="padding-left:22px;"><label for="acc_type"><?php echo "Type: ";?></label></td>
 				  <td>
 <select name="acc_type" id="acc_type"><?php
-foreach($premium_host_type as $khost => $nmhost){
+foreach($ar_host_acc as $khost => $nmhost){
  echo '<option value="'.$khost.'">'.$nmhost.'</option>';
 }
 ?>
 </select>
 				  </td>
 				 </tr>
-                 <tr><td style="padding-left:22px;"><label for="rpl"><?php echo $gtxt['_uname'];?></label></td><td><input type="text" id="rpl" name=rrapidlogin_com size="20" onFocus="highlight(this);" value="<?php echo ($_COOKIE["rrapidlogin_com"] ? $_COOKIE["rrapidlogin_com"] : ""); ?>"></td></tr>
-                 <tr><td style="padding-left:22px;"><label for="rppl"><?php echo $gtxt['_pass'];?></label></td><td><input type="text" id="rppl" name="rrapidpass_com" size="20" onFocus="highlight(this);" style="color: #912704;" value="<?php echo ($_COOKIE["rrapidpass_com"] ? $_COOKIE["rrapidpass_com"] : ""); ?>"></td></tr>
+                 <tr><td style="padding-left:22px;"><label for="rpl"><?php echo $gtxt['_uname'];?></label></td><td><input type="text" id="rpl" name=rrapidlogin_com size="20" onFocus="highlight(this);" value="<?php echo (isset($_COOKIE["rrapidlogin_com"]) ? $_COOKIE["rrapidlogin_com"] : ""); ?>"></td></tr>
+                 <tr><td style="padding-left:22px;"><label for="rppl"><?php echo $gtxt['_pass'];?></label></td><td><input type="text" id="rppl" name="rrapidpass_com" size="20" onFocus="highlight(this);" style="color: #912704;" value="<?php echo (isset($_COOKIE["rrapidpass_com"]) ? $_COOKIE["rrapidpass_com"] : ""); ?>"></td></tr>
                 </table>
 			  </td>
             </tr>
             <tr>
               <td>
-                <input type="checkbox" value="on" name="mu_acc" id="mu_acc" onClick="javascript:var displcom=this.checked?'':'none';document.getElementById('mprblok').style.display=displcom;" <?php if ($mu_cookie_user_value && isset($premium_acc_audl) && $premium_acc_audl) print ' checked'; ?>>&nbsp;<label for="mu_acc"><?php echo $atxt['plugin_megaupl'];?></label>
+                <input type="checkbox" value="on" name="mu_acc" id="mu_acc" onClick="javascript:var displcom=this.checked?'':'none';document.getElementById('mprblok').style.display=displcom;" <?php if (isset($mu_cookie_user_value) && isset($premium_acc_audl) && $premium_acc_audl) print ' checked'; ?>>&nbsp;<label for="mu_acc"><?php echo $atxt['plugin_megaupl'];?></label>
                 <table width="150" id="mprblok" style="display: none;">
-                 <tr><td style="padding-left:22px;"><label for="rplmu"><?php echo $atxt['_user'];?></label></td><td><input type="text" id="rplmu" size="25" name="mu_cookie" onFocus="highlight(this);" value=""></td></tr>
+                 <tr><td style="padding-left:22px;"><label for="rplmu"><?php echo $atxt['_user'];?></label></td><td><input type="text" id="rplmu" size="45" name="mu_cookie" onFocus="highlight(this);" value=""></td></tr>
                 </table>
 			  </td>
             </tr>
+            <tr>
+              <td>
+                <input type="checkbox" value="on" name="hf_acc" id="hf_acc" onClick="javascript:var displcom=this.checked?'':'none';document.getElementById('hfprblok').style.display=displcom;" <?php if (isset($hf_cookie_auth_value) && isset($premium_acc_audl) && $premium_acc_audl) print ' checked'; ?>>&nbsp;<label for="hf_acc"><?php echo $atxt['plugin_hotfile'];?></label>
+                <table width="150" id="hfprblok" style="display: none;">
+                 <tr><td style="padding-left:22px;"><label for="rplhf"><?php echo $atxt['_auth'];?></label></td><td><input type="text" id="rplhf" size="45" name="hf_cookie" onFocus="highlight(this);" value=""></td></tr>
+                </table>
+			  </td>
+            </tr>			
+            <tr>
+              <td>
+                <input type="checkbox" value="on" name="rs_acc" id="rs_acc" onClick="javascript:var displcom=this.checked?'':'none';document.getElementById('rsprblok').style.display=displcom;" <?php if (isset($rs_cookie_enc_value) && isset($premium_acc_audl) && $premium_acc_audl) print ' checked'; ?>>&nbsp;<label for="rs_acc"><?php echo $atxt['plugin_rs'];?></label>
+                <table width="150" id="rsprblok" style="display: none;">
+                 <tr><td style="padding-left:22px;"><label for="rplrs"><?php echo $atxt['_enc'];?></label></td><td><input type="text" id="rplrs" size="45" name="rs_cookie" onFocus="highlight(this);" value=""></td></tr>
+                </table>
+			  </td>
+            </tr>
+			
           </table>
         </td>
       </tr>
       </tbody>
     </table>
 </div>
-<textarea id="links" name="links" class="redtxtarea" style="width:640px; height:250px;"><?php print $_REQUEST["bufferlink"];?></textarea></td>
+<textarea id="links" name="links" class="redtxtarea" style="width:640px; height:250px;"><?php echo (isset($_REQUEST["bufferlink"]) ?$_REQUEST["bufferlink"]:"");?></textarea></td>
 <td valign="top"><input type="submit" value="<?php echo $atxt['_download'];?> " onClick="javascript:HideAll();" style="width:60px;height:80px;"></td>
 </tr>
 </tbody>

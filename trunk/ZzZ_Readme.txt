@@ -8,11 +8,40 @@ Latest Revision
 ## Lic Code: GNU General Public License v3
 ---------------
 
+Rv.7.3:
+ * Fix Traffic update
+ * Fix write/update FILES_LST
+ * Fix CSS for tdheadolgo & head_container
+ * Fix language
+ * Fix & Recoded xpanel
+ * Fix & Update zippyshare.com plugin
+ * Add hotfile cookie plugin; rapidshare cookie plugin
+ * Add Multi_IP (betha)
+ * update freakshare.net
+ * update hotfile.com
+ * update easyshare plugin
+ * update zippyshare.com plugin
+ * added x7.to download plugin .... finally :p
+ * litle fix in mediafire and hotfile for audl
+ * update hotfile.com plugin 
+ * update speedyshare.com plugin
+ * update storage.to plugin 
+ * update uploading.com upload plugin 
+
 Rv.7.2:
  * Roll-back public POST/GET key "pr_user" & "pr_pass"
  * Fix several plugins
-
-
+ * trying get youtube title video for filename
+ * failed load serverfiles after downloading redirected youtube video. doing xmlentities for file["link"].
+ * update mediafire plugin by kaox 26.php
+ * update megashares.com plugin by kaox 11.php
+ * Fix msg after deleteIt() (del.php)
+ * update zippyshare plugin by kaox 25.php
+ * Fix mediafire linkchecker
+ * Fix Failed calcUsedSpace (Current Used Storage)
+ * add freakshare.net plugin 74.php
+ * add sendspace to xpanel
+ 
 Rv.7.1RC:
  * Fix ifile.it acc in xpanel. Thx ROCK.
  * Add btaccel plugin, Thx Viant.

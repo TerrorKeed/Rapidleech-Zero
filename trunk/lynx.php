@@ -1,14 +1,22 @@
 <?php
 define('RAPIDLEECH', 'yes');
-error_reporting(0);
 
-$maxf=25;
+$time = explode (' ', microtime()); 
+$begintime = $time[1] + $time[0]; unset($time);
+
+error_reporting(0);
+//error_reporting(E_ALL); 
+//@ini_set('display_errors', true); 
+
 define('MISC_DIR', 'misc/');
 define('CLASS_DIR', 'classes/');
 define('CONFIG_DIR', './');
 define('LANG_DIR', 'languages/');
-$PHP_SELF = !$PHP_SELF ? $_SERVER["PHP_SELF"] : $PHP_SELF;
+clearstatcache();
+$PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
+//error_reporting(6135);
+$nn = "\r\n";
 $rev_num = '36B.Rv7.1';
 $RL_VER = 'Rx08.ii'.$rev_num;
 define('VERSION', "[ TuxiNuX::TimSukses ][ ccpb::kaskus ]");
@@ -21,8 +29,6 @@ $vpage = "lynx";
 require_once(LANG_DIR."language.$lang.inc.php");
 
 $charSet = (isset($charSet) && !empty($charSet) ? $charSet : 'charset=UTF-8');
-//$charSet = 'charset=ISO-8859-1';
-//$charSet = 'charset=UTF-8';
 
 define('DOWNLOAD_DIR', (substr($download_dir, 0, 6) == "ftp://" ? '' : $download_dir));
 define('TPL_PATH', 'tpl'. '/' . $csstype . '/');
@@ -31,8 +37,8 @@ define('IMAGE_DIR', MISC_DIR . TPL_PATH);
 //$jQ_filename = "http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js";
 $jQ_filename = MISC_DIR."jquery.min.js";
 $jQ_online = fopen($jQ_filename, "r");
+$server = getServerPlatf();
 
-//$server = getServerPlatf();
 #=====================
 
 //Cek ip yg banned || is it listed as authorized ip || check country limit
@@ -162,7 +168,7 @@ var dFile = new Object(); var text = "", thead, tfoot;
  
  foreach($list as $key => $file)
   {
-  if(file_exists($file["name"])){
+  if(isset($file["name"]) && @file_exists($file["name"])){
 	 $c++;
      //$total_size+=filesize($file["name"]);	 
      if($kumulatifsz) $total_size+=getfilesize($file["name"]);
@@ -177,7 +183,7 @@ var dFile = new Object(); var text = "", thead, tfoot;
 	  
   echo 'total_size = "'.$total_size.'";'."$nn";
   echo 'c = "'.$c.'";'."$nn";
-  $lynx_del = ($deletelink_in_lynx && !$disable_deleting && $jQ_online);
+  $lynx_del = ($deletelink_in_lynx && !$disable_to["act_delete"] && $jQ_online);
 ?>
    
    thead = "<table id='intbl' cellpadding='1' cellspacing='1' class='sortable' style='display: none;'>";
@@ -303,7 +309,15 @@ if($limit_timework)
 <br>
 
 <?php
-if($server_info || $show_sinfo){if(@file_exists(CLASS_DIR."sinfo.php")) require_once(CLASS_DIR."sinfo.php");}else echo "<hr>";
+if($navi_left["server_info"]){
+  if(@file_exists(CLASS_DIR."sinfo.php")) {
+    require_once(CLASS_DIR."sinfo.php");
+	$time = explode(" ", microtime());
+	$endtime = $time[1] + $time[0]; unset($time);
+    $totaltime = ($endtime - $begintime);
+	echo "<div style='padding-left:5px;text-align:left;width:190px;'><small>{$server['property']}<br>Page Load: {$totaltime} sec</small></div>";
+  }
+}else echo "<hr>";
 ?> 
  </td>
 </tr>
