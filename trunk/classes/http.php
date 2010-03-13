@@ -106,7 +106,7 @@ function is_page($lpage)
   }
 
 function geturl($host, $port, $url, $referer = 0, $cookie = 0, $post = 0, $saveToFile = 0, $proxy = 0, $pauth = 0, $auth = 0, $scheme = "http", $resume_from = 0) {
-global $nn, $lastError, $PHP_SELF, $AUTH, $IS_FTP, $FtpBytesTotal, $FtpBytesReceived, $FtpTimeStart, $FtpChunkSize, $Resume, $bytesReceived, $fs, $forbidden_filetypes, $rename_these_filetypes_to, $bw_save, $force_name, $rename_prefix, $rename_suffix, $limitsize, $lowlimitsize, $limitbyip, $ipmu, $ada_acc, $pointboost, $add_ext_5city,  $htxt, $gtxt;
+global $nn, $lastError, $PHP_SELF, $AUTH, $IS_FTP, $FtpBytesTotal, $FtpBytesReceived, $FtpTimeStart, $FtpChunkSize, $Resume, $bytesReceived, $fs, $forbidden_filetypes, $rename_these_filetypes_to, $bw_save, $force_name, $rename_prefix, $rename_suffix, $limitsize, $lowlimitsize, $limitbyip, $ipmu, $ada_acc, $pointboost, $add_ext_5city,  $htxt, $gtxt, $mip_enabled;
 //die('saveToFile:'.$saveToFile);
 $scheme.= "://";
 
@@ -181,7 +181,16 @@ $content_tl.$nn.$postdata;
 
 //write_file(CONFIG_DIR."request.txt", $request);
 
-$fp = @fsockopen($proxyHost ? $scheme.$proxyHost : $scheme.$host, $proxyPort ? $proxyPort : $port, $errno, $errstr, 15);
+if(isset($mip_enabled) && $mip_enabled){
+ $mip_action = "download"; 
+ if(file_exists(CLASS_DIR."mip.php")) @include_once(CLASS_DIR."mip.php");
+
+}else{
+
+ $fp = @fsockopen($proxyHost ? $scheme.$proxyHost : $scheme.$host, $proxyPort ? $proxyPort : $port, $errno, $errstr, 15);
+
+}
+
 
 if (!$fp)
 	{
@@ -206,6 +215,7 @@ if ($saveToFile)
 	else
 		{
 		echo "<p>".$htxt['_con_to'].": <b>".$host."</b> at port <b>".$port."</b>...<br>";
+		echo (isset($multi_ip) && $multi_ip ? "using IP: ".$mip_ip."<br>\n":"");
 		}
 	}
 	

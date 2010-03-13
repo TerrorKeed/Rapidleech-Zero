@@ -256,10 +256,10 @@ function mcd($armacc){
 autoNext function
 param: 
  $iset : should it set autoDL true or not
- $noterror: if download found error keep evaluate next link
+ $forceNext: if download found error keep evaluate next link
  $audl: wot method send from audl.php. eg. sims, queue, manual
 ==========*/
-function autoNext($iset, $noterror, $audl)
+function autoNext($iset, $forceNext, $audl)
 {
 	global $showautoclose, $timeautoclose;
 	$bfRet = "";
@@ -289,7 +289,7 @@ function autoNext($iset, $noterror, $audl)
 					break;
 		}
 		
-		if (($showautoclose=="true")&&($noterror))
+		if ( ($showautoclose=="true") &&$forceNext )
 		{
 			$bfRet.="\r\n<!-- \n var time = ".$timeautoclose.";\nif(autoDL==true && not_simultan){parent.nextlink(id);}\nfunction vbaccept(){\ntime--;frm = document.vbaccept;\nif(frm)frm.submit.value = 'Auto-Close through '+time+'';\n";
 			$bfRet.="if(time>0){window.setTimeout(\"vbaccept()\",1);}\n else \nif(frm){frm.submit.value = 'done';\nfrm.submit.disabled=0;window.close(self);}}\n";
@@ -327,8 +327,8 @@ function cek_worktime($workstart, $workend)
   
   $wstart = strtotime($tgl.$dtstr.$workstart);
   $nowUnix = strtotime("$tgl $dtstr $tnH:$tnM:$tnS");
-  $ws = split(":",$workstart);
-  $we = split(":",$workend);
+  $ws = explode(":",$workstart);
+  $we = explode(":",$workend);
   
   if((int)$ws[0]>=(int)$we[0])
   {
@@ -356,11 +356,13 @@ function cek_worktime($workstart, $workend)
 
 function get_traffic($filena)
 {
-	$isinya = Array();
+	$isinya = array(' ',null);
 	$fl = @fopen($filena, "r");
-	$buftxt = @fgets($fl);	
-	@fclose($fl);
-	$isinya = explode(":", trim($buftxt));
+	if($fl){
+	 $buftxt = @fgets($fl);	
+	 @fclose($fl);
+	 $isinya = explode(":", trim($buftxt));
+	}
 	if(!is_numeric($isinya[0]))
 	{
 	  $isinya[0] = 0;
@@ -368,23 +370,34 @@ function get_traffic($filena)
 	return $isinya;
 }
 
-function autoreset_traffic($days, $start_date){
-  global $reset_trafic, $cur_trf;
+function autoreset_traffic($days, $c_traf){
+  global $timezone;
+  $zone = (3600 * $timezone);
+  
   if($days>0){
-    $ret = false;
-	$unix_now = strtotime("now");
-	if(!$start_date){
-	 $start_date = $unix_now; 
-	 $no_reset_traffic = true; // manual reset traffic
+	$reset_traffic = false;
+	$start_date = $c_traf[1]; 
+	$unix_now = strtotime("now") + $zone;
+	
+	if(!preg_match("/\d{10}/i", $start_date)){
+	  $start_date = $unix_now; 
 	}else{
-	 if($start_date > $unix_now){ $start_date = $unix_now; }
+	  if($start_date > $unix_now){
+	    $start_date = $unix_now; 
+	    $reset_traffic = true;
+	  }
 	}
-	$waktu_start = explode("-", date("d-m-Y", $start_date));
-	$selang = 60 * 60 * 24 * $days; // $days hari berikutnya	
-	$waktu_akhir_unix = strtotime(date("d-m-Y", mktime(0,0,0,$waktu_start[1],$waktu_start[0],$waktu_start[2])));
-	if($waktu_akhir_unix <= $unix_now - $selang || isset($no_reset_traffic) ){
-	 $value_trafic = (!$no_reset_traffic ? '0' : $cur_trf[1]);
-	 upd_traffictime($value_trafic, $no_reset_traffic); // reset traffic
+	
+	$next_date = strtotime("+".$days." day", $start_date);
+	
+	if($next_date <= $unix_now){
+	    $reset_traffic = true;
+	    $start_date = $unix_now; 
+	}
+
+	if($next_date <= $start_date){
+	  $value_trafic = ($reset_traffic ? '0' : $c_traf[0]);
+	  $start_date = upd_traffictime($value_trafic); // reset traffic
 	}
 	return $start_date;
   }else{
@@ -393,20 +406,25 @@ function autoreset_traffic($days, $start_date){
 }
 
 function upd_traffictime($cur_traffic){
+  global $timezone;
+  $zone = (3600 * $timezone);
+  
   $fn_trafic = TRAFFIC_LST;
   if(@file_exists($fn_trafic)) {
-   $unix_now = strtotime("now");
+   $unix_now = strtotime("now") + $zone;
    $value_trafic = $cur_traffic. ":" . $unix_now;
-   $ret = @write_traffic($fn_trafic, $value_trafic);   
+   $ret = @write_traffic($fn_trafic, $value_trafic);
+   return $unix_now;
   }
 }
 
 function timeremain_traffic($days, $start_date){
-	$unix_now = strtotime("now");
- 	$waktu_start = explode("-", date("d-m-Y", $start_date));
-	$selang = 60 * 60 * 24 * $days; // $days hari berikutnya	
-	$waktu_akhir_unix = strtotime(date("d-m-Y", mktime(0,0,0,$waktu_start[1],$waktu_start[0],$waktu_start[2])));
-	return ( $waktu_akhir_unix - ($unix_now - $selang) );
+  global $timezone;
+  $zone = (3600 * $timezone);
+  
+  $unix_now = strtotime("now") + $zone;
+  $next_date = strtotime("+".$days." day", $start_date);
+  return ( $next_date - $unix_now );
 }
 
 // Log System
@@ -787,14 +805,14 @@ function itung(){if(di>0){ setTimeout("itung()",1000); di--; d.getElementById("t
 
 
 // Tambahan retry
-function html_retry($msg, $head = 1, $link)
+function html_retry($msg, $head = 1, $link, $cook=false)
 {
 	global $PHP_SELF, $gtxt, $alternatefree, $csstype;
 	if(!$alternatefree){html_error($msg, $head);}
  	
   if ($head == 1)
     {
-    ?>
+?>
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title>Upps...</title>
@@ -813,10 +831,10 @@ function html_retry($msg, $head = 1, $link)
 </div>
 <?php
     }
-    ?>
+?>
 <center>
 <?php 
-echo "<span style=\"color:red; background-color:#fec; padding:3px; border:2px solid #FFaa00; line-height:25px\"><b>$msg</b></span><br><br>"; 
+echo "<div style=\"height:30px;\">&nbsp;</div><span style=\"color:red; background-color:#fec; padding:3px; border:2px solid #FFaa00; line-height:25px\"><b>$msg</b></span><br><br>"; 
 echo "Trying free-download (without premium acc).[<b id='tmr' class='g'>~</b>]&nbsp;
 	  <a href=\"javascript:void(0);\" onclick=\"document.frmretry.submit();\">[Execute]</a><br><br>";
 echo "<a id=\"tdone\" href=\"".$PHP_SELF."\">[&nbsp;<b><span id=\"txtdone\">".$gtxt['back_main']."</b></span>&nbsp;]</a><br>";
@@ -829,6 +847,7 @@ echo counteritung('frmretry',15);
 <input type="hidden" name="task" value="retry">
 <input type="hidden" name="premium_acc" id="premium_acc" value="">
 <input type="hidden" name="mu_acc" id="mu_acc" value="">
+
 </form>
 	
 </center>
@@ -893,6 +912,13 @@ flush();
 
 function sec2time($time)
   {
+  global $gtxt;
+  $day = round($time / (3600*24), 2);
+  if($day >= 1)
+    {
+    $day = floor($day);
+    $time -= $day * 3600 * 24;
+    }	
   $hour = round($time / 3600, 2);
   if($hour >= 1)
     {
@@ -906,10 +932,11 @@ function sec2time($time)
     $time -= $min * 60;
     }
   $sec = $time;
-  $hour = ($hour > 1) ? $hour." hours " : ($hour == 1) ? $hour." hour " : "";
-  $min = ($min > 1) ? $min." minutes " : ($min == 1) ? $min." minute " : "";
-  $sec = ($sec > 1) ? $sec." seconds" : ($sec == 1 || $sec == 0) ? $sec." second" : "";
-  return $hour.$min.$sec;
+  $day  = ( ($day > 1) ? $day." {$gtxt["days"]} " : (($day == 1) ? $day." {$gtxt["days"]} " : "") );
+  $hour = ( ($hour > 1) ? $hour." {$gtxt["hours"]} " : (($hour == 1) ? $hour." {$gtxt["hours"]} " : "") );
+  $min  = ( ($min > 1) ? $min." {$gtxt["minutes"]} " : (($min == 1) ? $min." {$gtxt["minutes"]} " : "") );
+  $sec  = ( ($sec > 1) ? $sec." {$gtxt["seconds"]}" : (($sec == 1 || $sec == 0) ? $sec." {$gtxt["seconds"]}" : "") );
+  return $day.$hour.$min.$sec;
   }
 
 function sec1time($time)
@@ -975,24 +1002,27 @@ function updateCozEmpty($f){
 
 function _cmp_list_enums($a,$b)
   {
-  return strcmp($a["name"],$b["name"]);
+    if(isset($a["date"]) && isset($b["date"])){
+     return strcmp($a["date"],$b["date"]);
+	}else{
+     return strcmp($a["name"],$b["name"]);	
+	}
   }
+  
 
 function count_age($age){
-global $gtxt;
-  if($age<=0) return $gtxt["less_a_minute"];
-  $jam = 0;
-  if($age>3600){ 
-    $jam = floor($age / 3600);
-    $jam_str= ($jam . " " . $gtxt["hours"] );
+global $gtxt;  
+  if($age<=60) return $gtxt["less_a_minute"];
+  $jam_str="";
+  $jam = floor($age / 3600);
+  if($jam >= 1){
+    $jam_str= ($jam . " " . $gtxt["hours"] . " " );
+    $age -= $jam * 3600; 	
   }
-  $min = ($age - ($jam * 3600));
-  if($min>60){
-    $min = floor($min / 60);
-  }else{$min = 0;}
-  $min_str = ($jam_str!="" ? $jam_str . "," : "").($min>0?$min." ".$gtxt["minutes"].($gtxt["ago"]!=""?" ".$gtxt["ago"]:"") : ($jam!=0?"":$gtxt["less_a_minute"]));
-  
-  return $min_str;
+  if($age >= 60){
+    $min = floor($age / 60);    
+  }
+  return $jam_str . ($min > 0 ? $min." ".$gtxt["minutes"] : "") . ($gtxt["ago"]!=""?" ".$gtxt["ago"]:"");
 }
   
 function _create_list($lynx = false, $medic=false, $d_showall=false)
@@ -1000,8 +1030,8 @@ function _create_list($lynx = false, $medic=false, $d_showall=false)
   global $list, $_COOKIE, $show_all, $forbidden_filetypes, $show_column_sfile, $timezone;
   $glist = array();
   $unix_now = ( time() - date("Z") + (3600 * $timezone));
-  if(!$d_showall) $d_showall = $_COOKIE["showAll"];
-  if((($show_all === true) && ($d_showall == 1)) || $medic)
+  if(!$d_showall) $d_showall = (isset($_COOKIE["showAll"]) ? $_COOKIE["showAll"]:false);
+  if(($show_all && ($d_showall == 1)) || $medic)
     {  // Show Everything
 	if(!defined("ROOT_DIR")){define('ROOT_DIR', realpath("./"));}
 
@@ -1009,67 +1039,75 @@ function _create_list($lynx = false, $medic=false, $d_showall=false)
     $dir = @dir(DOWNLOAD_DIR); $totsize = 0; $cnt = 0;
     while(false !== ($file = $dir->read()))
       {
-      if($file != "." && $file != ".." && is_array($forbidden_filetypes) && !in_array(strtolower(strrchr($file, ".")), $forbidden_filetypes) && basename(DOWNLOAD_DIR.$file) != FILES_LST)
+      if($file != "." && $file != ".." && is_array($forbidden_filetypes) 
+	     && !in_array(strtolower(strrchr($file, ".")), $forbidden_filetypes) 
+		 && is_file(DOWNLOAD_DIR.$file) && basename($file) != FILES_LST)
         {
         $file = DOWNLOAD_DIR.$file;
         //$time = (($show_column_sfile["date"] || $lynx) ? (($inCurrDir!=TRUE) ? filectime(DOWNLOAD_DIR.basename($file)):filectime($file)) : '0');        
-        $time = (($inCurrDir!=TRUE) ? @filectime(DOWNLOAD_DIR.basename($file)) : @filectime($file));
+        $time = (($inCurrDir!=TRUE) ? @filemtime(DOWNLOAD_DIR.basename($file)) : @filemtime($file));        
 		$unix_zone = ( $time - date("Z") + (3600 * $timezone));
-        while(isset($glist[$time])){$unix_zone++;}
+        while(isset($glist[$unix_zone])){$unix_zone++;}
 		$size = getfilesize($file);
 		$agefile = ($unix_now - $unix_zone);
         $glist[$unix_zone] = array("name" => realpath($file),
-                              //"size" => bytesToKbOrMbOrGb(filesize($file)),
                               "size" => bytesToKbOrMbOrGb($size),
                               "date" => $unix_zone,
                               "age" => count_age($agefile),
-                              "md5" => ($show_column_sfile["md5"] && !$lynx ? md5_file($file):' ')
 							  );
-		$totsize+=$size; $cnt++;
+	    if($show_column_sfile["md5"] && !$lynx) $glist[$unix_zone]["md5"] = md5_file($file);
+		$totsize+=$size; $cnt++;		
         }
       }
     $dir->close();
     @uasort($glist,"_cmp_list_enums");
 	 if($cnt>0){
-	  $glist["files"]["totalsize"] = $totsize;
-	  $glist["files"]["totalfile"] = $cnt;
-	  $glist["files"]["misc"] = "files";
-	 }
+	   $glist["files"]["totalsize"] = $totsize;
+	   $glist["files"]["totalfile"] = $cnt;
+	   $glist["files"]["misc"] = "files";
+	 }	 
     }
   else
     {  // Show Downloaded
     if(@file_exists(FILES_LST))
-      {	  
+      {
       $glist = file(FILES_LST);
+	  $glistReformat = null;
       foreach($glist as $key => $record)
         {
-		  $recfile = unserialize($record);
+		  $recfile = @unserialize($record);
+		  if(is_array($recfile)){
           foreach($recfile as $field => $value)
            {
              if(in_array($field, array("date", "age", "misc"))) {
-              //if($field == "date") {
-				$time = @filectime($recfile["name"]);
-			    $unix_zone = ( $time - date("Z") + (3600 * $timezone));
+				$time = @filemtime($recfile["name"]);
+				//$time = @filectime( DOWNLOAD_DIR.basename($recfile["name"]) );
+			    $unix_zone = ($unix_zone!=$value ? $time - date("Z") + (3600 * $timezone) : $value);
 				if($field=="age") { 
 				  $agefile = ($unix_now - $unix_zone);
 				  $listReformat[$key]["age"] = count_age($agefile);
 				}
-			    $date = $unix_zone;
+				if($field=="date") { 
+				  $listReformat[$key][$field] = $unix_zone;
+			      $date = $unix_zone;
+				}
 			 }
-			 if($field!="age") $listReformat[$key][$field] = $value;
-             //if($field == "date") $date = $value;
+			 if($field!="age" && $field!="date") $listReformat[$key][$field] = $value;
            }
 		  $glist[$date] = $listReformat[$key];
           unset($glist[$key], $glistReformat[$key]);
+		 }
         }
+	  @uasort($glist,"_cmp_list_enums");	  
       }
     }
   $list = $glist;
 }
 
 function _create_lists(){
-  global $list;
+  global $lists;
   $glist = array();
+  $glistReformat = null;
   if(@file_exists(IP_L33CH_L0G)){
     $glist = file(IP_L33CH_L0G);
     foreach($glist as $key => $record){
@@ -1081,7 +1119,7 @@ function _create_lists(){
         unset($glist[$key], $glistReformat[$key]);
     }
   }
-  $list = $glist;
+  $lists = $glist;
 }
   
   
@@ -1209,16 +1247,15 @@ function purge_files($delay)
 		$files_lst = file(FILES_LST);
 		$files_new = ""; if(!isset($timezone)) $timezone = 7;
 		$unix_now = ( time() - date("Z") + (3600 * $timezone));
-		//print_r($unix_now);
-		foreach ($files_lst AS $files_line)
+		foreach ($files_lst as $files_line)
 		{
 			$files_data = unserialize(trim($files_line));
-			if (file_exists($files_data["name"]) && is_file($files_data["name"]))
+			if (isset($files_data["name"]) && @file_exists($files_data["name"]) && is_file($files_data["name"]))
 			{
-				//if (time() - $files_data["date"] >= $delay*60*60)
-				//$filedate = $files_data["date"];
-				$filedate = @filectime($files_data["name"]);
-				$unix_zone_filedate = ( $filedate - date("Z") + (3600 * $timezone));
+				$filedate = $files_data["date"];
+				//$filedate = @filectime($files_data["name"]);
+				//$unix_zone_filedate = ( $filedate - date("Z") + (3600 * $timezone));
+				$unix_zone_filedate = ( $filedate );
 				if(($unix_now -  $unix_zone_filedate) >= ($delay*3600))
 				{
 					@unlink($files_data["name"]); $cnt_deleted++;
@@ -1441,12 +1478,12 @@ function strip_quotes ($string){
 }
 
 // for debug manner, dump array
-function vdump($varray = array(), $textarea=false, $replace=true){
+function vdump($varray = array(), $textarea=false, $with_br=true){
   $buf = print_r($varray, true);
   if($textarea){
    $buf = "<textarea cols='90' rows='20' style='width:100%;font-size:11px;line-height:10px;'>".$buf."</textarea>";
   }else{
-   $buf = ($replace ? str_replace("\n", "<br>", $buf) : $buf);
+   $buf = ($with_br ? str_replace("\n", "<br>", $buf) : $buf);
   }
   print_r( $buf );
 }
