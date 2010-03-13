@@ -10,7 +10,9 @@ if (! defined ( 'RAPIDLEECH' ))
 	{
 		global $premium_acc;
 		if (($_REQUEST ["premium_acc"] == "on" && $_REQUEST ["premium_user"] && $_REQUEST ["premium_pass"]) ||
-			($_REQUEST ["premium_acc"] == "on" && $premium_acc ["hotfile_com"] ["user"] && $premium_acc ["hotfile_com"] ["pass"]))
+			($_REQUEST ["premium_acc"] == "on" && $premium_acc ["hotfile_com"] ["user"] && $premium_acc ["hotfile_com"] ["pass"]) ||
+			($_REQUEST["hf_acc"] == "on" && ($_REQUEST ["hf_cookie"] || $_REQUEST["hf_hash"] || $hf_cookie_auth_value))
+		   )
 		{
 			DownloadPremium($link);
 		}
@@ -22,6 +24,46 @@ if (! defined ( 'RAPIDLEECH' ))
 
 	function DownloadFree( $link )
 	{
+	    global $download_dir;
+		
+	    $hf = (isset($_POST['hf']) ? $_POST['hf'] : "");
+		
+		if($hf == "ok"){
+          $post=unserialize(urldecode($_POST['post']));
+          $post["action"] = "checkcaptcha";
+          $post["recaptcha_response_field"] = $_POST["captcha"];
+          $Referer = $_POST["link"];    
+          
+          $Url = parse_url($Referer);
+          $page = GetPage( $Referer, $cookie, $post, $Referer );
+          is_page($page);
+          
+          
+          preg_match('/\/\d+\/\w+\/\w+\/[^\'"]+/i', $page, $down);      
+          $LINK="http://hotfile.com/get".$down[0];     
+           if ($down[0]==""){
+             $dsource = cut_str($page,'<h3','</h3');
+             $ddw = cut_str($dsource,'href="','"');
+             $LINK=$ddw;
+           }
+           
+          if (!stristr($page,"REGULAR DOWNLOAD")){
+            $Url =parse_url($LINK);
+            $FileName = preg_replace("/[^a-z0-9_\.]/i", "_", urldecode(basename($Url["path"])));
+            $page = GetPage( $LINK );
+			
+            preg_match('/Location: *(.+)/', $page, $redir);
+            if (strpos($redir[1],"http://")===false) {
+			  html_error("Server problem. Please try again after",0);
+			}
+            $redirect=rtrim($redir[1]);
+            $Url = parse_url($redirect);
+			RedirectDownload( $LINK, $FileName );
+           }
+		   exit();
+        }
+
+		
 		$page = GetPage( $link );
 		
 	    is_present($page,"File not found","File not found, the file is not present or bad link","0");
@@ -50,57 +92,128 @@ if (! defined ( 'RAPIDLEECH' ))
 		insert_timer( $wait, "Waiting link timelock" );   
 		
 		$page = GetPage( $link, 0, $post );
-		
 		preg_match( '/http:\/\/.+get\/[^\'"]+/i', $page, $loca );
 		$Href = trim( $loca[0] );
 		
-		$page = GetPage( $Href );
+		preg_match('/\/\d+\/\w+\/\w+\/[^\'"]+/i', $page, $down);      
+        if ($down[0]==""){
+           $dsource = cut_str($page,'<h3','</h3');
+           $ddw = cut_str($dsource,'href="','"');
+           $LINK=$ddw;
+        }
 		
-		preg_match('/Location: *(.+)/i', $page, $newredir );
-		$Href = trim ( $newredir [1] );
+    if ($down[0]=="") {
+        $nofinish=true;
+        
+        $Href= "http://api.recaptcha.net/noscript?k=6LfRJwkAAAAAAGmA3mAiAcAsRsWvfkBijaZWEvkD";
+        
+        $page = GetPage( $Href );
+        is_page($page);
+        is_present($page,"Expired session", "Expired session . Go to main page and reattempt", 0);
+        
+        $cookie = GetCookies($page);
+        $ch = cut_str ( $page ,'recaptcha_challenge_field" value="' ,'"' );
+        
+        if($ch){
+           $Href= "http://api.recaptcha.net/image?c=".$ch;
+           $page = GetPage($Href, $cookie);
+           $headerend = strpos($page,"\r\n\r\n");
+           $pass_img = substr($page,$headerend+4);
+           $imgfile = $download_dir."hotfile_captcha.jpg";           
+           
+           if (file_exists($imgfile)){ 
+		     unlink($imgfile);
+		   }
+           write_file($imgfile, $pass_img);
+        }else{
+           html_error("Error get captcha", 0);
+        }
+
+        $captchaid=cut_str($page,"captchaid value=",">");
+        $hash1=cut_str($page,"hash1 value=",">");
+        $hash2=cut_str($page,"hash2 value=",">");
+        
+        unset($post);
+        $post['recaptcha_challenge_field']=$ch;
+        
+        print "<form method=\"post\" action=\"".$PHP_SELF.(isset($_GET["idx"]) ? "?&idx=".$_GET["idx"] : "")."\">$nn";
+        print "<h4>Enter <img src=\"$imgfile\"></h4>here: <input name=\"captcha\" type=\"text\" >$nn";
+        print "<input name=\"link\" value=\"$link\" type=\"hidden\">$nn";  
+        print '<input type="hidden" name="post" value="'.urlencode(serialize($post)).'">'.$nn;
+        print "<input name=\"hf\" value=\"ok\" type=\"hidden\">$nn";
+        print "<input name=\"Submit\" value=\"Submit\" type=\"submit\"></form>";
+    }
+
+		if (!$nofinish){
+           $Url = parse_url($LINK);
+           $FileName = preg_replace("/[^a-z0-9_\.]/i", "_", urldecode(basename($Url["path"])));
+           $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, 0, 0, $_GET["proxy"],$pauth); 
+           preg_match('/Location: *(.+)/i', $page, $redir);
+           if (strpos($redir[1],"http://")===false) {
+		     html_error("Server problem. Please try again after",0);
+		   }
+           $redirect=rtrim($redir[1]);
+           $Url = parse_url($redirect);
+		   RedirectDownload( $LINK, $FileName );
+        }
 		
-		if ( strpos( $Href,"http://" ) === false ) 
-		{ 
-			html_error("Server problem. Please try again after", 0 );
-		}
-		
-		$Url = parse_url( $Href );
-		$FileName = basename($Url["path"]);
-		RedirectDownload( $Href, $FileName );
 		exit ();
 	}
 	
 	function DownloadPremium($link)
 	{
 		global $premium_acc, $Referer;
-		$loginUrl = "http://hotfile.com/login.php";
 		$Referer1 = "http://hotfile.com/";
-		
 		$post = array();
-		$post["returnto"] = "/";
-		$post["user"] = $_REQUEST["premium_user"] ? trim( $_REQUEST["premium_user"] ) : $premium_acc["hotfile_com"]["user"];
-		$post["pass"] = $_REQUEST["premium_pass"] ? trim( $_REQUEST["premium_pass"] ) : $premium_acc["hotfile_com"]["pass"];
-		$page = GetPage( $loginUrl, 0, $post, $Referer1 );
+		if($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]){
+		 $loginUrl = "http://hotfile.com/login.php";
+		
+		 $post["returnto"] = "/";
+		 $post["user"] = $_REQUEST["premium_user"] ? trim( $_REQUEST["premium_user"] ) : $premium_acc["hotfile_com"]["user"];
+		 $post["pass"] = $_REQUEST["premium_pass"] ? trim( $_REQUEST["premium_pass"] ) : $premium_acc["hotfile_com"]["pass"];
+		 $page = GetPage( $loginUrl, 0, $post, $Referer1 );
 			
-		$cookie = GetCookies( $page );
-			
+		 $cookie = GetCookies( $page );
+		}
+		
+		if(!preg_match('/auth=\w{64}/i', $page) && $_GET ["hf_acc"] == "on"){
+	      $cookie = trim ( cut_str ( $page, "Set-Cookie:", ";" ) );
+	      if ( $_GET ["hf_cookie"]) {
+		  	$cookie .= 'auth=' . $_GET ["hf_cookie"];
+		  } elseif ($_GET["hf_hash"]) {
+		  	$cookie .= 'auth=' . strrev(dcd($_GET["hf_hash"]));
+		  } elseif ($hf_cookie_auth_value) {
+		  	$cookie .= 'auth=' . $hf_cookie_auth_value;			
+		  }
+	    }
+	   
 		$page = GetPage( "http://hotfile.com/?lang=en", $cookie, 0, $Referer1 );
 		
-		$findpre = strpos( $page, 'Premium' );
+		$findpre = trim ( cut_str ( $page, 'id="account"', 'id="lang"' ) );
+		$findpre = strpos( $findpre, 'Premium' );
 		
 		if( false === $findpre )
 		{
 			html_error( "Login Failed , Bad username/password combination.",0 );
 		}
 		
+		
 		$page = GetPage( $link, $cookie, 0, $Referer );
 		
 		is_present( $page, "File not found", "File not found, the file is not present or bad link","0" );
 		is_present( $page, "due to copyright","This file is either removed due to copyright claim or is deleted by the uploader.","0");
 	
-		preg_match( '/http:\/\/.+get\/[^\'"]+/i', $page, $loca );
-		$Href = trim( $loca[0] );
-		
+	    preg_match('/^HTTP\/1\.0|1 ([0-9]+) .*/',$page,$status);
+        if ($status[1] == 200) {
+          preg_match('/http:\/\/.+get\/[^\'"]+/i', $page, $loca);   
+          $Href = rtrim($loca[0]);  
+        } else{
+          preg_match('/Location:.+?\\r/i', $page, $loca);
+          $redir = rtrim($loca[0]);
+          preg_match('/http:.+/i', $redir, $loca);
+          $Href = rtrim($loca[0]);
+        }
+	   
 		$page = GetPage( $Href, $cookie, 0, $Referer );
 		
 		preg_match('/Location: *(.+)/i', $page, $newredir );

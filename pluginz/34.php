@@ -57,24 +57,23 @@ else
 	$FileName = trim(cut_str($temp,'<h2>','</h2>'));
 
 	is_page($page);
-	is_present($page, "Sorry, the file requested by you does not exist on our servers.");
-
-
+	is_present($page, "Sorry, the file requested by you does not exist on our servers.");	
+	
 	$code=explode("/",$Url["path"]);
-	$Url["path"]="/files/get/".$code[count($code)-2]."/";
-
+	$hcode=$code[count($code)-3];
+	$Url["path"]="/files/get/".$hcode."/";
 
 	$post = Array();
 	$post["action"] = "second_page";
 	$post["file_id"] = $fileID;
+	$post["code"] = $hcode;
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $LINK, $cookie, $post, 0, $_GET["proxy"],$pauth);
 
 	is_page($page);
-
 	is_present($page, "Requested file not found");
 
-	preg_match_all('/start_timer\((.*)\)/i', $page,$tm);
-	$waitt=$tm[1][1];
+	preg_match_all('/start_timer\((\d{1,})\)\;/i', $page,$tm);
+	$waitt=$tm[1][0];	
 	insert_timer($waitt+10); 
 
 	$tid=str_replace(".","12",microtime(true));
@@ -84,6 +83,7 @@ else
 	 unset($post);
 	$post["file_id"]=$fileID;
 	$post["action"]="get_link";
+	$post["code"] = $hcode;
 	$post["pass"]="";
 		$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $LINK, $cookie, $post, 0, $_GET["proxy"],$pauth);
 
@@ -99,5 +99,6 @@ else
 /**************************************************\  
 WRITTEN by kaox 24-may-2009
 UPDATE by kaox  29-nov-2009
+UPDATE by Idx  13-mar-2010
 \**************************************************/
 ?>

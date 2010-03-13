@@ -2,7 +2,9 @@
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
   
-if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["premium_user"] && $_GET["premium_pass"]) || ($premium_acc["rs_com"]["user"] && $premium_acc["rs_com"]["pass"]) ||(is_array($premium_acc["rs_com"][0])) || $_GET["maudl"]=='multi') || $_POST["sssid"])
+if (  $_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["premium_user"] && $_GET["premium_pass"]) || ($premium_acc["rs_com"]["user"] && $premium_acc["rs_com"]["pass"]) ||(is_array($premium_acc["rs_com"][0])) || $_GET["maudl"]=='multi')
+   || ($_GET["rs_acc"] == "on" && ($_GET["rs_cookie"] || $_GET["rs_hash"] || isset($rs_cookie_enc_value)) )
+   || $_POST["sssid"] )
 	{
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth);
 	is_page($page);
@@ -48,14 +50,31 @@ if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["premium_user"
 		}
 		if(!$success){
 			//html_error( "No usable premium account", 0);
-			html_retry("No usable premium account",0,$LINK);
+			html_retry("No usable premium account",0,$LINK);			
 		}
 	}
 	
-	$auth = $_POST["sssid"]? (utf8_strrev(dcd($_POST["sssid"]))) : ($_GET["premium_user"]!='' ? base64_encode($_GET["premium_user"].":".$_GET["premium_pass"]) : base64_encode($premium_acc["rs_com"]["user"].":".$premium_acc["rs_com"]["pass"]));
+	if($_POST["sssid"] || $_GET["premium_user"] || $premium_acc["rs_com"]){
+	  $auth = $_POST["sssid"] ? (utf8_strrev(dcd($_POST["sssid"]))) : ($_GET["premium_user"]!='' ? base64_encode($_GET["premium_user"].":".$_GET["premium_pass"]) : base64_encode($premium_acc["rs_com"]["user"].":".$premium_acc["rs_com"]["pass"]));
+	}
 
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth, $auth);
 	is_page($page);
+	  
+	$cook = trim ( cut_str ( $page, "Set-Cookie:", ";" ) );
+	if($_GET["rs_acc"] && !stristr ( $cook, "enc=" )){
+	  if (isset($_GET["rs_cookie"])) {
+	  	$cook .= 'enc=' . $_GET["rs_cookie"];
+	  } elseif (isset($_GET["rs_hash"])) {
+	  	$cook .= 'enc=' . strrev(dcd($_GET["rs_hash"]));
+	  } elseif (isset($rs_cookie_enc_value)) {
+	  	$cook .= 'enc=' . $rs_cookie_enc_value;
+	  }
+	  //$cook .= "; expires=Mon, 21-Nov-2020 16:01:23 GMT";
+	  $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, $cook, 0, 0, $_GET["proxy"],$pauth);
+	  is_page($page);
+	}
+	
 	//is_present($page,"Account found, but password is incorrect");
 	//is_present($page,"Account not found");
 	is_present_tryagain($page,"Account has been found, but the password is incorrect");
@@ -66,7 +85,7 @@ if ($_GET["premium_acc"] == "on" && ($_GET["auth_hash"] || ($_GET["premium_user"
 		$Href = trim(cut_str($page, "Location:","\n"));
 		$Url =  parse_url($Href);
 
-	 	insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "")."&auth=".$auth.($pauth ? "&pauth=".$pauth : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
+	 	insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : ""). "&cookie=" . urlencode ( $cook ) . "&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "")."&auth=".$auth.($pauth ? "&pauth=".$pauth : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
 		}
 	else
 		{
