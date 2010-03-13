@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('RAPIDLEECH'))
 {
 	require_once("404.php");
@@ -7,11 +6,11 @@ if (!defined('RAPIDLEECH'))
 }
 
 if($_POST["step"]){
-$cookie=$_POST["cookie"];
-$post["recaptcha_challenge_field"]=$_POST["ch"];
-$post['recaptcha_response_field']=urlencode($_POST['captcha']);
-$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $LINK, $cookie, $post, 0, $_GET["proxy"],$pauth);
-is_page($page);
+  $cookie=$_POST["cookie"];
+  $post["recaptcha_challenge_field"]=$_POST["ch"];
+  $post['recaptcha_response_field']=urlencode($_POST['captcha']);
+  $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $LINK, $cookie, $post, 0, $_GET["proxy"],$pauth);
+  is_page($page);
 
 }
 
@@ -24,8 +23,9 @@ if($_POST["passfile"])
     $cookie=$_POST["cookie"];
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $Referer, $cookie, $post, 0, $_GET["proxy"],$pauth);
 	is_page($page);
-}else
-{
+
+}else{
+
 	$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $Referer, 0, 0, 0, $_GET["proxy"],$pauth);
 	is_page($page);
 	$dlelement = cut_str($page, "var io=document.getElementById('", "')");
@@ -36,7 +36,7 @@ if($_POST["passfile"])
 		$Url = parse_url($Href);
 		$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), $Referer, 0, 0, 0, $_GET["proxy"],$pauth);
 		is_page($page);
-	}
+	}	
 	$cookie = GetCookies($page);
 }
 
@@ -70,7 +70,6 @@ $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Ur
 		$code .= '</form>';
 		echo ($code) ;
 		die;
-
 }
 
 
@@ -95,17 +94,15 @@ if( strpos( $page ,"dh('')")!== false ){
 	echo $code;
 	die;
 }
-if(preg_match('/cu\([^qk](.*?)\);/', $page, $values))
-{
+
+if(preg_match('/cu\([^qk](.*?)\);/', $page, $values)){
 	$values = str_replace("'", '', $values[1]);
 	$value = explode(',', $values);
 	$qk = $value[0];
 	$pk = $value[1];
 	$r = $value[2];
-}
-else
-{
-html_error( "Download values not found" , 0 );
+}else{
+  html_error( "Download values not found" , 0 );
 }
 
 $Href = "http://www.mediafire.com/dynamic/download.php?qk=$value[0]&pk=$value[1]&r=$value[2]";

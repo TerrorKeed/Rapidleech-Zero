@@ -123,7 +123,7 @@ if (! defined ( 'RAPIDLEECH' ))
 			"&post=" . urlencode ( serialize ( $post ) ) .
 			($_POST ["uploadlater"] ? "&uploadlater=".$_POST["uploadlater"]."&uploadtohost=".urlencode($_POST['uploadtohost']) : "").
 			($_POST ['autoclose'] ? "&autoclose=1" : "").
-			(isset($_GET["audl"]) ? "&audl=doum" : "") . $addon;
+			(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : "") . $addon;
 		
 		insert_location ( $loc );
 	}

@@ -97,7 +97,7 @@ if (! defined ( 'RAPIDLEECH' ))
 		preg_match ( '/http:.+/i', $redir, $loca );
 		$Href = trim ( $loca [0] );
 		
-		$cookie = $cook . "; " . BiscottiDiKaox ( $page );
+		$cookie = $cook . "; " . biscottiDiKaox ( $page );
 	
 		RedirectDownload( $Href, $FileName, $cookie, 0, $Referer, $pauth );
 		exit ();
