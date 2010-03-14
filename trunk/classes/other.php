@@ -1081,8 +1081,7 @@ function _create_list($lynx = false, $medic=false, $d_showall=false)
            {
              if(in_array($field, array("date", "age", "misc"))) {
 				$time = @filemtime($recfile["name"]);
-				//$time = @filectime( DOWNLOAD_DIR.basename($recfile["name"]) );
-			    $unix_zone = ($unix_zone!=$value ? $time - date("Z") + (3600 * $timezone) : $value);
+			    $unix_zone = ($time != $value ? $time - date("Z") + (3600 * $timezone) : $value);
 				if($field=="age") { 
 				  $agefile = ($unix_now - $unix_zone);
 				  $listReformat[$key]["age"] = count_age($agefile);
