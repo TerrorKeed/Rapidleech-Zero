@@ -5,6 +5,7 @@ if (!defined('RAPIDLEECH'))
 //for security reason we add this value so you just can set manualy directly to this file
 //whether you want disable/enable advanced editor in xpanel.
 $disableadvanceeditor = false;
+$xpanel_filename = 'xpanel.php'; // u need to allow this file in your htaccess if needed
 
 //set index filename, needed in audl incase you have a different name instead index.php
 $index_file = 'index.php';
@@ -42,12 +43,17 @@ $premium_acc["rs_com"] = array(
 //$premium_acc["filefactory"] = array('user' => '', 'pass' => '');
 //$premium_acc["ifile_it"] = array('user' => '', 'pass' => '');
 //$premium_acc["sendspace"] = array('user' => '', 'pass' => '');
-
 #Auto Download Premium Account #
 //$premium_acc_audl = false;
 
 #Megaupload cookie #
 //$mu_cookie_user_value = '';
+
+#Hotfile cookie #
+//$hf_cookie_auth_value = '';
+
+#Rapidshare cookie #
+//$rs_cookie_enc_value = '';
 
 ###Imageshack Torrent Account ###
 //$imageshack_acc = array('user' => '', 'pass' => '');
@@ -61,6 +67,7 @@ $premium_acc["rs_com"] = array(
 //$upload_acc["easysh_mem"] = array('user' => '', 'pass' => '');
 //$upload_acc["deposit_up"] = array('user' => '', 'pass' => '');
 //$upload_acc["uploading_up"] = array('user' => '', 'pass' => '');
+
 
 #-LIMITATION-CONFIG
 $limitbyip = false; //limit RL by IP; dont forget chmod 777 to folder tmp
@@ -83,10 +90,10 @@ $auul = 5; //how many file allow to auto-upload work ?
 $limitbytraffic = false; //limit RL by Traffic Flow
 $max_trafic = 81920; // (in MB). eg: 1 GB = 1 * (1024) MB
 $date_trafic = '14/04/2020'; // (d-day traffic quota expired). date in dd/mm/YYYY 
-$day_reset_trafic = 0; // auto reset traffic. delay in days; 
+$day_reset_trafic = 1; // auto reset traffic. delay in days; 
 
 $limited_edition = false; // limit authorization RL by ip address (banned and allowd list) 
-$list_allow_ip = ''; // White list ip. eg. 111.111.111.111, 255.*.*.*  //--never blank this shit if you set $limited_edition = true 
+$list_allow_ip = '127.0.0.1'; // White list ip. eg. 111.111.111.111, 255.*.*.*  //--never blank this shit if you set $limited_edition = true 
 $list_baned_ip = ''; // blacklist ip, u think so?!. eg. 111.111.111.111, 222.*.*.*, 212.212.212.* 
 
 $limited_area = false; // limit authorization RL by ID Country
@@ -98,7 +105,7 @@ $workstart = '00:00:00'; // Your RL start to work
 $workend = '23:59:00'; // Your RL end to work
 
 $limit_cpuload = false; // limit cpu load and task server job
-  $ServerLoadAllowed = 50; // Maximum server load allowed; Disable = 0
+  $ServerLoadAllowed = 0; // Maximum server load allowed; Disable = 0
   $CpuLoadFormat = 'load'; // Value = 'load' for load format; 'percent' for percent format
   ((!function_exists('exec')&&!function_exists('shell_exec'))?$CpuLoadFormat = 'percent':null); //CpuLoadFormat must be in percent mode if required functions is not exists
   $passthru_allowed = (!function_exists('passthru')?false:true) OR FALSE; // Does your host allows passthru?
@@ -170,11 +177,11 @@ $navi_left = array(
  'showlynx' => true,
  'server_info' => true,
 );
- 
+
  $forbid_audl = false;
  $forbid_auul = false;
  $forbid_lynx = false;
- $cpuUsageNFO = false;
+ $cpuUsageNFO = true;  // require server_info = true
 $OnlineVisitor = true; //Show Online Visitor
 
 $premix_status = true; // enable acc premix status
@@ -191,6 +198,9 @@ $alternatefree = true; //Auto switch freedownload if premium not good
 $showautoclose= true;//autoclose popup when leeching in audl
 $timeautoclose= 250;
 $autochecklink = true; // Auto check submited link in audl
+
+$mip_enabled= false; //If you need to disable multiple ip support, set to false
+$mip_arotate= true; //Auto change to next ip after start transload process
 
 $iframealocate = 10;//how many iframe to allocate in audl for manual method.
 $pointboost = 0;//boost your RS-Point with this feature!!
