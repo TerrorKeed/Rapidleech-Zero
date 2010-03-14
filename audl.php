@@ -17,9 +17,8 @@ ignore_user_abort(1);
 clearstatcache();
 $PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
-//error_reporting(6135);
 $nn = "\r\n";
-$rev_num = '36B.Rv7.1';
+$rev_num = '36B.Rv7.2';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
 require_once(CONFIG_DIR."config.php");
@@ -33,7 +32,7 @@ define('TPL_PATH', 'tpl'. '/' . $csstype . '/');
 define('IMAGE_DIR', MISC_DIR . TPL_PATH);
 
 $ch_curl = (extension_loaded("curl") ? 1 : 0);
-
+error_reporting(6135);
 //===================
 
 //Cek ip yg banned || is it listed as authorized ip || check country limit
