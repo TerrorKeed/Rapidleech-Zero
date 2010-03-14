@@ -1,8 +1,8 @@
 <?php
 define('RAPIDLEECH', 'yes');
 
-//error_reporting(0);
-error_reporting(E_ALL); 
+error_reporting(0);
+//error_reporting(E_ALL); 
 @ini_set('display_errors', true); 
 
 define('MISC_DIR', 'misc/');
