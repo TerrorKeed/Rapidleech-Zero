@@ -10,6 +10,7 @@ Latest Revision
 
 Rv.7.3:
  * Fix Traffic update
+ * Fix update FILES_LST after deleteIt
  * Fix write/update FILES_LST
  * Fix CSS for tdheadolgo & head_container
  * Fix language
