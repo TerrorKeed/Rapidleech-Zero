@@ -740,7 +740,7 @@ if(isset($_POST['submit'])){
 	$field = array(
 	 "rs_de_premix" => array("rs_de", "rplde", "rpplde"),
 	 "megaupload_premix" => array("megaupload", "usrmu", "passmu"),
-	 "megashare_premix" => array("rs_de", "rplde", "rpplde"),
+	 "megashare_premix" => array("megashare", "usrmega", "passmega"),
 	 "netload_premix" => array("netload", "usrnet", "passnet"),
 	 "gigasize_premix" => array("gigasize", "usrgz", "passgz"),
 	 "share_online_premix" => array("share_online", "usrsho", "passsho"),
