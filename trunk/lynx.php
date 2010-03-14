@@ -15,9 +15,9 @@ define('LANG_DIR', 'languages/');
 clearstatcache();
 $PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
-//error_reporting(6135);
+error_reporting(6135);
 $nn = "\r\n";
-$rev_num = '36B.Rv7.1';
+$rev_num = '36B.Rv7.2';
 $RL_VER = 'Rx08.ii'.$rev_num;
 define('VERSION', "[ TuxiNuX::TimSukses ][ ccpb::kaskus ]");
 

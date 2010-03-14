@@ -17,7 +17,7 @@ error_reporting(6135);
 $nn = "\r\n";
 $fromaddr = "RapidLeech";
 $dev_name = 'eqbal';
-$rev_num = '36B.Rv7.1';
+$rev_num = '36B.Rv7.2';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
 $PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
@@ -468,7 +468,7 @@ if (!isset($_GET["path"]) || $download_dir_is_changeable == false)
              
 		$auth = ($Url["user"] && $Url["pass"]) ? "&auth=".base64_encode($Url["user"].":".$Url["pass"]) : "";
 		
-		insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&port=".$Url["port"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "").$auth.($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=auto" : ""));
+		insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&port=".$Url["port"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "").$auth.($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
   }
 else
   {
