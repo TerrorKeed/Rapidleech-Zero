@@ -17,7 +17,7 @@ error_reporting(6135);
 $nn = "\r\n";
 $fromaddr = "RapidLeech";
 $dev_name = 'eqbal';
-$rev_num = '36B.Rv7.2';
+$rev_num = '36B.Rv7.3';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
 $PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
