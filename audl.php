@@ -18,7 +18,7 @@ clearstatcache();
 $PHP_SELF = !isset($PHP_SELF) ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
 $nn = "\r\n";
-$rev_num = '36B.Rv7.2';
+$rev_num = '36B.Rv7.3';
 $RL_VER = 'Rx08.ii'.$rev_num;
 
 require_once(CONFIG_DIR."config.php");

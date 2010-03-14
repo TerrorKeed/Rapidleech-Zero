@@ -12,7 +12,7 @@ define('CONFIG_DIR', './');
 define('LANG_DIR', 'languages/');
 $PHP_SELF = !$PHP_SELF ? $_SERVER["PHP_SELF"] : $PHP_SELF;
 
-$rev_num = '36B.Rv7.2';
+$rev_num = '36B.Rv7.3';
 $RL_VER = 'Rx08.ii'.$rev_num;
 $msg = "Powered by OLC";
 $VERSION = '<small style="color:#239FD9"><b>[ <a href="http://ocean-leecher.net/forum/index.php" target="_blank">olc</a> :: <a href="javascript:void(0)" title="room #14">ccpb</a> :: <a href="http://kaskus.us/" target="_blank">kaskus</a> ]</b></small>';
