@@ -537,7 +537,7 @@ pass: <input type="password" id="pass" name="pass">
     {$chk= ' checked';$sendspace=true;} 
 	?>
 <input type="checkbox" id="sendspace_premix" name="sendspace_premix" onClick="clk(this,'sendbox','sendket','<?php echo $sendspace;?>');"<?php echo $chk;?>>
-<label for="sendspace_premix">&nbsp;ifile.it</label>
+<label for="sendspace_premix">&nbsp;Sendspace.com</label>
 	</td>
 	<td class="tdacc">
 	<div id="sendbox"<?php echo $styledisplay;?> class="float">
