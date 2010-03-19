@@ -165,18 +165,21 @@ if (! defined ( 'RAPIDLEECH' ))
 		global $premium_acc, $Referer;
 		$Referer1 = "http://hotfile.com/";
 		$post = array();
-		if($_GET["premium_acc"] == "on" && $_GET["premium_user"] && $_GET["premium_pass"]){
+		if($_GET["premium_acc"] == "on" && 
+		  ( ($_GET["premium_user"] && $_GET["premium_pass"]) || 
+		    ($premium_acc ["hotfile_com"]["user"] && $premium_acc ["hotfile_com"]["pass"])
+		  )){
 		 $loginUrl = "http://hotfile.com/login.php";
 		
 		 $post["returnto"] = "/";
-		 $post["user"] = $_REQUEST["premium_user"] ? trim( $_REQUEST["premium_user"] ) : $premium_acc["hotfile_com"]["user"];
-		 $post["pass"] = $_REQUEST["premium_pass"] ? trim( $_REQUEST["premium_pass"] ) : $premium_acc["hotfile_com"]["pass"];
+		 $post["user"] = $_GET["premium_user"] ? trim( $_GET["premium_user"] ) : $premium_acc["hotfile_com"]["user"];
+		 $post["pass"] = $_GET["premium_pass"] ? trim( $_GET["premium_pass"] ) : $premium_acc["hotfile_com"]["pass"];
 		 $page = GetPage( $loginUrl, 0, $post, $Referer1 );
-			
+
 		 $cookie = GetCookies( $page );
 		}
 		
-		if(!preg_match('/auth=\w{64}/i', $page) && $_GET ["hf_acc"] == "on"){
+		if(!preg_match('/auth=\w{64}/i', $page) || $_GET ["hf_acc"] == "on"){
 	      $cookie = trim ( cut_str ( $page, "Set-Cookie:", ";" ) );
 	      if ( $_GET ["hf_cookie"]) {
 		  	$cookie .= 'auth=' . $_GET ["hf_cookie"];
@@ -186,13 +189,15 @@ if (! defined ( 'RAPIDLEECH' ))
 		  	$cookie .= 'auth=' . $hf_cookie_auth_value;			
 		  }
 	    }
-	   
+		
 		$page = GetPage( "http://hotfile.com/?lang=en", $cookie, 0, $Referer1 );
 		
-		$findpre = trim ( cut_str ( $page, 'id="account"', 'id="lang"' ) );
-		$findpre = strpos( $findpre, 'Premium' );
+		//$findpre = trim ( cut_str ( $page, 'id="account"', 'id="lang"' ) );
+		//$findpre = strpos( $findpre, 'Premium' );
 		
-		if( false === $findpre )
+		//if( false === $findpre )
+		$findpre = "Premium\s\|(?:[^\/]+)\/premiuminfo\.html";
+		if( !preg_match("/{$findpre}/", $page) )
 		{
 			html_error( "Login Failed , Bad username/password combination.",0 );
 		}
@@ -213,17 +218,17 @@ if (! defined ( 'RAPIDLEECH' ))
           preg_match('/http:.+/i', $redir, $loca);
           $Href = rtrim($loca[0]);
         }
-	   
-		$page = GetPage( $Href, $cookie, 0, $Referer );
+	   	
+		//$page = GetPage( $Href, $cookie, 0, $Referer );
 		
-		preg_match('/Location: *(.+)/i', $page, $newredir );
-		$Href = trim ( $newredir [1] );
+		//preg_match('/Location: *(.+)/i', $page, $newredir );
+		//$Href = trim ( $newredir [1] );
 		
-		//$Href = urldecode ( $Href );
+
+		$Href = urldecode ( $Href );
 		$Url = parse_url( $Href );
-		$FileName = basename($Url["path"]);
-		//$FileName = urldecode ( $FileName );
-		//$FileName = str_replace ( " " , "_" , $FileName );
+		$FileName = basename( $Url["path"] );
+		$FileName = str_replace ( " " , "_" , $FileName );
 		RedirectDownload( $Href, $FileName, $cookie, 0, $Referer );
 		exit ();
 	}
@@ -306,5 +311,6 @@ written by kaox 15-oct-2009
 update by kaox 10-jan-2010
 
 Fixed  downloading from free and premium account, Converted in OOPs format, removed un-neccesary code by Raj Malhotra on 27 Feb 2010
+Remix & Update by Idx 19-Mar-2010
 **********************************************************/
 ?>
