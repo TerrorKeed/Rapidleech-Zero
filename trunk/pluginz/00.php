@@ -1,17 +1,22 @@
-<?php
-if (!defined('RAPIDLEECH'))
-  {require_once("404.php");exit;}
+<?php    
+	if (!defined('RAPIDLEECH'))
+	  {
+	  require_once("404.php");
+	  exit;
+	  }
 
-//Use PREMIUM?
-	if (($_REQUEST["premium_acc"] == "on" && $_REQUEST["premium_user"] && $_REQUEST["premium_pass"]) || ($_GET["premium_acc"] == "on" && $premium_acc["filefactory"]["user"] && $premium_acc["filefactory"]["pass"]))
+	//Use PREMIUM?
+	if ($_REQUEST["premium_acc"] == "on" && (($_REQUEST["premium_user"] && $_REQUEST["premium_pass"]) || ($premium_acc["filefactory"]["user"] && $premium_acc["filefactory"]["pass"])) )
 	{
 		$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, 0, 0, 0, $_GET["proxy"],$pauth);
+
 		is_page($page);
-            if( preg_match('/Location: (.+)/i', $page, $loca)){
-        $redir = rtrim($loca[1]);
-        $Url= parse_url("http://filefactory.com".$redir);
-        $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, 0, 0, $_GET["proxy"], $pauth);
-        is_page($page);   
+
+        if( preg_match('/Location: (.+)/i', $page, $loca)){
+         $redir = rtrim($loca[1]);
+         $Url= parse_url("http://filefactory.com".$redir);
+         $page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, 0, 0, $_GET["proxy"], $pauth);
+         is_page($page);   
         }
 		is_present($page, 'File Not Found', 'Error - File was not found!');
          
@@ -21,20 +26,30 @@ if (!defined('RAPIDLEECH'))
 		$post['redirect'] = $LINK;
 		$page = geturl("www.filefactory.com", 80, "/", 0, 0, $post, 0, $_GET["proxy"], $pauth);
 		is_page($page);
+
 		if (!preg_match('%(ff_membership=.+); expires%', $page, $lcook)) html_error('Not logged in please check your credentials in config.php', 0);
-		
 		
 		$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"].($Url["query"] ? "?".$Url["query"] : ""), 0, $lcook[1], 0, 0, $_GET["proxy"],$pauth);
 		is_page($page);
         
-		if (!preg_match('%(http://dl\d{3}\.filefactory\.com/dlp/.+)">Download with FileFactory Premium%U', $page, $redir2)) html_error('Error getting redirect 2', 0);
-		$Url = parse_url($redir2[1]);
+		preg_match('/^HTTP\/1\.0|1 ([0-9]+) .*/',$page,$status);
+		if ($status[1] == 200) {
+		if (!preg_match('%(http://dl\d{3}\.filefactory\.com/dlp/.+)">Download with FileFactory Premium%U', $page, $redir2)) {
+			if (!preg_match('%(http://archive\d{2}\.filefactory\.com/dlp/.+)">Download with FileFactory Premium%U', $page, $redir2)) {
+				html_error('Error getting redirect 2', 0);
+				}
+			}
+		$dwn=$redir2[1];
+		}
+		if ($status[1] == 302) {
+		$dwn= cut_str ( $page ,"Location: " ,"\r" );
+		}
+		$Url = parse_url($dwn);
 		$FileName = basename($Url['path']);
 		insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&cookie=".urlencode($lcook[1])."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".$redir2[1].($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "").($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
-
 	}
 	else
-//Use FREE instead?
+	//Use FREE instead?
 	{
 		$page = geturl($Url["host"], $Url["port"] ? $Url["port"] : 80, $Url["path"], $Referer, 0, 0, 0, $_GET["proxy"], $pauth);
 		is_page($page);
@@ -63,14 +78,13 @@ if (!defined('RAPIDLEECH'))
         $FileName = !$FileName ? basename($Url["path"]) : $FileName; 
         $wait = cut_str($page,'startWait" value="','"');    
 		insert_timer($wait, "Preparing Your File");
-
-	     $fritz="$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "")."&auth=".$auth.($pauth ? "&pauth=$pauth" : "");
 		insert_location("$PHP_SELF?filename=".urlencode($FileName)."&host=".$Url["host"]."&path=".urlencode($Url["path"].($Url["query"] ? "?".$Url["query"] : ""))."&referer=".urlencode($Referer)."&email=".($_GET["domail"] ? $_GET["email"] : "")."&partSize=".($_GET["split"] ? $_GET["partSize"] : "")."&method=".$_GET["method"]."&proxy=".($_GET["useproxy"] ? $_GET["proxy"] : "")."&saveto=".$_GET["path"]."&link=".urlencode($LINK).($_GET["add_comment"] == "on" ? "&comment=".urlencode($_GET["comment"]) : "")."&auth=".$auth.($pauth ? "&pauth=$pauth" : "").(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : ""));
     }
+	/*
+	szal 18-jun-09
+	filefactory download plugin by mrbrownee70, created june 22, 2009 
+	update by kaox 19-oct-2009
+    Update Idx 20-mar-2010
+	*/
 
-/*
-szal 18-jun-09
-filefactory download plugin by mrbrownee70, created june 22, 2009 
-update by kaox 20-sep-2009
-*/
 ?>
