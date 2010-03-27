@@ -211,18 +211,18 @@ $atxt['reach_lim_audl'] = str_replace('%link%', $audl, $atxt['reach_lim_audl']);
 		  $pre_pass = $_REQUEST["rrapidpass_com"] ? $_REQUEST["rrapidpass_com"] : null;
 		  $start_link.=($pre_user==null && $pre_pass==null?'&maudl=multi':($pre_type!='' ? '&premium_user='.$pre_user.'&premium_pass='.$pre_pass : '&auth_hash='.encEnti(rotN(base64_encode($pre_user.":".$pre_pass),$rnum)).$rnum) );
 		}
-		if(isset($_REQUEST["mu_acc"]) && $_REQUEST["mu_acc"] == "on") {
-		  $cook = isset($_REQUEST["mu_cookie"]) ? $_REQUEST["mu_cookie"] : $mu_cookie_user_value;
-		  $start_link.='&mu_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
-		}
-		if(isset($_REQUEST["hf_acc"]) && $_REQUEST["hf_acc"] == "on") {
-		  $cook = isset($_REQUEST["hf_cookie"]) ? $_REQUEST["hf_cookie"] : $hf_cookie_auth_value;
-		  $start_link.='&hf_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
-		}
-		if(isset($_REQUEST["rs_acc"]) && $_REQUEST["rs_acc"] == "on") {
-		  $cook = isset($_REQUEST["rs_cookie"]) ? $_REQUEST["rs_cookie"] : $rs_cookie_enc_value;
-		  $start_link.='&rs_hash='.encEnti(rotN($cook,$rnum)).$rnum;	
-		}
+        if(isset($_REQUEST["mu_acc"]) && $_REQUEST["mu_acc"] == "on") {
+          $cook = isset($_REQUEST["mu_cookie"]) && $_REQUEST["mu_cookie"]!='' ? $_REQUEST["mu_cookie"] : $mu_cookie_user_value;
+          $start_link.='&mu_hash='.encEnti(rotN($cook,$rnum)).$rnum;    
+        }
+        if(isset($_REQUEST["hf_acc"]) && $_REQUEST["hf_acc"] == "on") {
+          $cook = isset($_REQUEST["hf_cookie"]) && $_REQUEST["hf_cookie"]!='' ? $_REQUEST["hf_cookie"] : $hf_cookie_auth_value;
+          $start_link.='&hf_hash='.encEnti(rotN($cook,$rnum)).$rnum;    
+        }
+        if(isset($_REQUEST["rs_acc"]) && $_REQUEST["rs_acc"] == "on") {
+          $cook = isset($_REQUEST["rs_cookie"]) && $_REQUEST["rs_cookie"]!='' ? $_REQUEST["rs_cookie"] : $rs_cookie_enc_value;
+          $start_link.='&rs_hash='.encEnti(rotN($cook,$rnum)).$rnum;    
+        } 
 ?>
 <script type="text/javascript" src="rscheck.js"></script>
 <script type="text/javascript">
