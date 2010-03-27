@@ -5,6 +5,14 @@ if (! defined ( 'RAPIDLEECH' ))
 	exit ();
 }
 
+$debug = array(
+   "cookie"   => false,
+   "req"      => false,
+   "chiper"   => false,
+   "lastlink" => false,
+   "stop"     => false,
+ );
+
 	Download( $LINK );
 	function Download( $link )
 	{
@@ -75,7 +83,7 @@ if (! defined ( 'RAPIDLEECH' ))
 	
 	function DownloadPremium($link)
 	{
-		global $premium_acc, $Referer, $hf_cookie_auth_value;
+		global $premium_acc, $Referer, $hf_cookie_auth_value, $debug;
 		$Referer1 = "http://hotfile.com/";
 		$post = array();
 		if($_REQUEST["premium_acc"] == "on" && 
@@ -117,7 +125,9 @@ if (! defined ( 'RAPIDLEECH' ))
 		}		
 		
 		$page = GetPage( $link, $cookie, 0, $Referer );
-	
+		
+		if($debug["lastlink"]) showDeb($page, 0, "lastlink");
+		
 		
 		is_present( $page, "File not found", "File not found, the file is not present or bad link","0" );
 		is_present( $page, "due to copyright","This file is either removed due to copyright claim or is deleted by the uploader.","0");
@@ -140,7 +150,10 @@ if (! defined ( 'RAPIDLEECH' ))
 		$Href = urldecode ( $Href );
 		$Url = parse_url( $Href );
 		$FileName = basename( $Url["path"] );
-
+		$Href = "http://" . $Url["host"] . dirname($Url["path"]) . "/" . str_replace("+", "%20", urlencode ( $FileName ) );
+		
+		if($debug["stop"]) exit("<br>".urldecode ( $Href ) . "<br><br>" .$Href."<br>" . $FileName);
+		
 		$FileName = str_replace ( " " , "_" , $FileName );
 		RedirectDownload( $Href, $FileName, $cookie, 0, $Referer );
 		exit ();
@@ -215,16 +228,26 @@ if (! defined ( 'RAPIDLEECH' ))
 			($_POST ["uploadlater"] ? "&uploadlater=".$_POST["uploadlater"]."&uploadtohost=".urlencode($_POST['uploadtohost']) : "").
 			($_POST ['autoclose'] ? "&autoclose=1" : "").
 			(isset($_GET["idx"]) ? "&idx=".$_GET["idx"] : "") . $addon;
-		
-		insert_location ( $loc );
-	}	
 
-/**********************************************************	
+		insert_location ( $loc );
+	}
+	
+	
+	function showDeb($var, $esc = 0, $label=''){
+        print_r("<br><br>");
+        $var = ($label!='' ? "<blink>".$label."</blink><br>":"") . ($esc==1 ? htmlspecialchars($var) : $var);
+        print_r($var);  
+        print_r("<br>");
+    }
+
+
+/************************hotfile.com**********************************	
 written by kaox 15-oct-2009
 update by kaox 10-jan-2010
 
 Fixed  downloading from free and premium account, Converted in OOPs format, removed un-neccesary code by Raj Malhotra on 27 Feb 2010
 Remix & Update by Idx 23-Mar-2010
 Update by Idx 24-Mar-2010
-**********************************************************/
+Update by Idx 27-Mar-2010 Fix encoded basename
+************************hotfile.com**********************************/
 ?>

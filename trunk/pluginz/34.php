@@ -1,9 +1,9 @@
 <?php
-if (! defined ( 'RAPIDLEECH' ))
-   {require_once("404.php");exit;}
-
-	Download( $LINK );
+if (!defined('RAPIDLEECH'))
+  {require_once("404.php");exit;}
+ 
 	
+	Download( $LINK );	
 	function Download($link) 
 	{
 		global $premium_acc;
@@ -29,13 +29,14 @@ if (! defined ( 'RAPIDLEECH' ))
 		$code = trim ( cut_str($page,'code" value="','"') );
 				
 		$action = trim ( cut_str($page,'action" value="','"') );
-		$Href_1 = trim ( cut_str($page,'form action="http://uploading.com/files','"') );
-		$Href_1 = "http://uploading.com/files".$Href_1;
+		$Href_1 = "http://uploading.com/files";
+		$Referer = $Href_1 . "/get/" . $fileID . "/";
+		$Href_1 .= trim ( cut_str($page,'form action="http://uploading.com/files','"') );
 
 		$cookie = GetCookies($page);
 		$temp = cut_str($page,'<div class="c_1','</div>');
 		$FileName = trim(cut_str($temp,'<h2>','</h2>'));
-
+		
 		is_present($page, "Sorry, the file requested by you does not exist on our servers.");
 		is_present($page, "We are sorry, the file was removed either by its owner or due to the complaint received" );
 		if (stristr ( $page, "Sorry, you can download only one file per" ))
@@ -43,7 +44,7 @@ if (! defined ( 'RAPIDLEECH' ))
 			$minutes = trim ( cut_str ( $page, "Sorry, you can download only one file per ", " minutes." ) );
 			if ($minutes)
 			{
-				html_error ( "Download limit exceeded. Sorry, you can download only one file per <font color=black><span id='waitTime'>$minutes</span></font> minutes.Please try again later or acquire a premium membership.", 0 ); 
+				html_error ( "Download limit exceeded. Sorry, you can download only one file per <font color=black><span id='waitTime'>$minutes</span></font> minutes. Please try again later or acquire a premium membership.", 0 ); 
 			}
 			else
 			{
@@ -54,8 +55,8 @@ if (! defined ( 'RAPIDLEECH' ))
 		$post = Array();
 		$post["action"] = $action;
 		$post["file_id"] = $fileID;
-		$post["code"] = $code;
-		$page = GetPage( $Href_1, $cookie, $post, $Referer );
+		$post["code"] = $code;		
+		$page = GetPage( $Href_1, $cookie, $post, $Referer );		
 
 		is_present($page, "Requested file not found");
 
@@ -75,14 +76,13 @@ if (! defined ( 'RAPIDLEECH' ))
 		$post["action"]="get_link";
 		$post["pass"]="";
 		$page = GetPage( $sUrl, $cookie, $post, $Referer );
-		
-		//$dUrl=str_replace("\\","",cut_str($page,'answer": { "link": "','"'));
+						
 		$dUrl = str_replace("\\","",cut_str($page,'link": "','"'));
 
 		if ($dUrl=="") {
 			html_error("Download url error , Please wait for some minute and reattempt",0);
 		}
-		
+				
 		RedirectDownload( $dUrl, $FileName, $cookie, 0, $Referer );
 		exit ();		
 	}
@@ -140,6 +140,7 @@ if (! defined ( 'RAPIDLEECH' ))
 		{ 
 			html_error("Download url error , Please reattempt",0);
 		}
+		
 		
 		RedirectDownload( $dUrl, $FileName, $cookie, 0, $Referer );
 		exit ();
@@ -219,7 +220,8 @@ if (! defined ( 'RAPIDLEECH' ))
 	}
 
 
-/**************************************************\  
+
+/***********************uploading.com***************************\  
 WRITTEN by kaox 24-may-2009
 UPDATE by kaox  29-nov-2009
 UPDATE by rajmalhotra  20 Jan 2010
@@ -227,5 +229,6 @@ UPDATE by rajmalhotra Fix for downloading from Premium Accounts 24 Jan 2010 and 
 Fixed by rajmalhotra Fix for downloading from Free and Premium Accounts 07 Feb 2010. Basically fix changes due to change in Site
 UPDATE by Idx 20-Mar-2010
 update by Idx 23-Mar-2010
-\**************************************************/
+update by Idx 27-Mar-2010
+\**********************uploading.com****************************/
 ?>
