@@ -186,10 +186,9 @@ function getParam($key, $url){
 			 array("rapidshare\.com\/files\/", 'class="downloadlink"', "/>\|\s(.*)</"),
 			 array("megaupload\.com\/\?d=", "(Filename:)|(All download slots assigned to your country)", '/File size:<\/font>\s<font style="font-family:arial;\scolor:#000000; font-size:13px;">(.*)</'),
 			 array("megashares\.com\/\?d01=", "Click here to download", "/size:\s(.*)</"),
-			 //array("hotfile\.com\/dl\/", "Downloading", '/class="size">\|\s(.*)<\/span>/'),
 			 array("hotfile\.com\/dl\/", "Downloading", '/Downloading:(?:[^\|]+)\|<\/span>\s<strong>(.*)<\/strong/'),
 			array("2shared\.com\/file\/", "Download", '/File\ssize:<\/span>\s(.*)\s&nbsp;/'),
-			 array("4shared\.com\/file\/", "Download Now", '/Size:</b>.*\">(.*)/s'),
+			 array("4shared\.com\/file\/", "fileNameTextTr", '/(?:Size|Ukuran|Saiz|Tamanho|Tamaño|Taille|Rozmiar|Boyut|ขนาด|Dimensione|サイズ|크기|Kích\scỡ|Размер)(?:\s*|):(?:\s*|)<\/b>.+(?:\r\n*|\r|\n|).+finforight(?:[^>])>(.*)</'),
 			 array("filefactory\.com\/file\/", "(download link)|(Please try again later)", '/\t<span>(.*)\sfile/'),
 			array("rapidshare\.de\/files\/", "You want to download"),
 			 array("mediafire\.com\/\?", "download_file_title", '/sharedtabsfileinfo1-fs.+?([0-9.]+\s\w+)">/'),
@@ -242,7 +241,7 @@ function getParam($key, $url){
   array("sharebee\.com\/", "Filename"),
   array("sharecash\.org\/(download\.php)?\?id=", "File Info"),
 			array("speedshare\.org\/(download\.php)?\?id=", "Sie haben"),
-			array("letitbit\.net\/download\/", "File::"),
+			array("letitbit\.net\/download\/", "File::", '/file\:\:(?:[^\s]+)(?:[\s|])(.+)\b<\//'),
 			array("saveqube\.com\/getfile\/", "File size"),
 			array("friendlyfiles\.net\/download\/", "Download a file"),
 			array("qubefiles\.com\/?\?file=\/getfile\/", "File size"),
@@ -259,7 +258,7 @@ function getParam($key, $url){
 			array("storage\.to\/get\/", "Downloading:", '/Downloading:(?:[^\(]+)\((.*)\)/'),
 			array("zippyshare\.com\/v\/", "You have requested", '/Size:(?:[^>]+)>(.*)<\/font/'),
 			array("freakshare\.net\/files\/", "box_heading", '/box_heading.+\s-\s(.*)<\/h1/'),
-			//<h1 class="box_heading" style="text-align:center;">
+			
 			);
 		$LnkOccur = false;
 		foreach($sites as $site) {
