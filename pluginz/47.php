@@ -1,17 +1,6 @@
 <?php
-if (! defined ( 'RAPIDLEECH' ))
-{
-	require_once ("404.php");
-	exit ();
-}
-
-$debug = array(
-   "cookie"   => false,
-   "req"      => false,
-   "chiper"   => false,
-   "lastlink" => false,
-   "stop"     => false,
- );
+if (!defined('RAPIDLEECH'))
+  {require_once("404.php");exit;}
 
 	Download( $LINK );
 	function Download( $link )
@@ -67,7 +56,7 @@ $debug = array(
 		
 		$page = GetPage( $Href );
 		
-		preg_match('/Location: *(.+)/i', $page, $newredir );
+		preg_match('/ocation: *(.+)/i', $page, $newredir );
 		$Href = trim ( $newredir [1] );
 		
 		if ( strpos( $Href,"http://" ) === false ) 
@@ -83,78 +72,71 @@ $debug = array(
 	
 	function DownloadPremium($link)
 	{
-		global $premium_acc, $Referer, $hf_cookie_auth_value, $debug;
+		global $premium_acc, $Referer, $hf_cookie_auth_value;
 		$Referer1 = "http://hotfile.com/";
 		$post = array();
 		if($_REQUEST["premium_acc"] == "on" && 
 		   ( ($_REQUEST["premium_user"] && $_REQUEST["premium_pass"]) || 
 		     ($premium_acc ["hotfile_com"]["user"] && $premium_acc ["hotfile_com"]["pass"])
 		   ) ){
-		 $loginUrl = "http://hotfile.com/login.php";
-		
+		 $loginUrl = "http://hotfile.com/login.php";		
 		 $post["returnto"] = "/";
 		 $post["user"] = $_REQUEST["premium_user"] ? trim( $_REQUEST["premium_user"] ) : $premium_acc["hotfile_com"]["user"];
 		 $post["pass"] = $_REQUEST["premium_pass"] ? trim( $_REQUEST["premium_pass"] ) : $premium_acc["hotfile_com"]["pass"];
 		 
-		 $page = GetPage( $loginUrl, 0, $post, $Referer1 );		 
+		 $page = GetPage( $loginUrl, 0, $post, $Referer1 );
 
 		 $cookie = GetCookies( $page );
 		}
+		$Referer = $link;
 		
-		if(!preg_match('/auth=\w{64}/i', $page) && $_GET ["hf_acc"] == "on"){
-	      $cookie = trim ( cut_str ( $page, "Set-Cookie:", ";" ) ) . ";";
-	      if ( $_GET ["hf_cookie"]) {
-		  	$cookie .= 'auth=' . $_GET ["hf_cookie"];
-		  } elseif ($_GET["hf_hash"]) {
-		  	$cookie .= 'auth=' . strrev(dcd($_GET["hf_hash"]));
-		  } elseif ($hf_cookie_auth_value) {
-		  	$cookie .= 'auth=' . $hf_cookie_auth_value;			
+		if(!preg_match('/auth=\w+;/i', $page, $ook)){
+		  if($_GET ["hf_acc"]=="on"){
+		    if($cookie!="" && substr(trim($cookie),-1)!=";")$cookie.="; ";
+		    if($_GET["hf_cookie"]) {
+		       $cookie .= 'auth='.$_GET["hf_cookie"];
+		    }elseif ($_GET["hf_hash"]) {
+		       $cookie .= 'auth='.strrev(dcd($_GET["hf_hash"]));
+		    }elseif ($hf_cookie_auth_value) {
+		       $cookie .= 'auth='.$hf_cookie_auth_value;			
+		    }
+		  }else{
+		    html_error("Login Failed , Bad username/password combination.",0);
 		  }
-	    }
+		}
+
 
 		is_present( $page, "suspended.html", "Account has been suspended","0" );
 			
-		$page = GetPage( "http://hotfile.com/?lang=en", $cookie, 0, $Referer1 );		
+		$page = GetPage( "http://hotfile.com/?lang=en", $cookie, 0, $Referer1 );
 		
 		$findpre = "Premium\s\|(?:[^\/]+)\/premiuminfo\.html";
 		if( !preg_match("/{$findpre}/", $page) )
 		{		    
-			is_present( $page, "Free", "Account found with no longer as Premium","0" );
-			
+			is_present( $page, "Free", "Account found with no longer as Premium","0" );			
 			html_error( "Login Failed , Bad username/password combination.",0 );
 		}		
 		
-		$page = GetPage( $link, $cookie, 0, $Referer );
-		
-		if($debug["lastlink"]) showDeb($page, 0, "lastlink");
-		
+		$page = GetPage( $link, $cookie, 0, $Referer );		
 		
 		is_present( $page, "File not found", "File not found, the file is not present or bad link","0" );
 		is_present( $page, "due to copyright","This file is either removed due to copyright claim or is deleted by the uploader.","0");
-	
+
+	    
 	    preg_match('/^HTTP\/1\.0|1 ([0-9]+) .*/',$page,$status);
-        if ($status[1] == 200) {
-          preg_match('/http:\/\/.+get\/[^\'"]+/i', $page, $loca);   
-          $Href = rtrim($loca[0]);
-		  
+        
+		if ($status[1] == 200) {
+          preg_match('/http:\/\/.+get[^"\'\s]+/i', $page, $loca);
+          $Href = rtrim($loca[0]);		  
           $page = GetPage( $Href, $cookie, 0, $Referer );		
 		  preg_match('/Location: *(.+)/i', $page, $newredir );
 		  $Href = trim ( $newredir [1] );		  
         } else{
-          preg_match('/Location:.+?\\r/i', $page, $loca);
-          $redir = rtrim($loca[0]);
-          preg_match('/http:.+/i', $redir, $loca);
-          $Href = rtrim($loca[0]);		  
-        }
-		
-		$Href = urldecode ( $Href );
-		$Url = parse_url( $Href );
-		$FileName = basename( $Url["path"] );
-		$Href = "http://" . $Url["host"] . dirname($Url["path"]) . "/" . str_replace("+", "%20", urlencode ( $FileName ) );
-		
-		if($debug["stop"]) exit("<br>".urldecode ( $Href ) . "<br><br>" .$Href."<br>" . $FileName);
-		
-		$FileName = str_replace ( " " , "_" , $FileName );
+          preg_match('/ocation:.+(http:\/\/s\d+\..+)\b/i', $page, $loca);
+          $Href = rtrim($loca[1]);
+        }		
+
+		$FileName = str_replace(" ","_",basename(urldecode($Href)) );
 		RedirectDownload( $Href, $FileName, $cookie, 0, $Referer );
 		exit ();
 	}
@@ -174,6 +156,7 @@ $debug = array(
 			global $Referer;
 			$referer = $Referer;
 		}
+
 		$Url = parse_url(trim($link));
 		$page = geturl ( $Url ["host"], $Url ["port"] ? $Url ["port"] : 80, $Url ["path"] . ($Url ["query"] ? "?" . $Url ["query"] : ""), $referer, $cookie, $post, 0, $_GET ["proxy"], $pauth, $auth );
 		is_page ( $page );
@@ -232,22 +215,13 @@ $debug = array(
 		insert_location ( $loc );
 	}
 	
-	
-	function showDeb($var, $esc = 0, $label=''){
-        print_r("<br><br>");
-        $var = ($label!='' ? "<blink>".$label."</blink><br>":"") . ($esc==1 ? htmlspecialchars($var) : $var);
-        print_r($var);  
-        print_r("<br>");
-    }
-
 
 /************************hotfile.com**********************************	
 written by kaox 15-oct-2009
 update by kaox 10-jan-2010
 
 Fixed  downloading from free and premium account, Converted in OOPs format, removed un-neccesary code by Raj Malhotra on 27 Feb 2010
-Remix & Update by Idx 23-Mar-2010
-Update by Idx 24-Mar-2010
 Update by Idx 27-Mar-2010 Fix encoded basename
+Update by Idx 03-apr-2010
 ************************hotfile.com**********************************/
 ?>
