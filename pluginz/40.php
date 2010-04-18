@@ -1,12 +1,12 @@
 <?php 
 if (!defined('RAPIDLEECH'))
   {require_once("404.php");exit;}
-  
-  
+
+
 	Download( $LINK );
 	function Download( $link )
 	{
-	   /*
+
 	    global $premium_acc, $hf_cookie_auth_value;		
 		if( ($_REQUEST ["premium_acc"] == "on" && $_REQUEST ["premium_user"] && $_REQUEST ["premium_pass"]) ||
 			($_REQUEST ["premium_acc"] == "on" && $premium_acc ["ifile_it"] ["user"] && $premium_acc ["ifile_it"] ["pass"])			
@@ -15,7 +15,7 @@ if (!defined('RAPIDLEECH'))
 			DownloadPremium($link);
 		}
 		else
-		*/
+
 		{
 			DownloadFree($link);
 		}
@@ -27,24 +27,29 @@ if (!defined('RAPIDLEECH'))
 	
 	  $Referer = $link;
 	  $dl_link = "http://ifile.it/dl";
+	  
       if($_POST["ffi"] == "ok"){
-        $cookie=$_POST["cookie"];
-        $ttemp= $_POST["link"]  ;
-        $ddlreq= str_replace("type=na&esn=1","type=simple&esn=1&".$_POST["vimg"]."=".$_POST["captcha_check"],$ttemp);
-		
-        $page = GetPage( $ddlreq, $cookie, 0, $Referer );
-        is_present($page, "show_captcha", $strerror = "The captha inserted is wrong", 0) ;
+
+
+
+	    
+		$capcay_msg = cek_post_ffi($dl_link);
+
+
         
-		$page = GetPage( $dl_link, $cookie, 0, $Referer );        
-        $snap = cut_str ( $page ,'id="req_btn' ,'>download' );
-        $Href  = cut_str ( $snap ,'href="' ,'"' );
-        
-        $FileName = basename($Href);
-        
-		RedirectDownload( $Href, $FileName );
-		exit ();
-        
-      }else{
+      } // end _POST
+
+
+
+	  
+	  // not else; just do it again
+	  {
+
+
+
+
+
+
 
         $page = GetPage( $link );
 		$cookie = GetCookies( $page );
@@ -54,62 +59,174 @@ if (!defined('RAPIDLEECH'))
 		   $Referer = $loc;
            $page = GetPage( $loc, $cookie, 0, $Referer);
 		
-		   if(preg_match("/var\s__alias_id.+=(?:[\t]+)*\'(.+)'/", $page, $cocok)){
-		     $alias_id = $cocok[1];
-			 $dllink = "http://ifile.it/download:dl_request?alias_id=".$alias_id."&type=na&esn=1";
-		   }
+		   if(!preg_match("/__alias_id.+=(?:[\t]+)*\'(.+)'/", $page, $file_key)) html_error('File key __alias_id Not Found!', 0);
+
+	       $dllink = "http://ifile.it/download:dl_request?alias_id=".$file_key[1]."&type=na&esn=1";
+	       $page = GetPage( $dllink, $cookie, 0, $Referer);
+
 		   
-		   $page = GetPage( $dllink, $cookie, 0, $Referer);
-		}else{
+		}elseif(!isset($_POST["ffi"])){
+
+
 		   html_error( "Error get link ifile.it/dl, probably changes have been made on the page." , 0 );
 		}
         
-		
-        //if (strpos($page,'captcha":"none'))
+
+
         if (strpos($page,'captcha":0') )
         {
-		   $page = GetPage( $loc, $cookie, 0, $Referer);           
-           $snap = cut_str ( $page ,'id="req_btn' ,'>download' );
-           $Href  = cut_str ( $snap ,'href="' ,'"' );
-           
+		   $page = GetPage( $loc, $cookie );
+		   if(!preg_match('%href="(http://s\d+\.ifile\.it/.+/.+/\d+/.+\..{3})"%U', $page, $dlink)) html_error('Final Download Link Not Found!');
+		   $Href = $dlink[1];
+
+
+
 		   $FileName = basename($Href);        
 		   RedirectDownload( $Href, $FileName );
 		   exit ();
 
-	   } elseif (strpos($page,'captcha":"simple')){
+	   } elseif (strpos($page,'captcha":1') || $capcay_msg!=''){
         
-           $rnd='0.'.idnum(16);
-		   $Referer = "http://ifile.it/dl";
-           $access_image_url='http://ifile.it/download:captcha?'.$rnd;
-		   $page = GetPage( $access_image_url, $cookie, 0, $Referer);
-               
-           $headerend = strpos($page,"JFIF");
-           $pass_img = substr($page,$headerend-6);
-           $imgfile=$download_dir."ifile_captcha.jpg"; 
-           if (file_exists($imgfile)){ unlink($imgfile);} 
-           write_file($imgfile, $pass_img);        	
-
-           print "<form method=\"post\" action=\"".$PHP_SELF.(isset($_GET["idx"]) ? "?idx=".$_GET["idx"] : "")."\">$nn";
-           print "<b>Please enter code:</b><br>$nn";
-           print "<img src=\"$imgfile\">$nn";
-           print "<input name=\"cookie\" value=\"$cookie\" type=\"hidden\">$nn";
-           print "<input name=\"ffi\" value=\"ok\" type=\"hidden\">$nn";
-           print "<input name=\"link\" value=\"$dllink\" type=\"hidden\">$nn";
-           print "<input name=\"vimg\" value=\"$__x_c\" type=\"hidden\">$nn";	
-           print "<input name=\"captcha_check\" type=\"text\" >";
-           print "<input name=\"Submit\" value=\"Submit\" type=\"submit\"></form>";       
-
-        }else{
-           html_error( "If you have already reattempted more times then this plugin not work , probably changes have been made on the page. Report it in the Rapidleech forum" , 0 );
+		   $Referer = $dl_link;
+		   load_recapcay($dllink, $cookie, $Referer, $capcay_msg);
+		   
+        }elseif(!isset($_POST["ffi"])){
+           html_error( "Error get json result, probably changes have been made on the page." , 0 );
         }
       }
 	
 	}  // end DownloadFree
 
 
+	function cek_post_ffi($dl_link=0){
+	    $cookie=$_POST["cookie"];
+        $post['recaptcha_response_field']=urlencode($_POST['captcha_check']);
+        $post["recaptcha_challenge_field"]=$_POST["ch"];
+	    $dllink=urldecode($_POST["link"]);
+		foreach($post as $key => $value){
+		  $dllink.="&".$key."=".$value;
+		}
+		$Referer = $dl_link;
+		$page = GetPage( $dllink, $cookie, $post, $Referer );
+
+		if (strpos($page,'retry":1') ){
+		  $capcay_msg = "incorrect CAPTCHA entered, try again please";
+		  return $capcay_msg;
+		}else{
+		   $page = GetPage( $dl_link, $cookie, 0, $Referer );
+		   
+		   if(!preg_match('%href="(http://s\d+\.ifile\.it/.+/.+/\d+/.+\..{3})"%U', $page, $dlink)) {
+		     html_error('Final Download Link Not Found!', 0);
+		   }else{
+		     $Href = $dlink[1];
+             $FileName = basename($Href);
+		     RedirectDownload( $Href, $FileName, $cookie, 0, $Referer );
+		     exit();
+		   }
+		}
+	}
+	
+	
+	function load_recapcay($dllink, $cookie=0, $Referer=0, $capcay_msg=''){
+
+	
+       $page = GetPage( "http://api.recaptcha.net/challenge?k=6LehdQcAAAAAABt0QFfzJT0yxsFydQsVTADaFakD", 0, 0, $Referer );
+       is_present($page,"Expired session", "Expired session . Go to main page and reattempt", 0);        
+       $ch = cut_str ( $page ,"challenge : '" ,"'" );
+
+
+
+
+       
+       $page = GetPage( "http://api.recaptcha.net/image?c=".$ch, $cookie, 0, $Referer );
+       $headerend = strpos($page,"\r\n\r\n");
+       $pass_img = substr($page,$headerend+4);
+       $imgfile=$download_dir."ifile_captcha.jpg";
+       
+       if (file_exists($imgfile)){ unlink($imgfile);} 
+       write_file($imgfile, $pass_img);
+       $dllink = str_replace("type=na","type=recaptcha",$dllink);
+       
+       print "<p><form method=\"post\" action=\"".$PHP_SELF.(isset($_GET["idx"]) ? "?idx=".$_GET["idx"] : "")."\">$nn";
+       print ($capcay_msg!='' ? "<b class='r'>{$capcay_msg}</b><br>$nn" : "");
+       print "<b>Please enter code:</b><br>$nn";
+       print "<img src=\"{$imgfile}?".rand(1,10000)."\"><br><br>$nn";
+       print "<input name=\"cookie\" value=\"$cookie\" type=\"hidden\">$nn";
+       print "<input name=\"ch\" value=\"".$ch."\" type=\"hidden\">$nn";
+       print "<input name=\"ffi\" value=\"ok\" type=\"hidden\">$nn";
+       print "<input name=\"link\" value=\"".urlencode($dllink)."\" type=\"hidden\">$nn";
+
+       print "<input name=\"captcha_check\" type=\"text\" >";
+       print "<input name=\"Submit\" value=\"Submit\" type=\"submit\"></form></p>";		   
+       exit("</body></html>");
+	}
+	
+	
 	function DownloadPremium($link)
-	{
-	   // not implemented yet =====================
+	{	   
+	   global $premium_acc, $PHP_SELF, $download_dir, $nn;
+	   
+	   $ch_curl = (extension_loaded("curl") ? 1 : 0);	   
+	   $dl_link = "http://ifile.it/dl";
+	   
+	   if($_POST["ffi"] == "ok"){
+	    
+		  $capcay_msg = cek_post_ffi($dl_link);
+
+       } // end _POST
+
+	  {
+	    if($ch_curl!=1) html_error("Can not proceed, require cURL extension_loaded.", 0);
+	    
+	    $signin = 'https://secure.ifile.it/account:process_signin';
+	    $post = array();
+	    $post["usernameFld"] = $_REQUEST["premium_user"] ? trim( $_REQUEST["premium_user"] ) : $premium_acc["ifile_it"]["user"];
+	    $post["passwordFld"] = $_REQUEST["premium_pass"] ? trim( $_REQUEST["premium_pass"] ) : $premium_acc["ifile_it"]["pass"];
+	    $post["submitBtn"] = "continue";
+	    $page = sslcurl( $signin, $post );
+	    $cookie = GetCookies($page);
+	    $Referer = $link;
+	    if (!preg_match('%(http\:\/\/ifile.it\/\?timestamp=\d+)">you have successfully signed in%', $page, $redir)) html_error('Invalid Authentication', 0);
+	    $loc = trim($redir[1]);
+	    $page = GetPage( $loc, $cookie );
+	    $cookie .= '; ' . GetCookies($page);
+	    
+	    $page = GetPage( $link, $cookie );
+        if(!preg_match('%ocation: (.+)\r\n%', $page, $rdir)) html_error( "Error get link ifile.it/dl, probably changes have been made on the page." , 0 );
+	    
+	    $page = GetPage( $rdir[1], $cookie );
+	    $Referer = $rdir[1];
+	    
+        if(!preg_match("/__alias_id.+=(?:[\t]+)*\'(.+)'/", $page, $file_key)) html_error('File key __alias_id Not Found!', 0);
+	    $dllink = "http://ifile.it/download:dl_request?alias_id=".$file_key[1]."&type=na&esn=1";
+	    $page = GetPage( $dllink, $cookie, 0, $Referer);
+        
+	    if (strpos($page,'captcha":0') )
+        {
+           $loc = $rdir[1];
+		   $page = GetPage( $loc, $cookie );
+           if (!preg_match('%href="(http://s\d+\.ifile\.it/.+/.+/\d+/.+\..{3})"%U', $page, $dlink)) html_error('Final Download Link Not Found!', 0);
+		   $Href = $dlink[1];
+           $FileName = basename($Href);
+		   RedirectDownload( $Href, $FileName, $cookie, 0, $Referer );
+		   exit();		 
+        }
+        elseif (strpos($page,'captcha":1') || $capcay_msg!='')
+        {
+		   $Referer = $dl_link;
+		   load_recapcay($dllink, $cookie, $Referer, $capcay_msg);
+        }else{
+           html_error( "Error get json result, probably changes have been made on the page." , 0 );
+        }
+	  }
+	   
+	   exit ();
+
+
+
+
+
+
 	}
 	
   	/**
@@ -128,7 +245,7 @@ if (!defined('RAPIDLEECH'))
 			$referer = $Referer;
 		}
 		$Url = parse_url(trim($link));
-		$page = geturl ( $Url ["host"], $Url ["port"] ? $Url ["port"] : 80, $Url ["path"] . ($Url ["query"] ? "?" . $Url ["query"] : ""), $referer, $cookie, $post, 0, $_GET ["proxy"], $pauth, $auth );
+		$page = geturl ( $Url ["host"], defport($Url), $Url ["path"] . ($Url ["query"] ? "?" . $Url ["query"] : ""), $referer, $cookie, $post, 0, $_GET ["proxy"], $pauth, $auth );
 		is_page ( $page );
 		return $page;
 	}
@@ -191,10 +308,34 @@ if (!defined('RAPIDLEECH'))
          $id .= floor(rand(0, 9));
       return $id;
     }
+	
+	function sslcurl ($link, $post = 0, $cookie = 0, $refer = 0)
+    {
+      $mm = !empty($post) ? 1 : 0;
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $link);
+      curl_setopt($ch, CURLOPT_HEADER, 1);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U;Windows NT 5.1; de;rv:1.8.0.1)\r\nGecko/20060111\r\nFirefox/1.5.0.1');
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_POST, $mm);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, formpostdata($post));
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+      curl_setopt($ch, CURLOPT_REFERER, $refer);
+      curl_setopt($ch, CURLOPT_COOKIE, $cookie) ;
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+      // curl_setopt ( $ch , CURLOPT_TIMEOUT, 15);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+      $contents .= curl_exec($ch);
+      // $info = curl_getinfo($ch);
+      // $stat = $info['http_code'];
+      curl_close($ch);
+      return $contents;
+    }
 
 /************************ifile.it**********************************
 // written by kaox 24-may-2009
 // update by kaox 15-nov-2009
 // update by Idx 01-apr-2010 - +Rebuild with Malhotra's OOP code
+// update by Idx 03-apr-2010
 ************************ifile.it*********************************/
 ?>
