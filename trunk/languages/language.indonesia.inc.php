@@ -233,6 +233,7 @@ switch($vpage)
 	 
      'mail_file_sent' => 'File terkirim ke alamat ini',
      'mail_error_send' => 'Gagal mengirim file!',
+     'created_file' => 'File Tersimpan:',
      'delete_link' => 'Link Delete:',
      'delete_link_notice' => 'Gunakan link delete ini setelah Anda selesai mendownload file<br>agar hard-disk Anda tidak terlalu cepat penuh.',
 	 'zzzzz' => ''
@@ -256,6 +257,7 @@ switch($vpage)
      '_sorry_tobig'       => 'Maaf, file Anda terlalu BESAR',
      '_sorry_tosmall'       => 'Maaf, file Anda terlalu kecil',
      '_sorry_quotafull'       => 'Maaf, trafik quota tidak mencukupi',
+     '_sorry_insuficient_storage' => 'Maaf, kapasitas penyimpanan tidak mencukupi',
 
 	 'zzzzz' => ''	 
      );
