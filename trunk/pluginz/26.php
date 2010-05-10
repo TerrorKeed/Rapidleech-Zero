@@ -58,18 +58,16 @@ if (!defined('RAPIDLEECH'))
               }
               $page = GetPage( $Href, 0, 0, $Referer );
             }
-        }
+        }		
 		
        	$ev = cut_str($page, "Eo(); ", "; ").";"; 
+
         if(preg_match("/dh\('(.*)'\)/i", $ev, $pass)){
             
-            echo("<div style=\"text-align: center\"><br><br>");
-            
-            if($pass[1])
-            {
+            echo("<div style=\"text-align: center\"><br><br>");            
+            if($pass[1]) {
                 echo ("<div style=\"text-align: center\">The password  '".$pass[1]."'  is INVALID please correct the error.</div>");
-            }else
-            {
+            } else {
                 echo ("<div style=\"text-align: center\">The file is password protect, please enter the password</div>");
             }
             $code = '<div style="text-align: center"><form method="post" action="'.$PHP_SELF.'">'.$nn;
@@ -78,8 +76,7 @@ if (!defined('RAPIDLEECH'))
             $code .= '<input type="hidden" name="passfile" value="true">'.$nn;
             $code .= '<input type="hidden" name="link" value="'.urlencode($link).'">'.$nn;
             $code .= '</form></div>';
-            echo $code;
-            die;
+			exit($code);            
         }
           
         if( strpos( $page ,"GetCaptcha('")!== false ){
@@ -120,20 +117,39 @@ if (!defined('RAPIDLEECH'))
         
         $startLink="http://www.mediafire.com/dynamic/download.php?qk=".$dat[0]."&pk=".$dat[1]."&r=".$dat[2];
 	    $page = GetPage( $startLink, $cookie, 0, $Referer );     
-     	
-        if(strpos($page, "Click here to start download") !== false && strpos($page, "unescape") === false)
-     	{
-          $page = str_replace("Click here to start download", "\n", $page);
-          preg_match_all("/\=(?:\s|)parent\.document\.getElementById\(\'(\w+)(?:[^<]+)(.+)(?:[^>])/",$page,$matches);
-          foreach($matches[1] as $idx => $idval){
-            if($idval==$frid){
-              $final_Link=Finalize($matches[2][$idx],$page);	
-              break;
-            }
-          }
-        }else
-     	{
-          if(preg_match_all("/;var.+?unescape\(.+?eval/",$page,$matches)){		  
+		
+        if(strpos($page, "Click here to start download") !== false ){
+		    if(strpos($page, "unescape") === false){
+                $page = str_replace("Click here to start download", "\n", $page);
+                preg_match_all("/\=(?:\s|)parent\.document\.getElementById\(\'(\w+)(?:[^<]+)(.+)(?:[^>])/",$page,$matches);
+		        
+                foreach($matches[1] as $idx => $idval){
+                  if($idval==$frid){
+                    $final_Link=Finalize($matches[2][$idx],$page);	
+                    break;
+                  }
+                }
+		        if(!isset($final_Link)) html_error("E101. Failed get Final Link", 0 );
+            
+		    } else {
+			    
+			    $unEscs = cut_str ( $page, 'case 15:' ,' break;' );
+			    $unEscs = explode ( "'';", $unEscs );
+				foreach($unEscs as $tmp){
+				    $string=DecoMfire($tmp);
+					if(preg_match("/\=(?:\s|)parent\.document\.getElementById\(\'(\w+)(?:[^<]+)(.+)(?:[^>])/", $string, $matches)){
+					  if($matches[1] == $frid){
+					    $final_Link=urldecode(Finalize($matches[2], $page ));
+						break;
+					  }
+					}
+				}
+				if(!isset($final_Link)) html_error("E103. Failed get Final Link", 0 );		    
+		    
+		    }
+		} else {
+		
+            preg_match_all("/;var.+?unescape\(.+?eval/",$page,$matches);
             foreach($matches[0] as $tmp){
              $string=DecoMfire($tmp);
              if( strpos( $string ,$frid)!== false ){
@@ -141,13 +157,12 @@ if (!defined('RAPIDLEECH'))
                break;
              }
             }
-		  }else{
-		    html_error("E143. Failed get Final Link", 0 );
-		  }
-        }
+		    if(!isset($final_Link)) html_error("E100. Failed get Final Link", 0 );
+
+        }		
      	
         $torep = array(" ", "+");
-        $FileName = str_replace($torep, "_", basename($final_Link));
+        $FileName = str_replace($torep, "_", basename($final_Link));		
 		RedirectDownload( $final_Link, $FileName, $cookie, 0, $Referer );
 		exit ();		
 	}
@@ -235,7 +250,7 @@ if (!defined('RAPIDLEECH'))
 		insert_location ( $loc );
 	}
 	
-	/* - DecoMfire - */
+	/* - Decode Mfire - */
     function DecoMfire ($string){
       do
       {
@@ -283,7 +298,7 @@ if (!defined('RAPIDLEECH'))
 
 /************mediafire.com*************\
  WRITTEN BY KAOX 11-mar-10
- Upate By Idx 26-mar-2010
  Upate By Idx 30-mar-2010 Split By Func
+ Upate By Idx 11-may-2010 Dcd.Lvl2
 \************mediafire.com*************/
 ?>
