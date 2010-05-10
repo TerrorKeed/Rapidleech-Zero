@@ -110,10 +110,12 @@ if (!defined('RAPIDLEECH'))
 			
 		$page = GetPage( "http://hotfile.com/?lang=en", $cookie, 0, $Referer1 );
 		
-		$findpre = "Premium\s\|(?:[^\/]+)\/premiuminfo\.html";
+		//$findpre = "Premium\s\|(?:[^\/]+)\/premiuminfo\.html";
+		$findpre = "Premium<\/sp";
+				
 		if( !preg_match("/{$findpre}/", $page) )
 		{		    
-			is_present( $page, "Free", "Account found with no longer as Premium","0" );			
+			is_present( $page, "Free</sp", "Account found with no longer as Premium","0" );			
 			html_error( "Login Failed , Bad username/password combination.",0 );
 		}		
 		
@@ -221,7 +223,7 @@ written by kaox 15-oct-2009
 update by kaox 10-jan-2010
 
 Fixed  downloading from free and premium account, Converted in OOPs format, removed un-neccesary code by Raj Malhotra on 27 Feb 2010
-Update by Idx 27-Mar-2010 Fix encoded basename
 Update by Idx 03-apr-2010
+Update by Idx 10-May-2010 - upd $findpre HF pattern
 ************************hotfile.com**********************************/
 ?>
