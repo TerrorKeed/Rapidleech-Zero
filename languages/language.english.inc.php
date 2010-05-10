@@ -231,6 +231,7 @@ switch($vpage)
 	 
      'mail_file_sent' => 'File was sent to this address',
      'mail_error_send' => 'Error sending file!',
+     'created_file' => 'File Created:',
      'delete_link' => 'Delete Link:',
      'delete_link_notice' => 'Use this delete link after you have finished downloading the file<br>free up space your hard disk for others.',
 	 'zzzzz' => ''
@@ -254,6 +255,10 @@ switch($vpage)
      '_sorry_tobig'       => 'Sorry, your file is too big',
      '_sorry_tosmall'       => 'Sorry, your file is too small',
      '_sorry_quotafull'       => 'Sorry, insufficient traffic quota',
+     '_sorry_insuficient_storage' => 'Sorry, insufficient storage space',
+     '_max_filesize' => 'MAX Filesize:',
+     '_min_filesize' => 'MIN Filesize:',
+     '_storage_limit' => 'Storage Limit:',
 
 	 'zzzzz' => ''	 
      );	 

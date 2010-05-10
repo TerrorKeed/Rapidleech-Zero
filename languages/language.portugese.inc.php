@@ -232,6 +232,7 @@ switch($vpage)
 	 
      'mail_file_sent' => 'Arquivo enviado para este endereço',
      'mail_error_send' => 'Erro ao estar enviando o arquivo!',
+     'delete_link' => 'Arquivo Salvado:',
      'delete_link' => 'Link para deletar:',
      'delete_link_notice' => 'Use o link de deletar após você ter feito o download do arquivo<br>para que deixe espaço livre no disco para outros.',
 	 'zzzzz' => ''
@@ -255,6 +256,7 @@ switch($vpage)
      '_sorry_tobig'       => 'Desculpe, seu arquivo é muito grande',
      '_sorry_tosmall'       => 'Desculpe, seu arquivo é muito pequeno',
      '_sorry_quotafull'       => 'Desculpe, insuficiente quantidade de banda',
+     '_sorry_insuficient_storage' => 'Desculpe, insuficiente alcançado espaço',
 
 	 'zzzzz' => ''	 
      );	 
