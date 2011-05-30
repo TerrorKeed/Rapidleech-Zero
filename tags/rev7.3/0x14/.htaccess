@@ -1,0 +1,7 @@
+<Files ~ "\.(php|php.*|sphp|php3|php4|php5|phtml|cgi|pl|shtml|dhtml)$">
+deny from all
+</files>
+
+<Files ~ "\.(html|htm)$">
+Allow from all
+</files>
